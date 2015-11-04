@@ -349,21 +349,37 @@ Another important consideration is that K+A models that include covariates and o
 
 The workhorse of detection function fitting in \pkg{Distance2} is the \code{ds} function. Here we show off the formulations for the detection function that we've seen above for both the minke whale and amakihi data.
 
+### Minke whale
+
 We can fit a model to the minke whale data, setting the truncation at 1.5km and using the default options in \code{ds} very simply:
 ```{r minke-hn}
 minke_hn <- ds(minke, truncation=1.5)
 ```
-**Figure???** shows the result of calling \code{plot} on the resulting model object.
+**Figure???** shows the result of calling \code{plot} on the resulting model object. We can also call \code{summary} on the model object to get summary information about the fitted model (though we postpone this until the next section).
 
 ```{r minke-hn-plot, fig.width=4, fig.height=4, fig.cap="Plot of fitted detection function overlayed on the histogram of observed distances for the minke whale data."}
 plot(minke_hn)
 ```
 
+We can specify the form of the detection function via the \code{model=df(...)} argument to \code{ds}. For example, fitting a hazard rate model with cosine adjustments of order 2 can be specified as:
+```{r minke-hr-cos}
+minke_hrcos <- ds(minke, truncation=1.5, model=df(model=~hr+cos(2)))
+```
 
+### Amakihi
 
+By default \code{ds} assumes that the data given to it is line transect, but we can switch to points using \code{transect="points"}. Including covariates in the scale is via the `scale=~...` argument to `df`; a hazard-rate model for the amakihi that includes observer as a covariate (and truncating at 82.5m, given in @Marques:2007ey) can be specified by:
+```{r amakihi-hr}
+amakihi_hr_obs <- ds(amakihi, truncation=82.5, model=df(model=~hr, scale=~obs), transect="point")
+```
 
 # Model checking and model selection
 
+```{r minke-hn-summary}
+summary(minke_hn)
+```
+
+* summary results
 * qq plots
 * hessian/convergence
 * monotonicity
