@@ -210,7 +210,7 @@ k(y) = \left\{
 $$
 Possible modelling options for key and adjustments are given in Table \ref{ka-tab} and illustrated in **Figure ???**.
 
-```{r hn-hr-par-comp, fig.width=10, fig.height=6.5, fig.cap="Half-normal (top row) and hazard-rate (bottom row) detection functions without adjustments, varying scale ($\\sigma$) and (for hazard-rate) shape ($b$) parameters (values are given above the plots). On the top row from left to right, the study species becomes more detectable (higher probability of detection at larger distances). The bottom row shows the hazard-rate model's more pronounced shoulder.", echo=FALSE}
+```{r hn-hr-par-comp, fig.width=10, fig.height=5, fig.cap="Half-normal (top row) and hazard-rate (bottom row) detection functions without adjustments, varying scale ($\\sigma$) and (for hazard-rate) shape ($b$) parameters (values are given above the plots). On the top row from left to right, the study species becomes more detectable (higher probability of detection at larger distances). The bottom row shows the hazard-rate model's more pronounced shoulder.", echo=FALSE}
 par(mfrow=c(2,4), mar=c(3.5, 3, 2, 1) + 0.1)
 
 
@@ -357,9 +357,6 @@ minke_hn <- ds(minke, truncation=1.5)
 ```
 **Figure???** shows the result of calling \code{plot} on the resulting model object. We can also call \code{summary} on the model object to get summary information about the fitted model (though we postpone this until the next section).
 
-```{r minke-hn-plot, fig.width=4, fig.height=4, fig.cap="Plot of fitted detection function overlayed on the histogram of observed distances for the minke whale data."}
-plot(minke_hn)
-```
 
 We can specify the form of the detection function via the \code{model=df(...)} argument to \code{ds}. For example, fitting a hazard rate model with cosine adjustments of order 2 can be specified as:
 ```{r minke-hr-cos}
@@ -369,8 +366,26 @@ minke_hrcos <- ds(minke, truncation=1.5, model=df(model=~hr+cos(2)))
 ### Amakihi
 
 By default \code{ds} assumes that the data given to it is line transect, but we can switch to points using \code{transect="points"}. Including covariates in the scale is via the `scale=~...` argument to `df`; a hazard-rate model for the amakihi that includes observer as a covariate (and truncating at 82.5m, given in @Marques:2007ey) can be specified by:
-```{r amakihi-hr}
-amakihi_hr_obs <- ds(amakihi, truncation=82.5, model=df(model=~hr, scale=~obs), transect="point")
+```{r amakihi-hr-obs}
+amakihi_hr_obs <- ds(amakihi, truncation=82.5, transect="point",
+                     model=df(model=~hr, scale=~obs))
+```
+As with the minke whale model, we can plot the resulting detection function. Since for the amakihi we used covariates in the detection function, the plot will show the detection function averaged over levels/values of the covariate and separately for each level set (for continuous covariates, the 25\%, 50\% and 75\% quantiles are displayed).
+
+When multiple covariates are used in the model, a series of plots are produced. We can see this in the bottom row of **Figure ???**, where we plot the results of fitting following model:
+```{r amakihi-hr-obs-mas}
+amakihi_hr_obs_mas <- ds(amakihi, truncation=82.5, transect="point",
+                         model=df(model=~hr, scale=~obs+mas))
+```
+
+```{r minke-hn-plot, fig.width=9, fig.height=9, fig.cap="Plot of fitted detection functions overlayed on the histograms of observed distances. Top row the minke whale data, half-normal model. Bottom row: average detection function for the amakihi data and marginal plot showing the levels of observer."}
+par(mfrow=c(3,3))
+plot(minke_hn, nomf=TRUE)
+plot(1:10,1:10, main="",xlab="",ylab="",type="n", axes=FALSE)
+plot(1:10,1:10, main="",xlab="",ylab="",type="n", axes=FALSE)
+plot(amakihi_hr_obs, nomf=TRUE)
+plot(1:10,1:10, main="",xlab="",ylab="",type="n", axes=FALSE)
+plot(amakihi_hr_obs_mas, nomf=TRUE)
 ```
 
 # Model checking and model selection
