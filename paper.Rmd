@@ -1,0 +1,312 @@
+---
+author:
+  - name: David L Miller
+    affiliation: Centre for Research into Ecological and Environmental Modelling, University of St Andrews
+    address: >
+      The Observatory,
+      St Andrews, Fife KY16 9LZ, Scotland
+    email: dave@ninepointeightone.net
+    url: http://converged.yt
+title:
+  formatted: "Distance Sampling in \\proglang{R}"
+  # If you use tex in the formatted title, also supply version without
+  plain:     "Distance Sampling in R"
+  # For running headers, if needed
+  #short:     "\\pkg{foo}: A Capitalized Title"
+abstract: >
+  The abstract of the article.
+keywords:
+  # at least one keyword must be supplied
+  formatted: [distance sampling, abundance estimation, line transects, point transects, "\\proglang{R}"]
+  plain:     [distance sampling, abundance estimation, line transects, point transects, R]
+preamble: >
+  \usepackage{amsmath}
+  \usepackage{amssymb}
+output: rticles::jss_article
+bibliography: jstatsoft.bib
+---
+
+# Introduction
+
+```{r setup, include=FALSE}
+library(knitr)
+opts_chunk$set(cache=TRUE)
+```
+
+Distance sampling [@Buckland:2001vm; @Buckland:2004ts] encompases a suite of field methods and statistical models used to estimate the abundance of biological populations. Distance sampling field procedure can be thought of as an extension of plot sampling, where we wish to take into account the decreasing probability of detecting objects at increasing distance from the sampler. We do this by building a model for detectability and use quantities calculated from the detection function to adjust the observed counts to obtain an estimate of abundance.
+
+For many years distance sampling analyses have been available via the Windows program Distance (or "DISTANCE"); for clarity henceforth "Distance for Windows" @Thomas:2010cf). From version 5 of Distance for Windows, R packages have been included to perform particular analyses (CITE Distance user manual). This paper shows how to fit detection functions, perform model checking and selection and estimate abundance in \proglang{R} using the package \pkg{Distance2}.
+
+
+## Distance sampling
+
+It is clear that census-type surveys (quadrat or strip transects) are inefficient (requiring a lot of effort on the part of those in the field) and we should expect that not all animals can be observed. Accounting for imperfect detectability is an important consideration when want to obtain accurate estimates of abundance [@LahozMonfort:2013bg]. Using the extra information gained by recording distance from the sampler to the observation, it is possible to model detectability. Since we expect detectability to decrease with increasing distance from the sampler, we model detectability as a function of distance (plus perhaps other covariates, see below).
+
+Distance sampling comes in two main "flavours": line and point transects. In line transect sampling observers walk (or fly, sail, etc) down lines observing objects and recording the distances to the line; whereas in point transect sampling observers stand stationary at a location and record distances from that point. Field methods are chosen to be suitable to species and habitat constraints [@buckland2015distance].
+
+```{r points-and-lines, fig.height=6, fig.width=7, echo=FALSE, message=FALSE, fig.cap="Left side plots show an example of a survey of an area containing a population of 500 objects, blue indicates sampler placement (top lines, bottom points) and red dots indicate detected individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom)."}
+opar <- par(mfrow=c(2,2))
+# line and point transect examples
+# top row points/samplers in space
+# bottom row histograms
+
+# generate some animals to sample
+set.seed(131) # same results every time
+library(mgcv) # for inSide
+
+# generate population locations
+N <- 500
+x <- runif(N)
+y <- runif(N)
+
+## line transects
+opar2 <- par(mar=c(1, 1, 1, 1) + 0.1)
+plot(x, y, pch=19, asp=1, cex=0.6, main="",col="grey", axes=FALSE, xlab="", ylab="")
+polygon(x=c(0,0,1,1,0), y=c(0,1,1,0,0))
+# generate some lines
+# in this case we don't randomise the offset of the grid
+lt <- list(x=c(-0.0125,-0.0125,0.0125,0.0125,-0.0125), y=c(0,1,1,0,0))
+# set sigma
+sigma <- 0.01
+# storage for detected distances
+detected_distances <- c()
+for(i in 1:5){
+  # calculate next strip location
+  lt$x <- lt$x+0.15
+  # plot the line transect
+  lines(x=rep(mean(range(lt$x)),2), y=c(0,1), col="blue",lty=2)
+  # calculate the distances to animals from the line
+  distances <- abs(lt$x - x)
+  # randomly decide which were detected
+  detected <- exp(-distances^2/(2*sigma^2)) > runif(length(distances))
+  # plot those animals detected
+  points(x[detected], y[detected], pch=19, cex=0.6, col="red")
+  # collect the distances to detected objects
+  detected_distances <- c(detected_distances, distances[detected])
+}
+
+#par(opar2)
+par(mar=c(4, 4, 1, 2) + 0.1)
+hist(detected_distances, main="", xlab="Observed distances")
+
+## point transects
+par(mar=c(1, 1, 1, 1) + 0.1)
+plot(x, y, pch=19, asp=1, cex=0.6, main="", col="grey", axes=FALSE, xlab="", ylab="")
+polygon(x=c(0,0,1,1,0), y=c(0,1,1,0,0))
+
+# set sigma
+sigma <- 0.05
+# storage for detected distances
+detected_distances <- c()
+# lay out a grid of points
+pt <- as.list(expand.grid(x=seq(0.15, 0.85, len=3), y=seq(0.15, 0.85, len=3)))
+for(i in 1:length(pt$x)){
+  # generate point location
+  # plot the line transect
+  points(pt$x[i], pt$y[i], pch=19, col="blue",cex=0.7)
+  # calculate the distances to animals from the line
+  distances <- sqrt((pt$x[i] - x)^2+(pt$y[i]-y)^2)
+  # randomly decide which were detected
+  detected <- exp(-distances^2/(2*sigma^2)) > runif(length(distances))
+  # plot those animals detected
+  points(x[detected], y[detected], pch=19, cex=0.6, col="red")
+  # collect the distances to detected objects
+  detected_distances <- c(detected_distances, distances[detected])
+}
+
+par(mar=c(4, 4, 1, 2) + 0.1)
+hist(detected_distances, main="", xlab="Observed distances")
+
+par(opar)
+
+```
+
+For both points and lines, once the geometry of the sampler has been taken into account, the histogram of distances should show a decreasing number of observations with increasing distance from the sampler. For line transects we expect objects to be distributed unformly with respect to distance from the line and what makes our histogram decrease is the detectability. For point transects, we must take into account the fact that as distance from the point increases, the area of the circle encompassed increases with distance squared.
+
+Using this histogram we can crudely estimate the drop-off in detectability by eye by tracing a line that approximates the tops of the histogram bars -- this is the detection function. \pkg{Distance2} estimates the parameters for a fixed-form detection function using maximum likelihood estimation. We address possible models in detail below
+
+## Data
+
+We demonstrate \pkg{Distance2} using two data sets: one line transect and one point transect. These data sets have been chosen to be representative of the kind of data seen in practice.
+
+### Minke whales
+
+The line transect data is simulated data based on a survey of Antarctic minke whales (*Balaenoptera bonaerensis*). The data is simulated from models fitted to data from the International Whaling Commission’s International Decade of Cetacean Research Southern Ocean Whale and Ecosystem Research (IWC IDCR-SOWER) programme 1992-1993 austral summer surveys [@Branch:2001ua]. They consist of 99 observations and include information on the effort expended and whether observations were in one of two geographical strata (near or far from land).
+
+### Amakihi
+
+The point transect data set consists of 1485 observations of Amakihi (*Hemignathus virens*; a Hawaiian songbird), collected at 41 points between 1992 and 1995. The data include distances and three covariates collected during the survey: observer ID (a three level factor), minutes after sunrise (continuous) and hours after sunrise (a six level factor). Data are analysed comprehensively in @Marques:2007ey.
+
+
+## The rest of the paper
+
+The rest of the paper is structured as follows: we first look into how data needs to be organised to allow it to be used with \pkg{Distance2}; models for the detection function are then covered including their formulation and examples of fitting in \proglang{R}. We then spend some time looking at model checking and goodness of fit testing, as well as model selection. Having illustrated how to obtain a good detection function, we show how to estimate abundance using that model, including using post-stratification. The final two sections of the article look at extensions (both in terms of methodology and software) and put the package in a broader context amongst other software packages used for animal abundance estimation.
+
+# Data setup
+
+The two example data sets used here are distributed with \pkg{Distance2} so readers can reproduce our results easiy. However in general we expect that data will be collected in the field and need to be formatted correctly for use with \pkg{Distance2}. The package allows for a flexible format for data input ranging from very simple to complex:
+
+* In the simplest case, where one would simply like to estimate a detection function, all that is needed is a vector of distances.
+* To include additional covariates into the detection function (see "Detection functions") we need to use a \code{data.frame}, this needs to have a column called \code{distance} and named columns for each covariate collected (for example \code{observer} or \code{seastate}). Some column names are reserved: \code{object} for an observation identifier (see "Extensions"), \code{size} for group or cluster size (see "Detection functions" and "Abundance and variance estimation"), \code{detected} for whether or not an observation was detected (see "Extensions") and the columns described in the next bullet.
+* If one would like to estimate abundance for some area, this information must be given at the same time. This consists of information about which transect and occasion the observation was made (the \code{Sample.Label}), a column named \code{Effort} which gives the effort associated with that sample (for lines their length and for points the number of times that point was visited), the stratum the sample was located in (this may have any name and may be from pre- or post-survey stratification, see "Estimating abundance and variance") and that stratum's area (which has the same name as the stratum column, appended with \code{.Area}). (We refer to this data format as "flatfile" is all information we have is contained in one table.)
+
+As we will see in "Extensions", further information is also required when we start using more complex models.
+
+Looking at an example of the data format given in the last bullet, we can examine the minke whale data:
+
+```{r minke-data-head}
+library(Distance2)
+head(minke)
+```
+and the amakihi data:
+```{r amakihi-data-head}
+head(amakihi)
+```
+
+* what do we want to say here?
+
+# Detection functions
+
+As mentioned above, the detection function describes the relationship between observed distances and probability of detection. The detection function itself models the probability $\mathbb{P}(\text{object detected } \vert \text{ object at distance } y)$ and is usually denoted $g(y; \boldsymbol{\theta})$ where $y$ is distance and $\boldsymbol{\theta}$ is a vector of parmeters to be estimated. Our goal is to estimate an average probability of detection (average in the sense of an average over the distances), so we must integrate out distance ($y$) from the detection function:
+$$
+p = \int_0^w \pi(y) g(y; \boldsymbol{\theta}) dy
+$$
+where $\pi(y)$ describes the distribution of objects with respect to the sampler and is $1/w$ for line transects and $\frac{2r}{w}$ for point transects [@Buckland:2001vm, Chapter 3].
+
+Models for the detection function are expected to have the following properties [@buckland2015distance, Chapter 5]:
+
+* *Shoulder*: we expect observers to be able to see objects near them, not just those directly infront of them. For this reason, we expect the detection function to be "flat" near zero distance.
+* *Non-increasing*: we don't think that observers should be more likely to see things further away than those nearer to them. This usually indicates an issue with field procedure (that the distribution of animals with respect to the line, $\pi(y)$ is not what we expect), so we do not want the detection function to model this.
+* *Model robust*: models should be flexible enough to make many different shapes.
+* *Pooling robust*: many factors can affect the probability of detection and it is not possible to measure all of these. We would like our models to be robust to us not including these factors.
+* *Estimator efficiency*: we would like our models to have low variances, but only given they satisfy the other properties above (which, if they are satisfied, would give low bias).
+
+There is a wide literature on possible formulations for the detection function [@Buckland:1992fa; @Eidous:2005bj; @Becker:2009cj; @Giammarino:2014eg; @Miller:2015hw; @Becker:2015fi]. \code{Distance2} includes the most popular of these models, and includes an extendable class system to add new detection functions while avoiding code duplication (see "Extensions").
+
+Here we'll show two popular detection function approaches: "key function plus adjustments" (K+A) and mixture models.
+
+## Detection functions: key function plus adjustments (K+A)
+
+Key function plus an adjustments (or adjustment series) models are formulated by taking a "key" function and optionally adding "adjustments" to it to improve the fit. Mathematically we formulate this as:
+$$
+g(y; \boldsymbol{\theta}) = k(y; \boldsymbol{\theta}_k)\left( 1+ \alpha_K(y; \boldsymbol{\theta}_\alpha)\right),
+$$
+where $k$ is the key function and $\alpha_K$ is sum series of functions and the subscripts on the parameter vector indicate those parameters belonging to each part of the model.
+
+Models for $k$ are as follows
+$$
+k(y) = \left\{
+\begin{array}{l l}
+  \exp\left(-\frac{y^2}{2 \sigma^2}\right) & \quad \text{half-normal} \\
+  1-\exp\left(\left(-\frac{y}{\sigma}\right)^{-b}\right) & \quad \text{hazard-rate} \\
+  1/w & \quad \text{uniform}
+\end{array} \right.
+$$
+Possible modelling options for key and adjustments are given in Table \ref{ka-tab} and illustrated in **Figure ???**.
+
+```{r hn-hr-par-comp, fig.width=10, fig.height=6.5, fig.cap="Half-normal (top row) and hazard-rate (bottom row) detection functions without adjustments, varying scale ($\\sigma$) and (for hazard-rate) shape ($b$) parameters (values are given above the plots). On the top row from left to right, the study species becomes more detectable (higher probability of detection at larger distances). The bottom row shows the hazard-rate model's more pronounced shoulder.", echo=FALSE}
+par(mfrow=c(2,4), mar=c(3.5, 3, 2, 1) + 0.1)
+
+## half-normal
+g.hn <- function(x,sigma) exp(-x^2/(2*sigma^2))
+x <- seq(0,1,len=200)
+for(this.sig in c(0.05, 0.25, 1, 10)){
+  plot(x, g.hn(x,this.sig), main=bquote(sigma == .(this.sig)),
+       xlab="", ylab="",
+       type="l", xlim=c(0,1), ylim=c(0,1), asp=1)
+  title(xlab="Distance", line=2)
+  title(ylab="Detection probability", line=2)
+}
+
+## hazard-rate
+g.hr <- function(x, sigma, b) 1 - exp(-(x/sigma)^-b)
+for(this.sig in c(0.1, 0.5)){
+  for(this.b in c(5, 1)){
+    plot(x, g.hr(x, this.sig, this.b),
+         main=bquote(sigma == .(this.sig) ~ .(", b") == .(this.b)),
+         xlab="", ylab="",
+         type="l", xlim=c(0,1), ylim=c(0,1), asp=1)
+    title(xlab="Distance", line=2)
+    title(ylab="Detection probability", line=2)
+  }
+}
+
+
+```
+
+
+\begin{table}
+\caption{Modelling options for key plus adjustments models for the detection function.}
+\begin{tabular}{llll}
+\hline
+key function   & form   & adjustment & form\\
+\hline
+ uniform  & $1/w$   & cosine  & $\sum_{k=1}^K a_k \cos(k \pi y/w)$ \\
+ & & Simple polynomial & $\sum_{k=1}^K a_k (y/w)^{2k}$ \\
+ half-normal  & $\exp\left(-\frac{y^2}{2 \sigma^2}\right)$ & cosine  & $\sum_{k=2}^K a_k \cos(k \pi y/w)$ \\
+ & & Hermite polynomial & $\sum_{k=2}^K a_k H_{2k}(y/\sigma)$ \\
+ hazard-rate  & $1-\exp\left[-\left(\frac{y}{\sigma}\right)^{-b}\right]$ & cosine  & $\sum_{k=2}^K a_k \cos(k \pi y/w)$ \\
+ & & Simple polynomial & $\sum_{k=2}^K a_k (y/w)^{2k}$ \\
+\hline
+\end{tabular}
+\label{ka-tab}
+\end{table}
+
+When adjustment terms are used it may be necessary to standardise the results to ensure that $g(0)=1$, so we can redefine the detection function as:
+$$
+g(y; \boldsymbol{\theta}) = \frac{k(y; \boldsymbol{\theta})\left( 1+ \alpha_K(y; \boldsymbol{\theta})\right)}{k(0; \boldsymbol{\theta})\left( 1+ \alpha_K(0; \boldsymbol{\theta})\right)}
+$$
+A distinct disadvantage of K+A models is that we must resort to constrained optimisation (via the \pkg{Rsolnp} package) in order to ensure that the resulting detection function is monotonic non-increasing over the whole range.
+
+We do not always use adjustments (except in the case of the uniform key), in which case we refer to "key only" models; see also "Covariates" and "Model checking and model selection" below.
+
+## Detection functions: mixture models
+
+We can also formulate the detection function as a mixture of (say) half-normal functions [@Miller:2015hw]:
+$$
+g(y; \boldsymbol{\theta}) = \sum_{k=1}^K \varphi_j \exp\left(-\frac{y^2}{2 \sigma_j^2}\right)
+$$
+where $\sum_{k=1}^K \varphi_j =1$ and $\boldsymbol{\theta} = (\varphi_1,\ldots,\varphi_{K-1},\sigma_1,\ldots,\sigma_K$. Such models do not require constrained optimisation (as K+A models do) as the mixtures are monotonic decreasing by construction.
+
+As with the K+A model, we describe model selection (in terms of number of mixture components) in "Model checking and selection" below.
+
+## Covariates
+
+As mentioned when we talked about pooling robustness, above, there are many factors that can affect the probability of detecting an object. These include things like the observer, the vessel or platform used, the sea state, weather conditions and time of day (to name but a few). We assume that these variables affect detection only via the scale of the detection function (and that they don't affect the shape).
+
+Covariates can be included in this formulation by considering the scale parameter from the half-normal or hazard-rate detection functions as a linear model (on the exponential scale) of the ($k$) covariates ($\mathbf{z}$):
+$$
+\sigma(\mathbf{z}) = \exp(\beta_0 + \sum_k \beta_k z_k).
+$$
+In the next section we'll discuss model selection for these models.
+
+Including covariates has an important implication for our calculation of detectability. Since we don't know what the true distribution of the covariates is we must calculate the probability of detection conditional on the observed values of the covariates:
+$$
+p(\mathbf{z_i}) = \int_0^w \pi(y) g(y, \mathbf{z_i}; \boldsymbol{\theta}) dy
+$$
+so we now calculate a value of "average" probability of detection (again the average is in the sense of distance) per observation. There will be as many unique values of $p(\mathbf{z_i})$ as there are unique covariate combinations in our data.
+
+Another important consideration is that K+A models that include covariates and one or more adjustments cannot be guaranteed to be monotonic non-increasing for all covariate combinations, as we don't have any model for the distribution of the covariates. For this reason, we advise against using both adjustments and covariates in a detection function [see @Miller:2015hw for an example of when this can be problematic].
+
+# Model checking and model selection
+
+* qq plots
+* hessian/convergence
+* monotonicity
+* AIC -- what else?
+
+# Estimating abundance and variance
+
+* Horvitz-Thompson
+* Refer to Fewster et al 2009
+
+# Extensions
+
+* writing new detection functions
+* Interface to dsm etc
+
+# Conclusion
+
+* Other software? \pkg{unmarked}, \pkg{RDistance} etc
+
+
