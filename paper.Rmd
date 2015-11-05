@@ -312,7 +312,6 @@ plotmix(0.8, 0.15, 0.3)
 plotmix(0.6, 0.1,0.7)
 plotmix(10, 0.2, 0.15)
 plotmix(0.7, 0.05, 0.6)
-
 ```
 
 
@@ -373,12 +372,12 @@ amakihi_hr_obs <- ds(amakihi, truncation=82.5, transect="point",
 As with the minke whale model, we can plot the resulting detection function. Since for the amakihi we used covariates in the detection function, the plot will show the detection function averaged over levels/values of the covariate and separately for each level set (for continuous covariates, the 25\%, 50\% and 75\% quantiles are displayed).
 
 When multiple covariates are used in the model, a series of plots are produced. We can see this in the bottom row of **Figure ???**, where we plot the results of fitting following model:
-```{r amakihi-hr-obs-mas}
+```{r amakihi-hr-obs-mas, warning=FALSE}
 amakihi_hr_obs_mas <- ds(amakihi, truncation=82.5, transect="point",
                          model=df(model=~hr, scale=~obs+mas))
 ```
 
-```{r minke-hn-plot, fig.width=9, fig.height=9, fig.cap="Plot of fitted detection functions overlayed on the histograms of observed distances. Top row the minke whale data, half-normal model. Bottom row: average detection function for the amakihi data and marginal plot showing the levels of observer."}
+```{r minke-hn-plot, echo=FALSE, warning=FALSE, fig.width=9, fig.height=9, fig.cap="Plot of fitted detection functions overlayed on the histograms of observed distances. Top row the minke whale data, half-normal model. Bottom row: average detection function for the amakihi data and marginal plot showing the levels of observer."}
 par(mfrow=c(3,3))
 plot(minke_hn, nomf=TRUE)
 plot(1:10,1:10, main="",xlab="",ylab="",type="n", axes=FALSE)
