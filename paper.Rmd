@@ -406,7 +406,7 @@ Once we have a set of models which fit well, we can use Akaike's Information Cri
 ```{r results="asis", echo=FALSE}
 kable(summarize_ds_models(amakihi_hr, amakihi_hr_obs, amakihi_hr_obs_mas),
       digits = 3, format = "latex", row.names = FALSE, escape=FALSE,
-      caption="Summary for the detection function models fitted to the amakihi data. \"C-vM\" stands for Cramer-von Mises. Models are sorted according to AIC.")
+      caption="Summary for the detection function models fitted to the amakihi data. \"C-vM\" stands for Cramer-von Mises, $P_a$ indicates average detectability (see \"Estimating abundance and variance\"), se indicates standard error. Models are sorted according to AIC.")
 ```
 
 
@@ -414,9 +414,30 @@ kable(summarize_ds_models(amakihi_hr, amakihi_hr_obs, amakihi_hr_obs_mas),
 
 # Estimating abundance and variance
 
-* Horvitz-Thompson
+Though fiting the detection function is the primary modelling step in distance sampling, we are really interested in estimating detectability, and from that abundance. We also wish to calculate our certainty in each abundance estimate. This section addresses these issues.
+
+## Abundance
+
+In order to estimate abundance ($\hat{N}$), we use the estimates of detection probability (the $\{p_i; i=1,\ldots,n\}$, above) in a Horvitz-Thompson like estimator:
+$$
+\hat{N} = \sum_{i=1}^n\frac{s_i}{\hat{p}_i}
+$$
+where $s_i$ are the sizes of the observed groups of objects, which is equal to 1 if objects only occur singly [@Borchers:2004wr]. @thompson2012sampling is the cannonical reference to this type of estimator; intuitively, we can think of the estimates of detectability ($\hat{p}_i$) as "inflating" the group sizes ($s_i$) to account for incomplete detection -- we then sum to obtain the abundance estimate. For models that do not include covariates, $\hat{p}_i$ is equal for all $i$, so this is equivalent to summing the groups and inflating by a single value for detectability.
+
+We can use the Horvitz-Thompson-like estimator to obtain an "average probability of detection" for models which include covariates. We can consider what single detectability value would given the $\hat{N}$ and therefore calculate:
+$$
+\hat{P_a} = n/\hat{N}.
+$$
+This can be a useful summary statistic and is included in the \code{summary} output and the table produced by \code{summarize_ds_models}.
+
+**detectability vs. average detectability vs. detection probability -- clarify**
+
+## Variance
+
+
+
+
 * Refer to Fewster et al 2009
-* calculation of $P_a$
 
 # Extensions
 
