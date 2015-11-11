@@ -174,13 +174,11 @@ head(amakihi)
 
 # Detection functions
 
-**Do we need to talk about binned distances too?**
-
-As mentioned above, the detection function describes the relationship between observed distances and probability of detection. The detection function itself models the probability $\mathbb{P}(\text{object detected } \vert \text{ object at distance } y)$ and is usually denoted $g(y; \boldsymbol{\theta})$ where $y$ is distance and $\boldsymbol{\theta}$ is a vector of parmeters to be estimated. Our goal is to estimate an average probability of detection (average in the sense of an average over the distances), so we must integrate out distance ($y$) from the detection function:
+As mentioned above, the detection function describes the relationship between observed distances and probability of detection. The detection function itself models the probability $\mathbb{P}(\text{object detected } \vert \text{ object at distance } y)$ and is usually denoted $g(y; \boldsymbol{\theta})$ where $y$ is distance and $\boldsymbol{\theta}$ is a vector of parmeters to be estimated. Our goal is to estimate an *average probability of detection* ($p$, average in the sense of an average over the distances), so we must integrate out distance ($y$) from the detection function:
 $$
 p = \int_0^w \pi(y) g(y; \boldsymbol{\theta}) dy
 $$
-where $\pi(y)$ describes the distribution of objects with respect to the sampler and is $1/w$ for line transects and $\frac{2r}{w}$ for point transects [@Buckland:2001vm, Chapter 3].
+where $\pi(y)$ describes the distribution of objects with respect to the sampler and is $1/w$ for line transects and $\frac{2r}{w}$ for point transects, taking into account the geometry of the sampler [@Buckland:2001vm, Chapter 3].
 
 It is important that the detection function accurately models detectability near zero distance. We are less worried by its behaviour further away from 0. To ensure that the model is not overly influence by distances far from zero we truncate the distances beyond a given distance $w$ (known as the *truncation distance*). Fitting to distances further away from zero does not improve the precision of abundance estimates considerably [@Buckland:2001vm, 103–108, 151–153].
 
@@ -204,17 +202,17 @@ Here we'll detail the most popular detection function approach: "key function pl
 
 Key function plus adjustment terms (or adjustment series) models are formulated by taking a "key" function and optionally adding "adjustments" to it to improve the fit. Mathematically we formulate this as:
 $$
-g(y; \boldsymbol{\theta}) = k(y; \boldsymbol{\theta}_k)\left( 1+ \alpha_K(y; \boldsymbol{\theta}_\alpha)\right),
+g(y; \boldsymbol{\theta}) = k(y; \boldsymbol{\theta}_\text{key})\left( 1+ \alpha_O(y; \boldsymbol{\theta}_\text{adjust})\right),
 $$
-where $k$ is the key function and $\alpha_K$ is sum series of functions and the subscripts on the parameter vector indicate those parameters belonging to each part of the model.
+where $k$ is the key function and $\alpha_O$ is sum series of functions (given in **Table ???**), described as an *adjustment of order $O$*. Subscripts on the parameter vector indicate those parameters belonging to each part of the model (i.e. $\boldsymbol{\theta} = (\boldsymbol{\theta}_\text{key}, \boldsymbol{\theta}_\text{adjust})$).
 
-Models for $k$ are as follows
+Some models for the key are as follows:
 $$
 k(y) = \left\{
 \begin{array}{l l}
-  \exp\left(-\frac{y^2}{2 \sigma^2}\right) & \quad \text{half-normal} \\
-  1-\exp\left(\left(-\frac{y}{\sigma}\right)^{-b}\right) & \quad \text{hazard-rate} \\
-  1/w & \quad \text{uniform}
+  \exp\left(-\frac{y^2}{2 \sigma^2}\right) & \quad \text{half-normal,} \\
+  1-\exp\left(\left(-\frac{y}{\sigma}\right)^{-b}\right) & \quad \text{hazard-rate,} \\
+  1/w & \quad \text{uniform.}
 \end{array} \right.
 $$
 Possible modelling options for key and adjustments are given in Table \ref{ka-tab} and illustrated in **Figure ???**. We select the number of adjustment terms ($K$) by AIC (further details in "Model checking and model selection").
@@ -254,12 +252,12 @@ for(this.sig in c(0.1, 0.5)){
 \hline
 key function   & form   & adjustment & form\\
 \hline
- uniform  & $1/w$   & cosine  & $\sum_{k=1}^K a_k \cos(k \pi y/w)$ \\
- & & Simple polynomial & $\sum_{k=1}^K a_k (y/w)^{2k}$ \\
- half-normal  & $\exp\left(-\frac{y^2}{2 \sigma^2}\right)$ & cosine  & $\sum_{k=2}^K a_k \cos(k \pi y/w)$ \\
- & & Hermite polynomial & $\sum_{k=2}^K a_k H_{2k}(y/\sigma)$ \\
- hazard-rate  & $1-\exp\left[-\left(\frac{y}{\sigma}\right)^{-b}\right]$ & cosine  & $\sum_{k=2}^K a_k \cos(k \pi y/w)$ \\
- & & Simple polynomial & $\sum_{k=2}^K a_k (y/w)^{2k}$ \\
+ uniform  & $1/w$   & cosine  & $\sum_{o=1}^O a_o \cos(o \pi y/w)$ \\
+ & & Simple polynomial & $\sum_{o=1}^O a_o (y/w)^{2o}$ \\
+ half-normal  & $\exp\left(-\frac{y^2}{2 \sigma^2}\right)$ & cosine  & $\sum_{o=2}^O a_o \cos(o \pi y/w)$ \\
+ & & Hermite polynomial & $\sum_{o=2}^O a_o H_{2o}(y/\sigma)$ \\
+ hazard-rate  & $1-\exp\left[-\left(\frac{y}{\sigma}\right)^{-b}\right]$ & cosine  & $\sum_{o=2}^O a_o \cos(o \pi y/w)$ \\
+ & & Simple polynomial & $\sum_{o=2}^O a_o (y/w)^{2o}$ \\
 \hline
 \end{tabular}
 \label{ka-tab}
@@ -267,8 +265,9 @@ key function   & form   & adjustment & form\\
 
 When adjustment terms are used it may be necessary to standardise the results to ensure that $g(0)=1$, so we can redefine the detection function as:
 $$
-g(y; \boldsymbol{\theta}) = \frac{k(y; \boldsymbol{\theta})\left( 1+ \alpha_K(y; \boldsymbol{\theta})\right)}{k(0; \boldsymbol{\theta})\left( 1+ \alpha_K(0; \boldsymbol{\theta})\right)}
+g(y; \boldsymbol{\theta}) = \frac{k(y; \boldsymbol{\theta}_\text{key})\left( 1+ \alpha_O(y; \boldsymbol{\theta}_\text{adjust})\right)}{k(0; \boldsymbol{\theta}_\text{key})\left( 1+ \alpha_O(0; \boldsymbol{\theta}_\text{adjust})\right)}.
 $$
+
 A disadvantage of K+A models is that we must resort to constrained optimisation (via the \pkg{Rsolnp} package) in order to ensure that the resulting detection function is monotonic non-increasing over the whole range.
 
 We do not always use adjustments (except in the case of the uniform key), in which case we refer to "key only" models; see also "Covariates" and "Model checking and model selection" below.
@@ -307,9 +306,9 @@ title(ylab="Detection probability", line=2)
 
 ### Covariates
 
-As mentioned when we talked about pooling robustness, above, there are many factors that can affect the probability of detecting an object. These include things like the observer, the vessel or platform used, the sea state, weather conditions and time of day (to name but a few). We assume that these variables affect detection only via the scale of the detection function (and that they don't affect the shape).
+There are many factors that can affect the probability of detecting an object. These include things like the observer, the vessel or platform used, the sea state, weather conditions and time of day (to name but a few). We assume that these variables affect detection only via the scale of the detection function (and that they don't affect the shape).
 
-Covariates can be included in this formulation by considering the scale parameter from the half-normal or hazard-rate detection functions as a linear model (on the exponential scale) of the ($J$) covariates ($\mathbf{z}$):
+Covariates can be included in this formulation by considering the scale parameter from the half-normal or hazard-rate detection functions as a linear model (on the exponential scale) of the ($J$) covariates ($\mathbf{z}$; a vector of length $J$ for each observation):
 $$
 \sigma(\mathbf{z}) = \exp(\beta_0 + \sum_{j=1}^J \beta_j z_j).
 $$
@@ -317,9 +316,9 @@ In the next section we'll discuss model selection.
 
 Including covariates has an important implication for our calculation of detectability. Since we don't know what the true distribution of the covariates is we must calculate the probability of detection conditional on the observed values of the covariates:
 $$
-p(\mathbf{z_i}) = \int_0^w \pi(y) g(y, \mathbf{z_i}; \boldsymbol{\theta}) dy
+p(\mathbf{z_i}) = \int_0^w \pi(y) g(y, \mathbf{z_i}; \boldsymbol{\theta}) dy,
 $$
-so we now calculate a value of "average" probability of detection (again the average is in the sense of distance) per observation. There will be as many unique values of $p(\mathbf{z_i})$ as there are unique covariate combinations in our data.
+where $\mathbf{z_i}$ is the vector of $J$ covariates associated with observation $i$. So for covariate models, we are calculating a value of "average" probability of detection (again the average is in the sense of distance) per observation. There will be as many unique values of $p(\mathbf{z_i})$ as there are unique covariate combinations in our data.
 
 Another important consideration is that K+A models which include covariates and one or more adjustments cannot be guaranteed to be monotonic non-increasing for all covariate combinations, as we don't have any model for the distribution of the covariates. For this reason, we advise against using both adjustments and covariates in a detection function [see @Miller:2015hw for an example of when this can be problematic].
 
@@ -397,51 +396,91 @@ gof_ds(amakihi_hr, asp=1)
 gof_ds(amakihi_hr_obs_mas, asp=1)
 ```
 
-**Do we need to add something about binned distances and Q-Q plots here?**
-
 ## Model selection
 
-Once we have a set of models which fit well, we can use Akaike's Information Criterion (AIC) to select between models. \pkg{Distance} includes a function to create table of summary information for fitted models, making it easy to get an overview of a large number of models at once. The \code{summarize_ds_models} function takes models as input and can be especially useful when paired with \pkg{knitr}'s \code{kable} function to create summary tables for publication. An example of this output is shown in **Table ???**.
+Once we have a set of models which fit well, we can use Akaike's Information Criterion (AIC) to select between models. \pkg{Distance} includes a function to create table of summary information for fitted models, making it easy to get an overview of a large number of models at once. The \code{summarize_ds_models} function takes models as input and can be especially useful when paired with \pkg{knitr}'s \code{kable} function to create summary tables for publication. An example of this output is shown in **Table ???** and was generated by:
+```{r summary-table-null, eval=FALSE}
+summarize_ds_models(amakihi_hr, amakihi_hr_obs, amakihi_hr_obs_mas)
+```
 
-```{r results="asis", echo=FALSE}
+```{r summary-table, results="asis", echo=FALSE}
 kable(summarize_ds_models(amakihi_hr, amakihi_hr_obs, amakihi_hr_obs_mas),
       digits = 3, format = "latex", row.names = FALSE, escape=FALSE,
       caption="Summary for the detection function models fitted to the amakihi data. \"C-vM\" stands for Cramer-von Mises, $P_a$ indicates average detectability (see \"Estimating abundance and variance\"), se indicates standard error. Models are sorted according to AIC.")
 ```
 
 
-* monotonicity -- do we need this?
-
 # Estimating abundance and variance
 
-Though fiting the detection function is the primary modelling step in distance sampling, we are really interested in estimating detectability, and from that abundance. We also wish to calculate our certainty in each abundance estimate. This section addresses these issues.
+Though fiting the detection function is the primary modelling step in distance sampling, we are really interested in estimating detectability, and from that abundance. We also wish to calculate our certainty in each abundance estimate. This section addresses these issues mathematically before showing how to estimate abundance and its variance in R.
 
 ## Abundance
 
-In order to estimate abundance ($\hat{N}$), we use the estimates of detection probability (the $\{p_i; i=1,\ldots,n\}$, above) in a Horvitz-Thompson like estimator:
-$$
-\hat{N} = \sum_{i=1}^n\frac{s_i}{\hat{p}_i}
-$$
-where $s_i$ are the sizes of the observed groups of objects, which is equal to 1 if objects only occur singly [@Borchers:2004wr]. @thompson2012sampling is the cannonical reference to this type of estimator; intuitively, we can think of the estimates of detectability ($\hat{p}_i$) as "inflating" the group sizes ($s_i$) to account for incomplete detection -- we then sum to obtain the abundance estimate. For models that do not include covariates, $\hat{p}_i$ is equal for all $i$, so this is equivalent to summing the groups and inflating by a single value for detectability.
+We wish to obtain the abundance in a study region, which we have sampled some (representative) subset of. To do this we first calculate the abundance in the area we have surveyed (the *covered area*) to obtain $\hat{N}_\text{C}$, we can then scale this up to the full study area by multiplying it by the ratio of covered area to study area.
 
-We can use the Horvitz-Thompson-like estimator to obtain an "average probability of detection" for models which include covariates. We can consider what single detectability value would given the $\hat{N}$ and therefore calculate:
+First, in order to estimate abundance in the covered area ($\hat{N}_\text{C}$), we use the estimates of detection probability (the $\{p_i; i=1,\ldots,n\}$, above) in a Horvitz-Thompson like estimator:
+\begin{equation}
+\hat{N}_\text{C} = \sum_{i=1}^n\frac{s_i}{\hat{p}_i},
+\label{ht}
+\end{equation}
+where $s_i$ are the sizes of the observed groups of objects, which is equal to 1 if objects only occur singly [@Borchers:2004wr]. @thompson2012sampling is the cannonical reference to this type of estimator; intuitively, we can think of the estimates of detectability ($\hat{p}_i$) as "inflating" the group sizes ($s_i$) to account for incomplete detection -- we then sum to obtain the abundance estimate. For models that do not include covariates, $\hat{p}_i$ is equal for all $i$, so this is equivalent to summing the groups and inflating that sum by the corresponding $\hat{p} (=\hat{p}_i \forall i)$.
+
+Having obtained the abundance in the covered area, we can then scale-up to the study area:
 $$
-\hat{P_a} = n/\hat{N}.
+\hat{N} = \frac{A}{a} \hat{N}_\text{C},
+$$
+where $A$ is the area of the study region to extrapolate the abundance estimate to and $a$ is the covered area. For line transects $a=2wL$ (twice the truncation distance multiplied by the total length of transects surveyed) and for points $a=\pi w^2 K$.
+
+We can use the Horvitz-Thompson-like estimator to calculate the "average" detectability for models which include covariates. We can consider what single detectability value would give the estimated $\hat{N}$ and therefore calculate:
+$$
+\hat{P_a} = n/\hat{N}_\text{C}.
 $$
 This can be a useful summary statistic and is included in the \code{summary} output and the table produced by \code{summarize_ds_models}.
 
-**detectability vs. average detectability vs. detection probability -- clarify**
+**stratification**
 
 ## Variance
 
+Uncertainty in $\hat{N}$ comes from two sources:
+
+1. *Model uncertainty*, from the estimation of the detection function parameters $\boldsymbol{\theta}$
+2. *Sampling uncertainty*, from the distribution of animals along the transect lines or between visiting occasions for points.
+
+We can see this by looking at the Horvitz-Thompson estimation in (\ref{ht}) and consider the terms which are random. These are: the detectability $\hat{p}_i$ (and hence the parameters of the detection function it is derived from) and $n$, the number of observations. We assume that the observed group size ($s_i$) is recorded without error.
+
+Model uncertainty can be addressed using standard maximum likelihood theory. We can invert the Hessian matrix of the likelihood to obtain a variance-covariance matrix. We can then pre- and post-multiple this by the derivatives of $\hat{N}_\text{C}$ 
+$$
+\widehat{\text{Var}}_\text{model}\left( \hat{N}_\text{C}\right) = \left(\frac{\partial \hat{N}_\text{C}}{\partial\hat{\boldsymbol{\theta}}}\right)^\text{T} \left(\hat{\mathbf{H}}(\hat{\boldsymbol{\theta}})^{-1} \right)\frac{\partial \hat{N}_\text{C}}{\partial\hat{\boldsymbol{\theta}}}
+$$
+where the partial derivatives of $\hat{N}_\text{C}$ are evaluated at the MLE ($\hat{\theta}$) and $\mathbf{H}$ is the first partial Hessian (outer product of first derivatives of the log likelihood) for numerical stability [@Buckland:2001vm, p 62]. Note that although we calculate uncertainty in $\hat{N}_\text{C}$, we can trivially scale-up to variance of $\hat{N}$.
+
+Sampling uncertainty can be characterised (rather than as simply $n$) by the *encounter rate*: $n/L$ for line transects (where $L$ is the total line length) or $n/K$ for point transects. Various formulations for the encounter rate variance are discussed in detail in @Fewster:2009ku. \pkg{Distance} implements all of the estimators of encounter rate variance given in that article plus some extras. 
+
+For line transects, by default, \pkg{Distance} uses a variation of the estimator "R2" from @Fewster:2009ku replacing number of observations per sample with the estimated abundance per sample (per @Innes:2002ka); that is for line transects:
+$$
+\widehat{\text{Var}}_{\text{encounter},R2} = \frac{K}{L^2(K-1)} \sum_{k=1}^{K} l_k^2 \left( \frac{N_k}{l_k} - \frac{N}{L}\right)^2,
+$$
+where $l_k$ are the lengths of the $K$ transects (such that $L = \sum_{k=1}^K l_k$).
+
+For points, 
 
 
 
-* Refer to Fewster et al 2009
+
+The \code{varn} manual page gives further advice and technical detail on this matter.
+
+## Estimating abundance and variance in R
+
+Going back to the minke whale data, we have the information we require to calculate $A$ and $a$ above, so we can estimate abundance and its variance. When we supply data to \code{ds} in the ``flat file'' format given above, \code{ds} will automatically calculate abundance estimates based on the survey setup in the data.
+
+Having already fitted a model to the minke whale data, we can see the results of the abundance estimation by simply looking at a model summary:
+```{r minke-N-summary}
+summary(minke_hn)
+```
 
 # Extensions
 
-* writing new detection functions
+
 * Interface to dsm etc
 * MRDS?
 * why is + important?
