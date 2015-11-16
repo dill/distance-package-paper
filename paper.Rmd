@@ -452,7 +452,7 @@ As an example the minke whale data consists of two strata: \code{North} and \cod
 
 ## Variance
 
-Uncertainty in $\hat{N}$ comes from two sources:
+Here we take an intuitive approach to uncertainty estimation, for a full derivations consult @Marques:2003vb. Uncertainty in $\hat{N}$ comes from two sources:
 
 1. *Model uncertainty*, from the estimation of the detection function parameters $\boldsymbol{\theta}$
 2. *Sampling uncertainty*, from the distribution of animals along the transect lines or between visiting occasions for points.
@@ -465,20 +465,20 @@ $$
 $$
 where the partial derivatives of $\hat{N}_\text{C}$ are evaluated at the MLE ($\hat{\theta}$) and $\mathbf{H}$ is the first partial Hessian (outer product of first derivatives of the log likelihood) for numerical stability [@Buckland:2001vm, p 62]. Note that although we calculate uncertainty in $\hat{N}_\text{C}$, we can trivially scale-up to variance of $\hat{N}$.
 
-Sampling uncertainty can be characterised (rather than as simply $n$) by the *encounter rate*: $n/L$ for line transects (where $L$ is the total line length) or $n/K$ for point transects. Various formulations for the encounter rate variance are discussed in detail in @Fewster:2009ku. \pkg{Distance} implements all of the estimators of encounter rate variance given in that article plus some extras. 
+Sampling uncertainty can be characterised (rather than as simply $n$) by the *encounter rate*: the number of animals per unit transect. When covariates are not included in the detection function we can define the encounter rate as $n/L$ for line transects (where $L$ is the total line length) or $n/T$ for point transects (where $T$ is the total number of visits to all points). When covariates are included in the detection function, it is recommended that we substitute the $n$ in the previous expressions with the estimated abundance $\hat{N}$ as this will take into account the effects of the covariates.
 
-For line transects, by default, \pkg{Distance} uses a variation of the estimator "R2" from @Fewster:2009ku replacing number of observations per sample with the estimated abundance per sample (per @Innes:2002ka); that is for line transects:
+For line transects, by default, \pkg{Distance} uses a variation of the estimator "R2" from @Fewster:2009ku replacing number of observations per sample with the estimated abundance per sample [@Innes:2002ka; @Marques:2003vb]:
 $$
 \widehat{\text{Var}}_{\text{encounter},R2} = \frac{K}{L^2(K-1)} \sum_{k=1}^{K} l_k^2 \left( \frac{N_k}{l_k} - \frac{N}{L}\right)^2,
 $$
-where $l_k$ are the lengths of the $K$ transects (such that $L = \sum_{k=1}^K l_k$).
+where $l_k$ are the lengths of the $K$ transects (such that $L = \sum_{k=1}^K l_k$). Whereas for points we use estimator "P3" from @Fewster:2009ku but again replacing $n$ by $\hat{N}$ to obtain the following estimator:
+$$
+\widehat{\text{Var}}_{\text{encounter},P3} = \frac{1}{T(K-1)} \sum_{k=1}^{K} t_k \left( \frac{N_k}{t_k} - \frac{N}{T}\right)^2,
+$$
+where $t_k$ is the number of visits to point $k$ and $T = \sum_{k=1}^K t_k$.
 
-For points, 
 
-
-
-
-The \code{varn} manual page gives further advice and technical detail on encounter rate variance.
+Various formulations for the encounter rate variance are discussed in detail in @Fewster:2009ku. \pkg{Distance} implements all of the estimators of encounter rate variance given in that article. The \code{varn} manual page gives further advice and technical detail on encounter rate variance.
 
 ## Estimating abundance and variance in R
 
