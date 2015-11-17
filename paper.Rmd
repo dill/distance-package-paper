@@ -44,7 +44,7 @@ It is clear that census-type surveys (quadrat or strip transects) are inefficien
 
 Distance sampling comes in two main "flavours": line and point transects. In line transect sampling observers walk (or fly, sail, etc) down lines observing objects and recording the distances to the line; whereas in point transect sampling observers stand stationary at a location and record distances from that point. Field methods are chosen to be suitable to species and habitat constraints [@buckland2015distance].
 
-```{r points-and-lines, fig.height=6, fig.width=7, echo=FALSE, message=FALSE, fig.cap="Left side plots show an example of a survey of an area containing a population of 500 objects, blue indicates sampler placement (top lines, bottom points) and red dots indicate detected individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom)."}
+```{r points-and-lines, fig.height=6, fig.width=7, echo=FALSE, message=FALSE, fig.cap="Left side plots show an example of a survey of an area containing a population of 500 objects, blue indicates sampler placement (top lines, bottom points) and red dots indicate detected individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).\\label{fig:pointslines}"}
 opar <- par(mfrow=c(2,2))
 # line and point transect examples
 # top row points/samplers in space
@@ -125,6 +125,9 @@ For both points and lines, once the geometry of the sampler has been taken into 
 
 Using this histogram we can crudely estimate the drop-off in detectability by eye by tracing a line that approximates the tops of the histogram bars -- this is the detection function. \pkg{Distance} estimates the parameters for a fixed-form detection function using maximum likelihood estimation. We address possible models in detail below.
 
+Figure \ref{fig:pointslines} shows examples of 500 individuals sampled using line and point transects (left column) and their corresponding histograms (right column).
+
+
 ## Data
 
 We demonstrate \pkg{Distance} using two data sets: one line transect and one point transect. These data sets have been chosen to be representative of the kind of data seen in practice.
@@ -202,7 +205,7 @@ Key function plus adjustment terms (or adjustment series) models are formulated 
 $$
 g(y; \boldsymbol{\theta}) = k(y; \boldsymbol{\theta}_\text{key})\left( 1+ \alpha_O(y; \boldsymbol{\theta}_\text{adjust})\right),
 $$
-where $k$ is the key function and $\alpha_O$ is sum series of functions (given in **Table ???**), described as an *adjustment of order $O$*. Subscripts on the parameter vector indicate those parameters belonging to each part of the model (i.e. $\boldsymbol{\theta} = (\boldsymbol{\theta}_\text{key}, \boldsymbol{\theta}_\text{adjust})$).
+where $k$ is the key function and $\alpha_O$ is sum series of functions (given in Table \ref{tab:keyadj}), described as an *adjustment of order $O$*. Subscripts on the parameter vector indicate those parameters belonging to each part of the model (i.e. $\boldsymbol{\theta} = (\boldsymbol{\theta}_\text{key}, \boldsymbol{\theta}_\text{adjust})$).
 
 Some models for the key are as follows:
 $$
@@ -213,9 +216,9 @@ k(y) = \left\{
   1/w & \quad \text{uniform.}
 \end{array} \right.
 $$
-Possible modelling options for key and adjustments are given in Table \ref{ka-tab} and illustrated in **Figure ???**. We select the number of adjustment terms ($K$) by AIC (further details in "Model checking and model selection").
+Possible modelling options for key and adjustments are given in Table \ref{tab:keyadj} and illustrated in Figure \ref{fig:hnhr} and \ref{fig:keyadj}. We select the number of adjustment terms ($K$) by AIC (further details in "Model checking and model selection").
 
-```{r hn-hr-par-comp, fig.width=10, fig.height=5, fig.cap="Half-normal (top row) and hazard-rate (bottom row) detection functions without adjustments, varying scale ($\\sigma$) and (for hazard-rate) shape ($b$) parameters (values are given above the plots). On the top row from left to right, the study species becomes more detectable (higher probability of detection at larger distances). The bottom row shows the hazard-rate model's more pronounced shoulder.", echo=FALSE}
+```{r hn-hr-par-comp, fig.width=10, fig.height=5, fig.cap="Half-normal (top row) and hazard-rate (bottom row) detection functions without adjustments, varying scale ($\\sigma$) and (for hazard-rate) shape ($b$) parameters (values are given above the plots). On the top row from left to right, the study species becomes more detectable (higher probability of detection at larger distances). The bottom row shows the hazard-rate model's more pronounced shoulder.\\label{fig:hnhr}", echo=FALSE}
 par(mfrow=c(2,4), mar=c(3.5, 3, 2, 1) + 0.1)
 
 ## half-normal
@@ -245,7 +248,7 @@ for(this.sig in c(0.1, 0.5)){
 
 
 \begin{table}
-\caption{Modelling options for key plus adjustments models for the detection function.}
+\caption{Modelling options for key plus adjustment series models for the detection function.}
 \begin{tabular}{llll}
 \hline
 key function   & form   & adjustment & form\\
@@ -258,7 +261,7 @@ key function   & form   & adjustment & form\\
  & & Simple polynomial & $\sum_{o=2}^O a_o (y/w)^{2o}$ \\
 \hline
 \end{tabular}
-\label{ka-tab}
+\label{tab:keyadj}
 \end{table}
 
 When adjustment terms are used it may be necessary to standardise the results to ensure that $g(0)=1$, so we can redefine the detection function as:
@@ -270,7 +273,7 @@ A disadvantage of K+A models is that we must resort to constrained optimisation 
 
 We do not always use adjustments (except in the case of the uniform key), in which case we refer to "key only" models; see also "Covariates" and "Model checking and model selection" below.
 
-```{r adjust-mix-comp, fig.width=9, fig.height=3, fig.cap="Possible shapes for the detection function when adjustments are included for half-normal and hazard-rate models.", echo=FALSE}
+```{r adjust-mix-comp, fig.width=9, fig.height=3, fig.cap="Possible shapes for the detection function when adjustments are included for half-normal and hazard-rate models.\\label{fig:keyadj}", echo=FALSE}
 par(mfrow=c(1,4), mar=c(3.5, 3, 2, 1) + 0.1)
 
 ## half-normal with cosine
@@ -333,7 +336,7 @@ minke_hn <- ds(minke, truncation=1.5)
 ```
 Note that \code{ds} will automatically select adjustment terms by AIC and shows it's selection steps as it goes.
 
-**Figure???** shows the result of calling \code{plot} on the resulting model object. We can also call \code{summary} on the model object to get summary information about the fitted model (though we postpone this until the next section).
+Figure \ref{fig:minkeamakihi} (left panel) shows the result of calling \code{plot} on the resulting model object. We can also call \code{summary} on the model object to get summary information about the fitted model (though we postpone this until the next section).
 
 We can specify the form of the detection function via the \code{key=} argument to \code{ds}. For example, a hazard rate model can be fitted as:
 ```{r minke-hr-cos}
@@ -348,17 +351,17 @@ By default \code{ds} assumes that the data given to it is line transect, but we 
 amakihi_hr_obs <- ds(amakihi, truncation=82.5, transect="point",
                      key="hr", formula=~obs)
 ```
-As with the minke whale model, we can plot the resulting detection function. **Since for the amakihi we used covariates in the detection function, the plot will show the detection function averaged over levels/values of the covariate and separately for each level set (for continuous covariates, the 25\%, 50\% and 75\% quantiles are displayed).**
+As with the minke whale model, we can plot the resulting detection function (Figure \ref{fig:minkeamakihi}, centre and right panels). *Since for the amakihi we used covariates in the detection function, the plot will show the detection function averaged over levels/values of the covariate and separately for each level set (for continuous covariates, the 25\%, 50\% and 75\% quantiles are displayed).*
 
 **It would be nice if I could get "nice" plotting working for `Distance` as they are much easier to interpret (IMO)**
 
-**When multiple covariates are used in the model, a series of plots are produced. We can see this in the bottom row of Figure ???, where we plot the results of fitting following model:**
+*When multiple covariates are used in the model, a series of plots are produced. We can see this in the bottom row of Figure \ref{fig:minkeamakihi}, where we plot the results of fitting following model:*
 ```{r amakihi-hr-obs-mas, warning=FALSE}
 amakihi_hr_obs_mas <- ds(amakihi, truncation=82.5, transect="point",
                          key="hr", formula=~obs+mas)
 ```
 
-```{r minke-hn-plot, echo=FALSE, warning=FALSE, fig.width=9, fig.height=3, fig.cap="Plot of fitted detection functions overlayed on the histograms of observed distances. Left minke whale data, half-normal model; centre, amakihi data hazard-rate with observer as a covariate; right, amakihi data, hazard-rate model with observer and minutes after sunrise as covariates"}
+```{r minke-amakihi-hn-plot, echo=FALSE, warning=FALSE, fig.width=9, fig.height=3, fig.cap="Plot of fitted detection functions overlayed on the histograms of observed distances. Left minke whale data, half-normal model; centre, amakihi data hazard-rate with observer as a covariate; right, amakihi data, hazard-rate model with observer and minutes after sunrise as covariates.\\label{fig:minkeamakihi}"}
 par(mfrow=c(1,3))
 plot(minke_hn)
 plot(amakihi_hr_obs)
@@ -386,9 +389,9 @@ amakihi_hr <- ds(amakihi, truncation=82.5, transect="point", key="hn", adjustmen
 gof_ds(amakihi_hr)
 gof_ds(amakihi_hr_obs_mas)
 ```
-The corresponding Q-Q plots are shown in **Figure ???**.
+The corresponding Q-Q plots are shown in Figure \ref{amakihi-qq}.
 
-```{r, amakihi-qq-comp, fig.width=6, fig.height=3, fig.cap="Comparison of quantile-quantile plots for a half-normal model (no adjustments, no covariates) and hazard-rate model with observer and minutes after sunrise for the amakihi data.", echo=FALSE, results="hide"}
+```{r, amakihi-qq-comp, fig.width=6, fig.height=3, fig.cap="Comparison of quantile-quantile plots for a half-normal model (no adjustments, no covariates) and hazard-rate model with observer and minutes after sunrise for the amakihi data.\\label{amakihi-qq}", echo=FALSE, results="hide"}
 par(mfrow=c(1,2))
 gof_ds(amakihi_hr, asp=1)
 gof_ds(amakihi_hr_obs_mas, asp=1)
@@ -396,7 +399,7 @@ gof_ds(amakihi_hr_obs_mas, asp=1)
 
 ## Model selection
 
-Once we have a set of models which fit well, we can use Akaike's Information Criterion (AIC) to select between models. \pkg{Distance} includes a function to create table of summary information for fitted models, making it easy to get an overview of a large number of models at once. The \code{summarize_ds_models} function takes models as input and can be especially useful when paired with \pkg{knitr}'s \code{kable} function to create summary tables for publication. An example of this output is shown in **Table ???** and was generated by:
+Once we have a set of models which fit well, we can use Akaike's Information Criterion (AIC) to select between models. \pkg{Distance} includes a function to create table of summary information for fitted models, making it easy to get an overview of a large number of models at once. The \code{summarize_ds_models} function takes models as input and can be especially useful when paired with \pkg{knitr}'s \code{kable} function to create summary tables for publication. An example of this output is shown in Table \ref{tab:amakihi} and was generated by:
 ```{r summary-table-null, eval=FALSE}
 library(knitr)
 summarize_ds_models(amakihi_hr, amakihi_hr_obs, amakihi_hr_obs_mas)
@@ -406,7 +409,7 @@ summarize_ds_models(amakihi_hr, amakihi_hr_obs, amakihi_hr_obs_mas)
 library(knitr)
 kable(summarize_ds_models(amakihi_hr, amakihi_hr_obs, amakihi_hr_obs_mas),
       digits = 3, format = "latex", row.names = FALSE, escape=FALSE,
-      caption="Summary for the detection function models fitted to the amakihi data. \"C-vM\" stands for Cramer-von Mises, $P_a$ indicates average detectability (see \"Estimating abundance and variance\"), se indicates standard error. Models are sorted according to AIC.")
+      caption="Summary for the detection function models fitted to the amakihi data. \"C-vM\" stands for Cramer-von Mises, $P_a$ indicates average detectability (see \"Estimating abundance and variance\"), se indicates standard error. Models are sorted according to AIC.\\label{tab:amakihi}")
 ```
 
 
@@ -441,11 +444,11 @@ This can be a useful summary statistic and is included in the \code{summary} out
 
 We may wish to calculate abundance estimates for some sub-regions of the study region, we call these areas *strata*. A stratum may be defined by, for example, a different habitat type or by the sex of the animal (or some combination) which may be of interest for biological or management reasons. In order to calculate estimates for a given stratification each observation must occur in a stratum which must be labelled with a \code{Region.Label} and have a corresponding \code{Area} (if we are using an animal characteristic like sex, we would have the areas be the same but if we were using say forested vs. wetland habitat the areas of those strata would be different). Finally, we must also know which stratum a given transect lies in.
 
-As an example the minke whale data consists of two strata: \code{North} and \code{South} relating to a stratum further away and nearer the Antarctic ice edge, respectively. Figure \ref{minke-strata} shows the two strata, along with observations and transect lines.
+As an example the minke whale data consists of two strata: \code{North} and \code{South} relating to a stratum further away and nearer the Antarctic ice edge, respectively. Figure \ref{fig:minke-strata} shows the two strata, along with observations and transect lines.
 
 \begin{figure}
 \includegraphics{minke-strata}
-\label{minke-strata}
+\label{fig:minke-strata}
 \caption{Strata used for the minke whale data adapted from @Hedley:2004et. Points show the locations of observations along transect lines. The stepped line shows the boundary between North and South strata. Further details on the survey are available in @Branch:2001ua (simulated data is based on ``1992/93 Area III'' therein).}
 \end{figure}
 
@@ -488,7 +491,7 @@ Having already fitted a model to the minke whale data, we can see the results of
 ```{r minke-N-summary}
 summary(minke_hn)
 ```
-This prints a rather large amount of information. One useful feature is that the returned object is a \code{list} of \code{data.frames}, so we can again use \pkg{knitr}s \code{kable} function to create useful tables for publication. For example **Table ???**.
+This prints a rather large amount of information. One useful feature is that the returned object is a \code{list} of \code{data.frames}, so we can again use \pkg{knitr}s \code{kable} function to create useful tables for publication. For example Table \ref{minke-abund}.
 
 ```{r minke-abundance-table}
 minke_table <- summary(minke_hn)$dht$individuals$N
@@ -496,7 +499,7 @@ minke_table$lcl <- minke_table$ucl <- minke_table$df <- NULL
 colnames(minke_table) <- c("Stratum", "$\\hat{N}$", "$\\text{se}(\\hat{N}$)", 
                            "$\\text{CV}(\\hat{N}$)")
 kable(minke_table, digits = 3, format = "latex",
-      row.names = FALSE, escape=FALSE,caption="Summary of abundance estimation for the half-normal model for the minke whale data.")
+      row.names = FALSE, escape=FALSE,caption="Summary of abundance estimation for the half-normal model for the minke whale data.\\label{minke-abund}")
 ```
 
 
