@@ -41,7 +41,7 @@ For many years distance sampling analyses have been available via the Windows pr
 
 ## Distance sampling
 
-It is clear that census-type surveys (quadrat or strip transects) are inefficient (requiring a lot of effort on the part of those in the field) and we should expect that not all animals can be observed. Accounting for imperfect detectability is an important consideration when want to obtain accurate estimates of abundance [@LahozMonfort:2013bg]. Using the extra information gained by recording distance from the sampler to the observation, it is possible to model detectability. Since we expect detectability to decrease with increasing distance from the sampler, we model detectability as a function of distance (plus perhaps other covariates, see below).
+It is clear that census-type surveys (quadrat or strip transects) are inefficient (requiring a lot of effort on the part of those in the field) and we should expect that not all objects (animals, plants, dung, etc) can be observed. Accounting for imperfect detectability is an important consideration when want to obtain accurate estimates of abundance [@LahozMonfort:2013bg]. Using the extra information gained by recording distance from the sampler to the observation, it is possible to model detectability. Since we expect detectability to decrease with increasing distance from the sampler, we model detectability as a function of distance (plus perhaps other covariates, see below).
 
 Distance sampling comes in two main "flavours": line and point transects. In line transect sampling observers walk (or fly, sail, etc) down lines observing objects and recording the distances to the line; whereas in point transect sampling observers stand stationary at a location and record distances from that point. Field methods are chosen to be suitable to species and habitat constraints [@buckland2015distance].
 
@@ -76,11 +76,11 @@ for(i in 1:5){
   lt$x <- lt$x+0.15
   # plot the line transect
   lines(x=rep(mean(range(lt$x)),2), y=c(0,1), col="blue",lty=2)
-  # calculate the distances to animals from the line
+  # calculate the distances to objects from the line
   distances <- abs(lt$x - x)
   # randomly decide which were detected
   detected <- exp(-distances^2/(2*sigma^2)) > runif(length(distances))
-  # plot those animals detected
+  # plot those objects detected
   points(x[detected], y[detected], pch=19, cex=0.6, col="red")
   # collect the distances to detected objects
   detected_distances <- c(detected_distances, distances[detected])
@@ -105,11 +105,11 @@ for(i in 1:length(pt$x)){
   # generate point location
   # plot the line transect
   points(pt$x[i], pt$y[i], pch=19, col="blue",cex=0.7)
-  # calculate the distances to animals from the line
+  # calculate the distances to objects from the line
   distances <- sqrt((pt$x[i] - x)^2+(pt$y[i]-y)^2)
   # randomly decide which were detected
   detected <- exp(-distances^2/(2*sigma^2)) > runif(length(distances))
-  # plot those animals detected
+  # plot those objects detected
   points(x[detected], y[detected], pch=19, cex=0.6, col="red")
   # collect the distances to detected objects
   detected_distances <- c(detected_distances, distances[detected])
@@ -144,7 +144,7 @@ The point transect data set consists of 1485 observations of Amakihi (*Hemignath
 
 ## The rest of the paper
 
-The rest of the paper is structured as follows: we first look into how data needs to be organised to allow it to be used with \pkg{Distance}; models for the detection function are then covered including their formulation and examples of fitting in \proglang{R}. We then spend some time looking at model checking and goodness of fit testing, as well as model selection. Having illustrated how to obtain a good detection function, we show how to estimate abundance using that model, including using post-stratification. The final two sections of the article look at extensions (both in terms of methodology and software) and put the package in a broader context amongst other software packages used for animal abundance estimation.
+The rest of the paper is structured as follows: we first look into how data needs to be organised to allow it to be used with \pkg{Distance}; models for the detection function are then covered including their formulation and examples of fitting in \proglang{R}. We then spend some time looking at model checking and goodness of fit testing, as well as model selection. Having illustrated how to obtain a good detection function, we show how to estimate abundance using that model, including using post-stratification. The final two sections of the article look at extensions (both in terms of methodology and software) and put the package in a broader context amongst other software packages used for estimating the abundance of biological populations.
 
 # Data setup
 
@@ -187,7 +187,7 @@ It is important that the detection function accurately models detectability near
 Models for the detection function are expected to have the following properties [@buckland2015distance, Chapter 5]:
 
 * *Shoulder*: we expect observers to be able to see objects near them, not just those directly infront of them. For this reason, we expect the detection function to be "flat" near zero distance.
-* *Non-increasing*: we don't think that observers should be more likely to see things further away than those nearer to them. This usually indicates an issue with field procedure (that the distribution of animals with respect to the line, $\pi(y)$ is not what we expect), so we do not want the detection function to model this.
+* *Non-increasing*: we don't think that observers should be more likely to see things further away than those nearer to them. This usually indicates an issue with field procedure (that the distribution of objects with respect to the line, $\pi(y)$ is not what we expect), so we do not want the detection function to model this.
 * *Model robust*: models should be flexible enough to make many different shapes.
 * *Pooling robust*: many factors can affect the probability of detection and it is not possible to measure all of these. We would like our models to be robust to us not including these factors.
 * *Estimator efficiency*: we would like our models to have low variances, but only given they satisfy the other properties above (which, if they are satisfied, would give low bias).
@@ -380,7 +380,7 @@ This summary information includes various details of the data and model specific
 
 ## Goodness of fit
 
-To judge goodness of fit for detection functions when exact distances are used, we want to compare the cumulative distribution function (CDF) and empirical distribution function (EDF) for the detection function via a quantile-quantile plot (Q-Q plot). In our case the CDF evaluates the probability of observing an animal at a distance less than or equal to some given value. The EDF gives the proportion of observations for which the CDF is less than or equal to that of a given distance. In essence we're asking "is the number of observations up to a given distance in line with what the model says they should be?" (where “given values” are the observed distances). As usual for Q-Q plots, "good" models will have values close to the line $y=x$, poor models will show more deviations from that line.
+To judge goodness of fit for detection functions when exact distances are used, we want to compare the cumulative distribution function (CDF) and empirical distribution function (EDF) for the detection function via a quantile-quantile plot (Q-Q plot). In our case the CDF evaluates the probability of observing an object at a distance less than or equal to some given value. The EDF gives the proportion of observations for which the CDF is less than or equal to that of a given distance. In essence we're asking "is the number of observations up to a given distance in line with what the model says they should be?" (where “given values” are the observed distances). As usual for Q-Q plots, "good" models will have values close to the line $y=x$, poor models will show more deviations from that line.
 
 We can inspect Q-Q plots visually, though for a large number of models this can be tiresome and prone to subjective judgements. Instead we can quantify the Q-Q plot's information using a Kolmogorov-Smirnov or Cramer-von Mises test [@Burnham:2004vd]. Both test to see if the points from the EDF and CDF are from the same distribution. The Kolmogorov-Smirnov uses the test statistic of the largest difference between a point on the Q-Q plot and the line $y=x$, whereas the Cramer-von Mises test uses the sum of all the differences. As it takes into account more information and is therefore more powerful, the Cramer-von Mises is generally preferred. A significant result from either tests indicates that the EDF and CDF do not come from the same distribution (and therefore the model is does not fit the data well).
 
@@ -460,7 +460,7 @@ As an example the minke whale data consists of two strata: \code{North} and \cod
 Here we take an intuitive approach to uncertainty estimation, for a full derivations consult @Marques:2003vb. Uncertainty in $\hat{N}$ comes from two sources:
 
 1. *Model uncertainty*, from the estimation of the detection function parameters $\boldsymbol{\theta}$
-2. *Sampling uncertainty*, from the distribution of animals along the transect lines or between visiting occasions for points.
+2. *Sampling uncertainty*, from the distribution of objects along the transect lines or between visiting occasions for points.
 
 We can see this by looking at the Horvitz-Thompson estimation in (\ref{ht}) and consider the terms which are random. These are: the detectability $\hat{p}_i$ (and hence the parameters of the detection function it is derived from) and $n$, the number of observations. We assume that the observed group size ($s_i$) is recorded without error.
 
@@ -470,7 +470,7 @@ $$
 $$
 where the partial derivatives of $\hat{N}_\text{C}$ are evaluated at the MLE ($\hat{\theta}$) and $\mathbf{H}$ is the first partial Hessian (outer product of first derivatives of the log likelihood) for numerical stability [@Buckland:2001vm, p 62]. Note that although we calculate uncertainty in $\hat{N}_\text{C}$, we can trivially scale-up to variance of $\hat{N}$.
 
-Sampling uncertainty can be characterised (rather than as simply $n$) by the *encounter rate*: the number of animals per unit transect. When covariates are not included in the detection function we can define the encounter rate as $n/L$ for line transects (where $L$ is the total line length) or $n/T$ for point transects (where $T$ is the total number of visits to all points). When covariates are included in the detection function, it is recommended that we substitute the $n$ in the previous expressions with the estimated abundance $\hat{N}$ as this will take into account the effects of the covariates.
+Sampling uncertainty can be characterised (rather than as simply $n$) by the *encounter rate*: the number of objects per unit transect. When covariates are not included in the detection function we can define the encounter rate as $n/L$ for line transects (where $L$ is the total line length) or $n/T$ for point transects (where $T$ is the total number of visits to all points). When covariates are included in the detection function, it is recommended that we substitute the $n$ in the previous expressions with the estimated abundance $\hat{N}$ as this will take into account the effects of the covariates.
 
 For line transects, by default, \pkg{Distance} uses a variation of the estimator "R2" from @Fewster:2009ku replacing number of observations per sample with the estimated abundance per sample [@Innes:2002ka; @Marques:2003vb]:
 $$
