@@ -23,6 +23,7 @@ preamble: >
   \usepackage{amsmath}
   \usepackage{amssymb}
   \usepackage{longtable}
+  \usepackage{booktabs}
 output: rticles::jss_article
 bibliography: jstatsoft.bib
 ---
@@ -251,13 +252,13 @@ for(this.sig in c(0.1, 0.5)){
 \caption{Modelling options for key plus adjustment series models for the detection function.}
 \begin{tabular}{llll}
 \hline
-key function   & form   & adjustment & form\\
+Key function   & Form   & Adjustment series & Form\\
 \hline
- uniform  & $1/w$   & cosine  & $\sum_{o=1}^O a_o \cos(o \pi y/w)$ \\
+ Uniform  & $1/w$   & cosine  & $\sum_{o=1}^O a_o \cos(o \pi y/w)$ \\
  & & Simple polynomial & $\sum_{o=1}^O a_o (y/w)^{2o}$ \\
- half-normal  & $\exp\left(-\frac{y^2}{2 \sigma^2}\right)$ & cosine  & $\sum_{o=2}^O a_o \cos(o \pi y/w)$ \\
+ Half-normal  & $\exp\left(-\frac{y^2}{2 \sigma^2}\right)$ & cosine  & $\sum_{o=2}^O a_o \cos(o \pi y/w)$ \\
  & & Hermite polynomial & $\sum_{o=2}^O a_o H_{2o}(y/\sigma)$ \\
- hazard-rate  & $1-\exp\left[-\left(\frac{y}{\sigma}\right)^{-b}\right]$ & cosine  & $\sum_{o=2}^O a_o \cos(o \pi y/w)$ \\
+ Hazard-rate  & $1-\exp\left[-\left(\frac{y}{\sigma}\right)^{-b}\right]$ & cosine  & $\sum_{o=2}^O a_o \cos(o \pi y/w)$ \\
  & & Simple polynomial & $\sum_{o=2}^O a_o (y/w)^{2o}$ \\
 \hline
 \end{tabular}
@@ -409,7 +410,8 @@ summarize_ds_models(amakihi_hr, amakihi_hr_obs, amakihi_hr_obs_mas)
 library(knitr)
 kable(summarize_ds_models(amakihi_hr, amakihi_hr_obs, amakihi_hr_obs_mas),
       digits = 3, format = "latex", row.names = FALSE, escape=FALSE,
-      caption="Summary for the detection function models fitted to the amakihi data. \"C-vM\" stands for Cramer-von Mises, $P_a$ indicates average detectability (see \"Estimating abundance and variance\"), se indicates standard error. Models are sorted according to AIC.\\label{tab:amakihi}")
+      booktabs=TRUE,
+      caption="Summary for the detection function models fitted to the amakihi data. ``C-vM'' stands for Cramer-von Mises, $P_a$ indicates average detectability (see ``Estimating abundance and variance''), se indicates standard error. Models are sorted according to AIC.\\label{tab:amakihi}")
 ```
 
 
@@ -498,8 +500,8 @@ minke_table <- summary(minke_hn)$dht$individuals$N
 minke_table$lcl <- minke_table$ucl <- minke_table$df <- NULL
 colnames(minke_table) <- c("Stratum", "$\\hat{N}$", "$\\text{se}(\\hat{N}$)", 
                            "$\\text{CV}(\\hat{N}$)")
-kable(minke_table, digits = 3, format = "latex",
-      row.names = FALSE, escape=FALSE,caption="Summary of abundance estimation for the half-normal model for the minke whale data.\\label{minke-abund}")
+kable(minke_table, digits=3, format="latex", booktabs=TRUE,
+      row.names=FALSE, escape=FALSE,caption="Summary of abundance estimation for the half-normal model for the minke whale data.\\label{minke-abund}")
 ```
 
 
