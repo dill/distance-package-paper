@@ -1,12 +1,19 @@
 ---
 author:
   - name: David L Miller
-    affiliation: Centre for Research into Ecological and Environmental Modelling, University of St Andrews
+    affiliation: University of St Andrews
     address: >
+      Centre for Research into Ecological and Environmental Modelling,
       The Observatory,
       St Andrews, Fife KY16 9LZ, Scotland
     email: dave@ninepointeightone.net
     url: http://converged.yt
+  - name: Jeffrey L Laake
+    affiliation: National Marine Mammal Laboratory
+    address: >
+      Alaska Fisheries Science Center
+      7600 Sand Point Way N.E., Seattle, WA 98115, USA
+    email: Jeff.Laake@noaa.gov
 title:
   formatted: "Distance Sampling in \\proglang{R}"
   # If you use tex in the formatted title, also supply version without
@@ -156,8 +163,7 @@ The two example data sets used here are distributed with \pkg{Distance} so reade
 
 As we will see in "Extensions", further information is also required when we start using more complex models.
 
-Looking at an example of the data format given in the last bullet, we can examine the minke whale data:
-
+The minke whale data follows the "flatfile" format given in the last bullet point:
 ```{r load-data, echo=FALSE}
 # quietly load the data
 load("data/minke.RData")
@@ -167,20 +173,20 @@ load("data/amakihi.RData")
 library(Distance)
 head(minke)
 ```
-and the amakihi data:
+Where as the amakihi data lacks effort and stratum data:
 ```{r amakihi-data-head}
 head(amakihi)
 ```
 
-* what do we want to say here?
+We'll explore what the effects of including effort data are during analysis below.
 
 # Detection functions
 
-As mentioned above, the detection function describes the relationship between observed distances and probability of detection. The detection function itself models the probability $\mathbb{P}(\text{object detected } \vert \text{ object at distance } y)$ and is usually denoted $g(y; \boldsymbol{\theta})$ where $y$ is distance and $\boldsymbol{\theta}$ is a vector of parmeters to be estimated. Our goal is to estimate an *average probability of detection* ($p$, average in the sense of an average over the distances), so we must integrate out distance ($y$) from the detection function:
+As mentioned above, the detection function describes the relationship between observed distances and probability of detection. The detection function itself models the probability $\mathbb{P}(\text{object detected } \vert \text{ object at distance } y)$ and is usually denoted $g(y; \boldsymbol{\theta})$ where $y$ is distance (either from a line or point) and $\boldsymbol{\theta}$ is a vector of parmeters to be estimated. Our goal is to estimate an *average probability of detection* ($p$, average in the sense of an average over the distances), so we must integrate out distance ($y$) from the detection function:
 $$
 p = \int_0^w \pi(y) g(y; \boldsymbol{\theta}) dy
 $$
-where $\pi(y)$ describes the distribution of objects with respect to the sampler and is $1/w$ for line transects and $\frac{2r}{w}$ for point transects, taking into account the geometry of the sampler [@Buckland:2001vm, Chapter 3].
+where $\pi(y)$ describes the distribution of objects with respect to the sampler and $\pi(x)=1/w$ for line transects and $\pi(r)=\frac{2r}{w^2}$ for point transects, taking into account the geometry of the sampler [@Buckland:2001vm, Chapter 3] (letting $x$ denote a perpendicular distance from a line and $r$ denote radial distance from a point).
 
 It is important that the detection function accurately models detectability near zero distance. We are less worried by its behaviour further away from 0. To ensure that the model is not overly influence by distances far from zero we truncate the distances beyond a given distance $w$ (known as the *truncation distance*). Fitting to distances further away from zero does not improve the precision of abundance estimates considerably [@Buckland:2001vm, 103–108, 151–153].
 
@@ -196,19 +202,17 @@ Given these criteria, we can start to think about models for $g$.
 
 ## Formulations
 
-There is a wide literature on possible formulations for the detection function [@Buckland:1992fa; @Eidous:2005bj; @Becker:2009cj; @Giammarino:2014eg; @Miller:2015hw; @Becker:2015fi]. \code{Distance} includes the most popular of these models, and includes an extendable class system to add new detection functions while avoiding code duplication (see "Extensions").
-
-Here we'll detail the most popular detection function approach: "key function plus adjustments" (K+A).
+There is a wide literature on possible formulations for the detection function [@Buckland:1992fa; @Eidous:2005bj; @Becker:2009cj; @Giammarino:2014eg; @Miller:2015hw; @Becker:2015fi]. \code{Distance} includes the most popular of these models. Here we'll detail the most popular detection function approach: "key function plus adjustments" (K+A).
 
 ### Key function plus adjustments (K+A)
 
-Key function plus adjustment terms (or adjustment series) models are formulated by taking a "key" function and optionally adding "adjustments" to it to improve the fit. Mathematically we formulate this as:
+Key function plus adjustment terms (or adjustment series) models are formulated by taking a "key" function and optionally adding "adjustments" to it to improve the fit [@Buckland:1992fa]. Mathematically we formulate this as:
 $$
 g(y; \boldsymbol{\theta}) = k(y; \boldsymbol{\theta}_\text{key})\left( 1+ \alpha_O(y; \boldsymbol{\theta}_\text{adjust})\right),
 $$
 where $k$ is the key function and $\alpha_O$ is sum series of functions (given in Table \ref{tab:keyadj}), described as an *adjustment of order $O$*. Subscripts on the parameter vector indicate those parameters belonging to each part of the model (i.e. $\boldsymbol{\theta} = (\boldsymbol{\theta}_\text{key}, \boldsymbol{\theta}_\text{adjust})$).
 
-Some models for the key are as follows:
+Available models for the key are as follows:
 $$
 k(y) = \left\{
 \begin{array}{l l}
@@ -272,7 +276,7 @@ $$
 
 A disadvantage of K+A models is that we must resort to constrained optimisation (via the \pkg{Rsolnp} package) in order to ensure that the resulting detection function is monotonic non-increasing over the whole range.
 
-We do not always use adjustments (except in the case of the uniform key), in which case we refer to "key only" models; see also "Covariates" and "Model checking and model selection" below.
+We do not always include adjustments (except in the case of the uniform key), in which case we refer to "key only" models (see the next section and "Model checking and model selection").
 
 ```{r adjust-mix-comp, fig.width=9, fig.height=3, fig.cap="Possible shapes for the detection function when adjustments are included for half-normal and hazard-rate models.\\label{fig:keyadj}", echo=FALSE}
 par(mfrow=c(1,4), mar=c(3.5, 3, 2, 1) + 0.1)
@@ -337,7 +341,7 @@ minke_hn <- ds(minke, truncation=1.5)
 ```
 Note that \code{ds} will automatically select adjustment terms by AIC and shows it's selection steps as it goes.
 
-Figure \ref{fig:minkeamakihi} (left panel) shows the result of calling \code{plot} on the resulting model object. We can also call \code{summary} on the model object to get summary information about the fitted model (though we postpone this until the next section).
+Figure \ref{fig:minkeamakihi} (top left plot) shows the result of calling \code{plot} on the resulting model object. We can also call \code{summary} on the model object to get summary information about the fitted model (though we postpone this until the next section).
 
 We can specify the form of the detection function via the \code{key=} argument to \code{ds}. For example, a hazard rate model can be fitted as:
 ```{r minke-hr-cos}
@@ -347,31 +351,32 @@ Again, \code{ds} fits a model with cosine adjustments (the default) but finds th
 
 ### Amakihi
 
-By default \code{ds} assumes that the data given to it is line transect, but we can switch to points using \code{transect="point"}. Including covariates in the scale is via the \code{formula=~...} argument to \code{ds}; a hazard-rate model for the amakihi that includes observer as a covariate (and truncating at 82.5m, given in @Marques:2007ey) can be specified by:
+By default \code{ds} assumes that the data given to it is line transect, but we can switch to points using \code{transect="point"}. Including covariates in the scale is via the \code{formula=~...} argument to \code{ds}; a hazard-rate model for the amakihi that includes observer as a covariate can be specified by [truncating at 82.5m, given in @Marques:2007ey]:
 ```{r amakihi-hr-obs}
 amakihi_hr_obs <- ds(amakihi, truncation=82.5, transect="point",
                      key="hr", formula=~obs)
 ```
-As with the minke whale model, we can plot the resulting detection function (Figure \ref{fig:minkeamakihi}, centre and right panels). *Since for the amakihi we used covariates in the detection function, the plot will show the detection function averaged over levels/values of the covariate and separately for each level set (for continuous covariates, the 25\%, 50\% and 75\% quantiles are displayed).*
-
-**It would be nice if I could get "nice" plotting working for `Distance` as they are much easier to interpret (IMO)**
-
-*When multiple covariates are used in the model, a series of plots are produced. We can see this in the bottom row of Figure \ref{fig:minkeamakihi}, where we plot the results of fitting following model:*
+As with the minke whale model, we can plot the resulting detection function (Figure \ref{fig:minkeamakihi}, centre column). Since for the amakihi we used covariates in the detection function, the plot will show the detection function averaged over levels/values of the covariate. Points on the plot indicate probability of detection  for each observation. For the `amakihi_hr_obs` model we see fairly clear levels of the observer covariate in the points. Looking at the left panel of Figure \ref{fig:minkeamakihi}, we can see this is less clear when adding minutes after sunrise as a covariate into the model:
 ```{r amakihi-hr-obs-mas, warning=FALSE}
 amakihi_hr_obs_mas <- ds(amakihi, truncation=82.5, transect="point",
                          key="hr", formula=~obs+mas)
 ```
 
-```{r minke-amakihi-hn-plot, echo=FALSE, warning=FALSE, fig.width=9, fig.height=3, fig.cap="Plot of fitted detection functions overlayed on the histograms of observed distances. Left minke whale data, half-normal model; centre, amakihi data hazard-rate with observer as a covariate; right, amakihi data, hazard-rate model with observer and minutes after sunrise as covariates.\\label{fig:minkeamakihi}"}
-par(mfrow=c(1,3))
-plot(minke_hn)
+The bottom row of Figure \ref{fig:minkeamakihi} shows the probability density functions for the amakihi models. These often are easier to interpret than the detection functions, as for point data we must rescale the histogram when plotting the detection function to take into account the geometry of the point sampler.
+
+```{r minke-amakihi-hn-plot, echo=FALSE, warning=FALSE, fig.width=9, fig.height=6, fig.cap="Top row plots of fitted detection functions overlayed on the histograms of observed distances; left minke whale data, half-normal model; centre, amakihi data hazard-rate with observer as a covariate; right, amakihi data, hazard-rate model with observer and minutes after sunrise as covariates (for amakihi histograms are rescale to take into account sampler geometry). Bottom row shows plots of the probability density function for the amakihi models (as top row). For covariate models (centre and right columns) points indicate probability of detection for a given observation (given that observations covariate values) and lines indicate the average detection function.\\label{fig:minkeamakihi}"}
+par(mfrow=c(2,3))
+plot(minke_hn, showpoints=FALSE)
 plot(amakihi_hr_obs)
 plot(amakihi_hr_obs_mas)
+plot(1,1, type="n", axes=FALSE, xlab="", ylab="")
+plot(amakihi_hr_obs, pdf=TRUE)
+plot(amakihi_hr_obs_mas, pdf=TRUE)
 ```
 
 # Model checking and model selection
 
-As with models fitted using \code{lm} or \code{glm} in \proglang{R} we can use \code{summary} to give us some useful information about our fitted model. For example for our hazard-rate model for the amakihi, with observer as a covariate:
+As with models fitted using \code{lm} or \code{glm} in \proglang{R}, we can use \code{summary} to give us some useful information about our fitted model. For example for our hazard-rate model for the amakihi, with observer as a covariate:
 ```{r amakihi-summary}
 summary(amakihi_hr_obs)
 ```
@@ -442,7 +447,7 @@ $$
 $$
 This can be a useful summary statistic and is included in the \code{summary} output and the table produced by \code{summarize_ds_models}.
 
-### Post-stratification
+### Stratification
 
 We may wish to calculate abundance estimates for some sub-regions of the study region, we call these areas *strata*. A stratum may be defined by, for example, a different habitat type or by the sex of the animal (or some combination) which may be of interest for biological or management reasons. In order to calculate estimates for a given stratification each observation must occur in a stratum which must be labelled with a \code{Region.Label} and have a corresponding \code{Area} (if we are using an animal characteristic like sex, we would have the areas be the same but if we were using say forested vs. wetland habitat the areas of those strata would be different). Finally, we must also know which stratum a given transect lies in.
 
@@ -482,8 +487,10 @@ $$
 $$
 where $t_k$ is the number of visits to point $k$ and $T = \sum_{k=1}^K t_k$.
 
-
 Various formulations for the encounter rate variance are discussed in detail in @Fewster:2009ku. \pkg{Distance} implements all of the estimators of encounter rate variance given in that article. The \code{varn} manual page gives further advice and technical detail on encounter rate variance.
+
+We combine these two sources of variance by noting that squared coefficients of variation (approximately) add [@Goodman:1960dd].
+
 
 ## Estimating abundance and variance in R
 
