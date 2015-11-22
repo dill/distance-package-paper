@@ -48,9 +48,11 @@ For many years distance sampling analyses have been available via the Windows pr
 
 ## Distance sampling
 
-It is clear that census-type surveys (quadrat or strip transects) are inefficient (requiring a lot of effort on the part of those in the field) and we should expect that not all objects (animals, plants, dung, etc) can be observed. Accounting for imperfect detectability is an important consideration when want to obtain accurate estimates of abundance [@LahozMonfort:2013bg]. Using the extra information gained by recording distance from the sampler to the observation, it is possible to model detectability. Since we expect detectability to decrease with increasing distance from the sampler, we model detectability as a function of distance (plus perhaps other covariates, see below).
+_before getting too deep into detection functions, would be nice to describe the 2-stage nature; adjust counts by detectability to get $\hat{N_c}$ then scale up $\hat{N_c}$ to get $\hat{N}$_
 
-Distance sampling comes in two main "flavours": line and point transects. In line transect sampling observers walk (or fly, sail, etc) down lines observing objects and recording the distances to the line; whereas in point transect sampling observers stand stationary at a location and record distances from that point. Field methods are chosen to be suitable to species and habitat constraints [@buckland2015distance].
+Census-type surveys (quadrat or strip transects assuming perfect detectability within strips or quadrats) are inefficient (requiring considerable field effort) and we should expect that not all objects (animals, plants, dung, etc) can be observed. Accounting for imperfect detectability is an important consideration when obtaining accurate estimates of abundance [@LahozMonfort:2013bg]. Using the extra information gained by recording distance from the sampler to the observation, it is possible to model detectability. Because we expect detectability to decrease with increasing distance from the sampler, we model detectability as a function of distance (plus perhaps other covariates, see below).
+
+Distance sampling surveys are conducted using two transect types: line and point transects. In line transect sampling observers walk (or fly, sail, etc)  lines observing objects and recording the distances to the line; whereas in point transect sampling observers remain stationary at a location and record distances from that point. Field methods are chosen to be suitable to species and habitat constraints [@buckland2015distance].
 
 ```{r points-and-lines, fig.height=6, fig.width=7, echo=FALSE, message=FALSE, fig.cap="Left side plots show an example of a survey of an area containing a population of 500 objects, blue indicates sampler placement (top lines, bottom points) and red dots indicate detected individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).\\label{fig:pointslines}"}
 opar <- par(mfrow=c(2,2))
@@ -129,7 +131,7 @@ par(opar)
 
 ```
 
-For both points and lines, once the geometry of the sampler has been taken into account, the histogram of distances should show a decreasing number of observations with increasing distance from the sampler. For line transects we expect objects to be distributed unformly with respect to distance from the line and what makes our histogram decrease is the detectability. For point transects, we must take into account the fact that as distance from the point increases, the area of the circle encompassed increases with distance squared.
+For both points and lines, once the geometry of the sampler _<likely spell out geom of sampler>_ has been taken into account, the histogram of distances should show a decreasing number of observations with increasing distance from the sampler. For line transects we expect objects to be distributed unformly with respect to distance from the line and what makes our histogram decrease is the detectability. For point transects, we recognise that as distance from the point increases, the area of the circle encompassed increases with distance squared; hence the number of objects available to be detected is a linearly increasing function of distance from the point.
 
 Using this histogram we can crudely estimate the drop-off in detectability by eye by tracing a line that approximates the tops of the histogram bars -- this is the detection function. \pkg{Distance} estimates the parameters for a fixed-form detection function using maximum likelihood estimation. We address possible models in detail below.
 
@@ -151,15 +153,15 @@ The point transect data set consists of 1485 observations of Amakihi (*Hemignath
 
 ## The rest of the paper
 
-The rest of the paper is structured as follows: we first look into how data needs to be organised to allow it to be used with \pkg{Distance}; models for the detection function are then covered including their formulation and examples of fitting in \proglang{R}. We then spend some time looking at model checking and goodness of fit testing, as well as model selection. Having illustrated how to obtain a good detection function, we show how to estimate abundance using that model, including using post-stratification. The final two sections of the article look at extensions (both in terms of methodology and software) and put the package in a broader context amongst other software packages used for estimating the abundance of biological populations.
+The rest of the paper has this structure: we describe data organisation for use with \pkg{Distance}; models for the detection function are described in terms of formulation and examples of fitting in \proglang{R}. We then examine model checking, goodness of fit and model selection. Having illustrated how to obtain a good detection function, we show how to estimate abundance using that model, including stratification. The final two sections of the article look at extensions (both in terms of methodology and software) and put the package in a broader context amongst other software packages used for estimating the abundance of biological populations.
 
 # Data setup
 
-The two example data sets used here are distributed with \pkg{Distance} so readers can reproduce our results easiy. However in general we expect that data will be collected in the field and need to be formatted correctly for use with \pkg{Distance}. The package allows for a flexible format for data input ranging from very simple to complex:
+The two example data sets used here are distributed with \pkg{Distance} so readers can reproduce our results. However, data will be collected in the field and formatted correctly for use with \pkg{Distance}. The package allows for a flexible format for data input ranging from very simple to complex:
 
 * In the simplest case, where one would simply like to estimate a detection function, all that is needed is a vector of distances.
-* To include additional covariates into the detection function (see "Detection functions") we need to use a \code{data.frame}, this needs to have a column called \code{distance} and named columns for each covariate collected (for example \code{observer} or \code{seastate}). Some column names are reserved: \code{object} for an observation identifier (see "Extensions"), \code{size} for group or cluster size (see "Detection functions" and "Abundance and variance estimation"), \code{detected} for whether or not an observation was detected (see "Extensions") and the columns described in the next bullet.
-* If one would like to estimate abundance for some area, this information must be given at the same time. This consists of information about which transect and occasion the observation was made (the \code{Sample.Label}), a column named \code{Effort} which gives the effort associated with that sample (for lines their length and for points the number of times that point was visited), the stratum the sample was located in (this may have any name and may be from pre- or post-survey stratification, see "Estimating abundance and variance") and that stratum's area (which has the same name as the stratum column, appended with \code{.Area}). (We refer to this data format as "flatfile" is all information we have is contained in one table.)
+* To include additional covariates into the detection function (see "Detection functions") we need to use a \code{data.frame}. The data.frame contains a column called \code{distance} and additional named columns for covariates potentially useful in modelling detectability (for example \code{observer} or \code{seastate}). Some column names are reserved: \code{object} for an observation identifier (see "Extensions"), \code{size} for group or cluster size (see "Detection functions" and "Abundance and variance estimation"), \code{detected} for whether  an observation was detected (see "Extensions") and the columns described in the next bullet.
+* If one would like to estimate abundance beyond area covered by expended survey effort, additional information is required. This consists of information about which transect and occasion the observation was made (the \code{Sample.Label}), a column named \code{Effort} which gives the effort associated with that sample (for lines their length and for points the number of times that point was visited), the stratum the sample was located in (this may have any name and may be from pre- or post-survey stratification, see "Estimating abundance and variance") and that stratum's area (which has the same name as the stratum column, appended with \code{.Area}). (We refer to this data format as "flatfile" where all information is contained in one table.)
 
 As we will see in "Extensions", further information is also required when we start using more complex models.
 
@@ -173,7 +175,7 @@ load("data/amakihi.RData")
 library(Distance)
 head(minke)
 ```
-Where as the amakihi data lacks effort and stratum data:
+Whereas the amakihi data lacks effort and stratum data:
 ```{r amakihi-data-head}
 head(amakihi)
 ```
@@ -188,7 +190,7 @@ p = \int_0^w \pi(y) g(y; \boldsymbol{\theta}) dy
 $$
 where $\pi(y)$ describes the distribution of objects with respect to the sampler and $\pi(x)=1/w$ for line transects and $\pi(r)=\frac{2r}{w^2}$ for point transects, taking into account the geometry of the sampler [@Buckland:2001vm, Chapter 3] (letting $x$ denote a perpendicular distance from a line and $r$ denote radial distance from a point).
 
-It is important that the detection function accurately models detectability near zero distance. We are less worried by its behaviour further away from 0. To ensure that the model is not overly influence by distances far from zero we truncate the distances beyond a given distance $w$ (known as the *truncation distance*). Fitting to distances further away from zero does not improve the precision of abundance estimates considerably [@Buckland:2001vm, 103–108, 151–153].
+It is important that the detection function accurately models detectability near zero distance. We are less worried by its behaviour further away from 0. To ensure that the model is not overly influence by distances far from zero we truncate the distances beyond a given distance $w$ (known as the *truncation distance*). Fitting to distances at great distances from zero does not demonstrably improve the precision of abundance estimates [@Buckland:2001vm, 103–108, 151–153].
 
 Models for the detection function are expected to have the following properties [@buckland2015distance, Chapter 5]:
 
@@ -426,7 +428,7 @@ Though fiting the detection function is the primary modelling step in distance s
 
 ## Abundance
 
-We wish to obtain the abundance in a study region, which we have sampled some (representative) subset of. To do this we first calculate the abundance in the area we have surveyed (the *covered area*) to obtain $\hat{N}_\text{C}$, we can then scale this up to the full study area by multiplying it by the ratio of covered area to study area.
+We wish to obtain the abundance in a study region, of which we have sampled a (representative) subset. To do this we first calculate the abundance in the area we have surveyed (the *covered area*) to obtain $\hat{N}_\text{C}$, we can then scale this up to the full study area by multiplying it by the ratio of covered area to study area.
 
 First, in order to estimate abundance in the covered area ($\hat{N}_\text{C}$), we use the estimates of detection probability (the $\{p_i; i=1,\ldots,n\}$, above) in a Horvitz-Thompson like estimator:
 \begin{equation}
