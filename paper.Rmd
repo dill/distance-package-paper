@@ -131,7 +131,7 @@ par(opar)
 
 ```
 
-For both points and lines, once the geometry of the sampler _<likely spell out geom of sampler>_ has been taken into account, the histogram of distances should show a decreasing number of observations with increasing distance from the sampler. For line transects we expect objects to be distributed unformly with respect to distance from the line and what makes our histogram decrease is the detectability. For point transects, we recognise that as distance from the point increases, the area of the circle encompassed increases with distance squared; hence the number of objects available to be detected is a linearly increasing function of distance from the point.
+For both points and lines, once the geometry of the sampler _likely spell out geom of sampler, or note it specification is forthcoming_ has been taken into account, the histogram of distances should show a decreasing number of observations with increasing distance from the sampler. For line transects we expect objects to be distributed unformly with respect to distance from the line and what makes our histogram decrease is the detectability. For point transects, we recognise that as distance from the point increases, the area of the circle encompassed increases with distance squared; hence the number of objects available to be detected is a linearly increasing function of distance from the point.
 
 Using this histogram we can crudely estimate the drop-off in detectability by eye by tracing a line that approximates the tops of the histogram bars -- this is the detection function. \pkg{Distance} estimates the parameters for a fixed-form detection function using maximum likelihood estimation. We address possible models in detail below.
 
@@ -144,7 +144,7 @@ We demonstrate \pkg{Distance} using two data sets: one line transect and one poi
 
 ### Minke whales
 
-The line transect data is simulated data based on a survey of Antarctic minke whales (*Balaenoptera bonaerensis*). The data is simulated from models fitted to data from the International Whaling Commission’s International Decade of Cetacean Research Southern Ocean Whale and Ecosystem Research (IWC IDCR-SOWER) programme 1992-1993 austral summer surveys [@Branch:2001ua]. They consist of 99 observations and include information on the effort expended and whether observations were in one of two geographical strata (near or far from land).
+The line transect data is simulated data based on a survey of Antarctic minke whales (*Balaenoptera bonaerensis*). The data is simulated from models fitted to data from the International Whaling Commission's International Decade of Cetacean Research Southern Ocean Whale and Ecosystem Research (IWC IDCR-SOWER) programme 1992-1993 austral summer surveys [@Branch:2001ua]. They consist of 99 observations and include information on the effort expended and whether observations were in one of two geographical strata (near or far from land).
 
 ### Amakihi
 
@@ -190,7 +190,7 @@ p = \int_0^w \pi(y) g(y; \boldsymbol{\theta}) dy
 $$
 where $\pi(y)$ describes the distribution of objects with respect to the sampler and $\pi(x)=1/w$ for line transects and $\pi(r)=\frac{2r}{w^2}$ for point transects, taking into account the geometry of the sampler [@Buckland:2001vm, Chapter 3] (letting $x$ denote a perpendicular distance from a line and $r$ denote radial distance from a point).
 
-It is important that the detection function accurately models detectability near zero distance. We are less worried by its behaviour further away from 0. To ensure that the model is not overly influence by distances far from zero we truncate the distances beyond a given distance $w$ (known as the *truncation distance*). Fitting to distances at great distances from zero does not demonstrably improve the precision of abundance estimates [@Buckland:2001vm, 103–108, 151–153].
+It is important that the detection function accurately models detectability near zero distance. We are less worried by its behaviour further away from 0. To ensure that the model is not overly influence by distances far from zero we truncate the distances beyond a given distance $w$ (known as the *truncation distance*). Fitting to distances at great distances from zero does not demonstrably improve the precision of abundance estimates [@Buckland:2001vm, 103-108, 151-153].
 
 Models for the detection function are expected to have the following properties [@buckland2015distance, Chapter 5]:
 
@@ -314,7 +314,7 @@ title(ylab="Detection probability", line=2)
 
 ### Covariates
 
-There are many factors that can affect the probability of detecting an object. These include things like the observer, the vessel or platform used, the sea state, weather conditions and time of day (to name but a few). We assume that these variables affect detection only via the scale of the detection function (and that they don't affect the shape).
+There are many factors that can affect the probability of detecting an object. These include things like the observer, the vessel or platform used, the sea state, weather conditions and time of day (to name but a few). We assume that these variables affect detection only via the scale of the detection function (and do not affect the shape).
 
 Covariates can be included in this formulation by considering the scale parameter from the half-normal or hazard-rate detection functions as a linear model (on the exponential scale) of the ($J$) covariates ($\mathbf{z}$; a vector of length $J$ for each observation):
 $$
@@ -387,7 +387,7 @@ This summary information includes various details of the data and model specific
 
 ## Goodness of fit
 
-To judge goodness of fit for detection functions when exact distances are used, we want to compare the cumulative distribution function (CDF) and empirical distribution function (EDF) for the detection function via a quantile-quantile plot (Q-Q plot). In our case the CDF evaluates the probability of observing an object at a distance less than or equal to some given value. The EDF gives the proportion of observations for which the CDF is less than or equal to that of a given distance. In essence we're asking "is the number of observations up to a given distance in line with what the model says they should be?" (where “given values” are the observed distances). As usual for Q-Q plots, "good" models will have values close to the line $y=x$, poor models will show more deviations from that line.
+To judge goodness of fit for detection functions when exact distances are used, we want to compare the cumulative distribution function (CDF) and empirical distribution function (EDF) for the detection function via a quantile-quantile plot (Q-Q plot). In our case the CDF evaluates the probability of observing an object at a distance less than or equal to some given value. The EDF gives the proportion of observations for which the CDF is less than or equal to that of a given distance. In essence we're asking "is the number of observations up to a given distance in line with what the model says they should be?" (where 'given values' are the observed distances). As usual for Q-Q plots, "good" models will have values close to the line $y=x$, poor models will show more deviations from that line.
 
 We can inspect Q-Q plots visually, though for a large number of models this can be tiresome and prone to subjective judgements. Instead we can quantify the Q-Q plot's information using a Kolmogorov-Smirnov or Cramer-von Mises test [@Burnham:2004vd]. Both test to see if the points from the EDF and CDF are from the same distribution. The Kolmogorov-Smirnov uses the test statistic of the largest difference between a point on the Q-Q plot and the line $y=x$, whereas the Cramer-von Mises test uses the sum of all the differences. As it takes into account more information and is therefore more powerful, the Cramer-von Mises is generally preferred. A significant result from either tests indicates that the EDF and CDF do not come from the same distribution (and therefore the model is does not fit the data well).
 
