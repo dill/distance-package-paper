@@ -14,3 +14,6 @@ To build the paper, you can use RStudio create a new project and hit "Knit". Thi
 
 To contribute, simply edit the `paper.Rmd` file, generate a new PDF and commit.
 
+Must install `rticles`  
+`devtools:::install_github("rstudio/rticles")`
+
