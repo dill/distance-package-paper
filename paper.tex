@@ -1,9 +1,6 @@
 \documentclass[article]{jss}
 \usepackage[utf8]{inputenc}
 
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-
 \author{
 David L Miller\\University of St Andrews \And Jeffrey L Laake\\National Marine Mammal Laboratory
 }
@@ -71,10 +68,6 @@ that package.
 
 \subsection{Distance sampling}\label{distance-sampling}
 
-\emph{before getting too deep into detection functions, would be nice to
-describe the 2-stage nature; adjust counts by detectability to get
-\(\hat{N_c}\) then scale up \(\hat{N_c}\) to get \(\hat{N}\)}
-
 Census-type surveys (quadrat or strip transects assuming perfect
 detectability within strips or quadrats) are inefficient (requiring
 considerable field effort) and we should expect that not all objects
@@ -85,7 +78,10 @@ estimates of abundance (Lahoz-Monfort, Guillera-Arroita, and Wintle
 sampler to the observation, it is possible to model detectability.
 Because we expect detectability to decrease with increasing distance
 from the sampler, we model detectability as a function of distance (plus
-perhaps other covariates, see below).
+perhaps other covariates, see below). We use the probabilities of
+detection calculated from the detection function to estimate an
+abundance for the area covered by the survey, which we then scale-up to
+the study region of interest.
 
 Distance sampling surveys are conducted using two transect types: line
 and point transects. In line transect sampling observers walk (or fly,
@@ -106,17 +102,16 @@ al. 2015).
 \end{figure}
 \end{CodeChunk}
 
-For both points and lines, once the geometry of the sampler \emph{likely
-spell out geom of sampler, or note it specification is forthcoming} has
-been taken into account, the histogram of distances should show a
-decreasing number of observations with increasing distance from the
-sampler. For line transects we expect objects to be distributed unformly
-with respect to distance from the line and what makes our histogram
-decrease is the detectability. For point transects, we recognise that as
-distance from the point increases, the area of the circle encompassed
-increases with distance squared; hence the number of objects available
-to be detected is a linearly increasing function of distance from the
-point.
+For both points and lines, once the geometry of the sampler (see
+``Detection functions'') has been taken into account, the histogram of
+distances should show a decreasing number of observations with
+increasing distance from the sampler. For line transects we expect
+objects to be distributed unformly with respect to distance from the
+line and what makes our histogram decrease is the detectability. For
+point transects, we recognise that as distance from the point increases,
+the area of the circle encompassed increases with distance squared;
+hence the number of objects available to be detected is a linearly
+increasing function of distance from the point.
 
 Using this histogram we can crudely estimate the drop-off in
 detectability by eye by tracing a line that approximates the tops of the
