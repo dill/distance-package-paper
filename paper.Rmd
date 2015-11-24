@@ -8,6 +8,13 @@ author:
       St Andrews, Fife KY16 9LZ, Scotland
     email: dave@ninepointeightone.net
     url: http://converged.yt
+  - name: Eric A Rexstad
+    affiliation: University of St Andrews
+    address: >
+      Centre for Research into Ecological and Environmental Modelling,
+      The Observatory,
+      St Andrews, Fife KY16 9LZ, Scotland
+    email: Eric.Rexstad@st-andrews.ac.uk
   - name: Jeffrey L Laake
     affiliation: National Marine Mammal Laboratory
     address: >
