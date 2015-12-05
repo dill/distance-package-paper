@@ -165,7 +165,7 @@ The rest of the paper has this structure: we describe data organisation for use 
 The two example data sets used here are distributed with \pkg{Distance} so readers can reproduce our results. However, data will be collected in the field and formatted correctly for use with \pkg{Distance}. The package allows for a flexible format for data input ranging from very simple to complex:
 
 * In the simplest case, where the objective is to estimate a detection function, all that is needed is a vector of distances.
-* To include additional covariates into the detection function (see "Detection functions") we use a \code{data.frame}. The data.frame contains a column called \code{distance} and additional named columns for covariates potentially useful in modelling detectability (for example \code{observer} or \code{seastate}). Some column names are reserved: \code{object} for an observation identifier (see "Extensions"), \code{size} for group or cluster size (see "Detection functions" and "Abundance and variance estimation"), \code{detected} for whether an observation was detected (see "Extensions") and the columns described in the next bullet.
+* To include additional covariates into the detection function (see "Detection functions") we use a \code{data.frame}. The \code{data.frame} contains a column called \code{distance} and additional named columns for covariates potentially useful in modelling detectability (for example \code{observer} or \code{seastate}). Some column names are reserved: \code{object} for an observation identifier (see "Extensions"), \code{size} for group or cluster size (see "Detection functions" and "Abundance and variance estimation"), \code{detected} for whether an observation was detected (see "Extensions") and the columns described in the next bullet.
 * To estimate abundance beyond area covered by expended survey effort, additional information is required. This consists of information about which transect and occasion the observation was made (the \code{Sample.Label}), a column named \code{Effort} which gives the effort associated with that sample (for lines their length and for points the number of times that point was visited), the stratum the sample was located in (this may have any name and may be from pre- or post-survey stratification, see "Estimating abundance and variance") and strata areas (which has the same name as the stratum column, appended with \code{.Area}). We refer to this data format as "flatfile" where all information is contained in one table.
 
 As we will see in "Extensions", further information is also required when using more complex models.
@@ -199,7 +199,7 @@ It is crucial that the detection function accurately models detectability at sma
 
 Models for the detection function are expected to have the following properties [@buckland2015distance, Chapter 5]:
 
-* *Shoulder*: we expect observers to be able to see objects near them, not just those directly adjacent to them. For this reason, we expect the detection function to be horizontal near zero distance.
+* *Shoulder*: we expect observers to be able to see objects near them, not just those directly in front of them. For this reason, we expect the detection function to be horizontal near zero distance.
 * *Non-increasing*: we do not think that observers should be more likely to see things distant from the transect than those near the transect. If this occurs, it usually indicates an issue with field procedure (that the distribution of objects with respect to the line, $\pi(y)$ is not what we expect), so we do not want the detection function to model this.
 * *Model robust*: models should be flexible enough to make many different shapes.
 * *Pooling robust*: many factors can affect the probability of detection and it is not possible to measure all of these. We would like models to produce unbiased results without inclusion of these factors.
@@ -291,7 +291,7 @@ par(mfrow=c(1,4), mar=c(3.5, 3, 2, 1) + 0.1)
 ## half-normal with cosine
 g <- function(x) exp(-x^2/(2*0.01^2))*(1+0.5*cos((2*pi*x)/0.025))
 f <- function(x) g(x)/g(0)
-curve(f, from=0, to=0.025, xlab="", ylab="", main="Half-normal with \n1 cosine adjustment",xlim=c(0,0.025), ylim=c(0,1))
+curve(f, from=0, to=0.025, xlab="", ylab="", main="Half-normal with \n1 cosine adjustment", xlim=c(0,0.025), ylim=c(0,1))
 title(xlab="Distance", line=2)
 title(ylab="Detection probability", line=2)
 # 2 cosines
@@ -304,14 +304,14 @@ title(ylab="Detection probability", line=2)
 ## hazard-rate with cosine
 g <- function(x) (1 - exp(-(x/0.005)^-1.1))*(1-0.05*cos((2*pi*x)/0.025))
 f <- function(x) g(x)/g(0)
-curve(f, from=0, to=0.025, xlab="", ylab="", main="Hazard-rate with \n1 cosine adjustment",xlim=c(0,0.025), ylim=c(0,1))
+curve(f, from=0, to=0.025, xlab="", ylab="", main="Hazard-rate with \n1 cosine adjustment", xlim=c(0,0.025), ylim=c(0,1))
 title(xlab="Distance", line=2)
 title(ylab="Detection probability", line=2)
 # 2 cosines
 g <- function(x) (1 - exp(-(x/0.005)^-1.9))*
                   (1+0.05*cos((2*pi*x)/0.025) + 0.25*cos((3*pi*x)/0.025))
 f <- function(x) g(x)/g(0)
-curve(f, from=0, to=0.025, xlab="", ylab="", main="Hazard-rate with \n2 cosine adjustments",xlim=c(0,0.025), ylim=c(0,1))
+curve(f, from=0, to=0.025, xlab="", ylab="", main="Hazard-rate with \n2 cosine adjustments", xlim=c(0,0.025), ylim=c(0,1))
 title(xlab="Distance", line=2)
 title(ylab="Detection probability", line=2)
 ```
@@ -442,7 +442,7 @@ First, to estimate abundance in the covered area ($\hat{N}_\text{C}$), we use th
 \hat{N}_\text{C} = \sum_{i=1}^n\frac{s_i}{\hat{p}_i},
 \label{ht}
 \end{equation}
-where $s_i$ are the sizes of the observed groups of objects, which is equal to 1 if objects only occur singly [@Borchers:2004wr]. @thompson2012sampling is the canonical reference to this type of estimator; intuitively, we can think of the estimates of detectability ($\hat{p}_i$) as "inflating" the group sizes ($s_i$) to account for incomplete detection -- we then sum over all $n$ detections to obtain the abundance estimate. For models that do not include covariates, $\hat{p}_i$ is equal for all $i$, so this is equivalent to summing the groups and inflating that sum by the corresponding $\hat{p} (=\hat{p}_i \forall i)$.
+where $s_i$ are the sizes of the observed groups of objects, which is equal to 1 if objects only occur singly [@Borchers:2004wr]. @thompson2012sampling is the canonical reference to this type of estimator; intuitively, we can think of the estimates of detectability ($\hat{p}_i$) as "inflating" the group sizes ($s_i$) to account for incomplete detection -- we then sum over the detections ($i$) to obtain the abundance estimate. For models that do not include covariates, $\hat{p}_i$ is equal for all $i$, so this is equivalent to summing the groups and inflating that sum by the corresponding $\hat{p} (=\hat{p}_i \forall i)$.
 
 Having obtained the abundance in the covered area, we can then scale-up to the study area:
 $$
@@ -462,12 +462,11 @@ This can be a useful summary statistic and is included in the \code{summary} out
 
 We may wish to calculate abundance estimates for some sub-regions of the study region, we call these areas *strata*. For example, strata may be defined by habitat types or animal gender (or some combination) which may be of interest for biological or management reasons. To calculate estimates for a given stratification each observation must occur in a stratum which must be labelled with a \code{Region.Label} and have a corresponding \code{Area} (if we are using an animal characteristic like gender, we would have the areas be the same but if we were using say forested vs. wetland habitat the areas of those strata would be different). Finally, we must also know the stratum in which transects lie.
 
-As an example the minke whale data consists of two strata: \code{North} and \code{South} relating to a stratum further away and nearer the Antarctic ice edge, respectively. Figure \ref{fig:minke-strata} shows the two strata, along with observations and transect lines.  *figure number messed up*
+As an example the minke whale data consists of two strata: \code{North} and \code{South} relating to a stratum further away and nearer the Antarctic ice edge, respectively. Figure \ref{fig:minke-strata} shows the two strata, along with observations and transect lines.
 
 \begin{figure}
 \includegraphics{minke-strata}
-\label{fig:minke-strata}
-\caption{Strata used for the minke whale data adapted from @Hedley:2004et. Points show the locations of observations along transect lines. The stepped line shows the boundary between North and South strata. Further details on the survey are available in @Branch:2001ua (simulated data is based on ``1992/93 Area III'' therein).}
+\caption{Strata used for the minke whale data adapted from Hedley and Buckland (2004). Points show the locations of observations along transect lines. The stepped line shows the boundary between North and South strata. Further details on the survey are available in Branch and Butterworth (2001) (simulated data is based on ``1992/93 Area III'' therein).\label{fig:minke-strata}}
 \end{figure}
 
 
@@ -500,12 +499,12 @@ where $t_k$ is the number of visits to point $k$ and $T = \sum_{k=1}^K t_k$. *th
 
 Various formulations for the encounter rate variance are discussed in detail in @Fewster:2009ku. \pkg{Distance} implements all of the estimators of encounter rate variance given in that article. The \code{varn} manual page gives further advice and technical detail on encounter rate variance.
 
-We combine detection function variance with encounter rate variance by use of the $\delta$-method approximation [@Goodman:1960dd].
+We combine these two sources of variance by noting that squared coefficients of variation (approximately) add [@Goodman:1960dd] (sometimes referred to as "the delta method").
 
 
 ## Estimating abundance and variance in R
 
-Returning to the minke whale data, we have the necessary information to calculate $A$ and $a$ above, so we can estimate abundance and its variance. When we supply data to \code{ds} in the ``flatfile'' format given above, \code{ds} will automatically calculate abundance estimates based on the survey information in the data.
+Returning to the minke whale data, we have the necessary information to calculate $A$ and $a$ above, so we can estimate abundance and its variance. When we supply data to \code{ds} in the "flatfile" format given above, \code{ds} will automatically calculate abundance estimates based on the survey information in the data.
 
 Having already fitted a model to the minke whale data, we can see the results of the abundance estimation by viewing the model summary:
 ```{r minke-N-summary}
