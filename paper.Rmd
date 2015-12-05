@@ -444,7 +444,7 @@ Having obtained the abundance in the covered area, we can then scale-up to the s
 $$
 \hat{N} = \frac{A}{a} \hat{N}_\text{C},
 $$
-where $A$ is the area of the study region to extrapolate the abundance estimate to and $a$ is the covered area. For line transects $a=2wL$ (twice the truncation distance multiplied by the total length of transects surveyed, $L$) and for points $a=\pi w^2 T$ (where $\pi w^2$ is the area of a single surveyed circle and $T$ is the total number of circles sampled).
+where $A$ is the area of the study region to extrapolate the abundance estimate to and $a$ is the covered area. For line transects $a=2wL$ (twice the truncation distance multiplied by the total length of transects surveyed, $L$) and for points $a=\pi w^2 T$ (where $\pi w^2$ is the area of a single surveyed circle and $T$ is the total number of visits to the sampled points).
 
 We can use the Horvitz-Thompson-like estimator to calculate the "average" detectability for models which include covariates. We can consider what single detectability value would give the estimated $\hat{N}$ and therefore calculate:
 $$
@@ -479,7 +479,7 @@ $$
 $$
 where the partial derivatives of $\hat{N}_\text{C}$ are evaluated at the MLE ($\hat{\theta}$) and $\mathbf{H}$ is the first partial Hessian (outer product of first derivatives of the log likelihood) for numerical stability [@Buckland:2001vm, p 62]. Note that although we calculate uncertainty in $\hat{N}_\text{C}$, we can trivially scale-up to variance of $\hat{N}$.
 
-Sampling uncertainty can be characterised (rather than as simply $n$) by the *encounter rate*: the number of objects per unit transect. When covariates are not included in the detection function we can define the encounter rate as $n/L$ for line transects (where $L$ is the total line length) or $n/T$ for point transects (where $T$ is the total number of visits to all points) *earlier eqn uses notation $K$ for number of points*. When covariates are included in the detection function, it is recommended that we substitute the $n$ in the previous expressions with the estimated abundance $\hat{N}$ as this will take into account the effects of the covariates.
+Sampling uncertainty can be characterised (rather than as simply $n$) by the *encounter rate*: the number of objects per unit transect. When covariates are not included in the detection function we can define the encounter rate as $n/L$ for line transects (where $L$ is the total line length) or $n/T$ for point transects (where $T$ is the total number of visits to all points). When covariates are included in the detection function, it is recommended that we substitute the $n$ in the previous expressions with the estimated abundance $\hat{N}$ as this will take into account the effects of the covariates.
 
 For line transects, by default, \pkg{Distance} uses a variation of the estimator "R2" from @Fewster:2009ku replacing number of observations per sample with the estimated abundance per sample [@Innes:2002ka; @Marques:2003vb]:
 $$
@@ -489,7 +489,7 @@ where $l_k$ are the lengths of the $K$ transects (such that $L = \sum_{k=1}^K l_
 $$
 \widehat{\text{Var}}_{\text{encounter},P3} = \frac{1}{T(K-1)} \sum_{k=1}^{K} t_k \left( \frac{N_k}{t_k} - \frac{N}{T}\right)^2,
 $$
-where $t_k$ is the number of visits to point $k$ and $T = \sum_{k=1}^K t_k$. *this messes with the $K$ notation even further*
+where $t_k$ is the number of visits to point $k$ and $T = \sum_{k=1}^K t_k$ (the total number of visits to all points is the sum of the visits to each point).
 
 Various formulations for the encounter rate variance are discussed in detail in @Fewster:2009ku. \pkg{Distance} implements all of the estimators of encounter rate variance given in that article. The \code{varn} manual page gives further advice and technical detail on encounter rate variance.
 
