@@ -444,9 +444,7 @@ Having obtained the abundance in the covered area, we can then scale-up to the s
 $$
 \hat{N} = \frac{A}{a} \hat{N}_\text{C},
 $$
-where $A$ is the area of the study region to extrapolate the abundance estimate to and $a$ is the covered area. For line transects $a=2wL$ (twice the truncation distance multiplied by the total length of transects surveyed) and for points $a=\pi w^2 K$.
-
-*have L and K been previously defined?*
+where $A$ is the area of the study region to extrapolate the abundance estimate to and $a$ is the covered area. For line transects $a=2wL$ (twice the truncation distance multiplied by the total length of transects surveyed, $L$) and for points $a=\pi w^2 T$ (where $\pi w^2$ is the area of a single surveyed circle and $T$ is the total number of circles sampled).
 
 We can use the Horvitz-Thompson-like estimator to calculate the "average" detectability for models which include covariates. We can consider what single detectability value would give the estimated $\hat{N}$ and therefore calculate:
 $$
