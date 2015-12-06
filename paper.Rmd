@@ -538,7 +538,7 @@ We note that there are other packages available for performing distance sampling
 
 # Acknowledgements
 
-The authors would like to thank the many users of \pkg{Distance}, \pkg{mrds} and DISTANCE who have contributed bug reports and suggestions for improvements over the years.
+The authors would like to thank the many users of \pkg{Distance}, \pkg{mrds} and DISTANCE who have contributed bug reports and suggestions for improvements over the years. We would also like to thank Jon Bishop and Lorenzo Milazzo for their contributions to \pkg{mrds}.
 
 
 # Bibliography
