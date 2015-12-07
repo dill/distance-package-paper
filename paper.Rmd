@@ -372,7 +372,7 @@ amakihi_hr_obs_mas <- ds(amakihi, truncation=82.5, transect="point",
 The bottom row of Figure \ref{fig:minkeamakihi} shows the probability density functions for the amakihi models. Probability density function plots give a better sense of fit of the model than the detection functions, as for point data we must rescale the histogram when plotting the detection function to take into account the geometry of the point sampler.
 
 
-```{r minke-amakihi-hn-plot, echo=FALSE, warning=FALSE, fig.width=9, fig.height=4, fig.cap="Left: fitted detection functions overlayed on the histogram of observed distances for the minke whale data using half-normal model. Centre, right: plots of the probability density function for the amakihi models. Centre, hazard-rate with observer as a covariate; right, hazard-rate model with observer and minutes after sunrise as covariates. Points indicate probability of detection for a given observation (given that observations covariate values) and lines indicate the average detection function.\\label{fig:minkeamakihi}"}
+```{r minke-amakihi-hn-plot, echo=FALSE, warning=FALSE, fig.width=9, fig.height=4, fig.cap="Left: fitted detection function overlayed on the histogram of observed distances for the minke whale data using half-normal model. Centre, right: plots of the probability density function for the amakihi models. Centre, hazard-rate with observer as a covariate; right, hazard-rate model with observer and minutes after sunrise as covariates. Points indicate probability of detection for a given observation (given that observations covariate values) and lines indicate the average detection function.\\label{fig:minkeamakihi}"}
 par(mfrow=c(1, 3))
 plot(minke_hn, showpoints=FALSE)
 plot(amakihi_hr_obs, pdf=TRUE, cex=0.7)
