@@ -28,11 +28,11 @@ title:
   # For running headers, if needed
   #short:     "\\pkg{foo}: A Capitalized Title"
 abstract: >
-  The abstract of the article.
+  The estimation of the abundance of biological population is an essential part of applied ecology and wildlife management. To ensure that abundance estimates are accurate, we must account for uncertain detectability of plants and animals; distance sampling is a popular method for doing this. Here we show how models for detectabilty can be fitted using the \proglang{R} package \pkg{Distance}. We also show how \pkg{Distance} can be used to calculate Horvitz-Thompson-like estimates of abundance, interfaces to other packages to provide sophisticated analyses and a migration from previous software.
 keywords:
   # at least one keyword must be supplied
-  formatted: [distance sampling, abundance estimation, line transects, point transects, "\\proglang{R}"]
-  plain:     [distance sampling, abundance estimation, line transects, point transects, R]
+  formatted: [distance sampling, abundance estimation, line transects, point transects, detection functions, "\\proglang{R}"]
+  plain:     [distance sampling, abundance estimation, line transects, point transects, detection functions, R]
 preamble: >
   \usepackage{amsmath}
   \usepackage{amssymb}
