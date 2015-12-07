@@ -15,9 +15,24 @@ author:
       The Observatory,
       St Andrews, Fife KY16 9LZ, Scotland
     email: Eric.Rexstad@st-andrews.ac.uk
-  - name: Jeffrey L Laake
-    affiliation: National Marine Mammal Laboratory
+  - name: Len Thomas
+    affiliation: University of St Andrews
     address: >
+      Centre for Research into Ecological and Environmental Modelling,
+      The Observatory,
+      St Andrews, Fife KY16 9LZ, Scotland
+    email: len.thomas@st-andrews.ac.uk
+  - name: Laura Marshall
+    affiliation: University of St Andrews
+    address: >
+      Centre for Research into Ecological and Environmental Modelling,
+      The Observatory,
+      St Andrews, Fife KY16 9LZ, Scotland
+    email: lhm@st-andrews.ac.uk
+  - name: Jeffrey L Laake
+    affiliation: NOAA
+    address: >
+      National Marine Mammal Laboratory
       Alaska Fisheries Science Center
       7600 Sand Point Way N.E., Seattle, WA 98115, USA
     email: Jeff.Laake@noaa.gov
