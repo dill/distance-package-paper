@@ -170,6 +170,8 @@ The two example data sets used here are distributed with \pkg{Distance} so reade
 
 As we will see in "Extensions", further information is also required when using more complex models.
 
+It is also possible to use distances collected in intervals ("binned", as opposed to "exact" distance data) to model the detection function. In this case a set of cutpoints for the bins must be provided rather than the \code{distance} column, these are specified as two columns \code{distbegin} and \code{distend}.
+
 The minke whale data follows the "flatfile" format given in the last bullet point:
 ```{r load-data, echo=FALSE}
 # quietly load the data
