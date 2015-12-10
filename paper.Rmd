@@ -43,11 +43,11 @@ title:
   # For running headers, if needed
   #short:     "\\pkg{foo}: A Capitalized Title"
 abstract: >
-  The estimation of the abundance of biological population is an essential part of applied ecology and wildlife management. To ensure that abundance estimates are accurate, we must account for uncertain detectability of plants and animals; distance sampling is a popular method for doing this. Here we show how models for detectabilty can be fitted using the \proglang{R} package \pkg{Distance}. We also show how \pkg{Distance} can be used to calculate Horvitz-Thompson-like estimates of abundance, interfaces to other packages to provide sophisticated analyses and a migration pathway from previous software.
+  The estimation of the abundance of biological population is an essential part of applied ecology and wildlife management. To ensure that abundance estimates are accurate, we must account for uncertain detectability of plants and animals; distance sampling is a popular method for doing this. Here we show how models for detectabilty can be fitted using the \proglang{R} package \pkg{Distance}. We also show how \pkg{Distance} can be used to calculate Horvitz-Thompson-like estimates of abundance, its interface to other packages to provide sophisticated analyses and a migration pathway from previous software.
 keywords:
   # at least one keyword must be supplied
-  formatted: [distance sampling, abundance estimation, line transects, point transects, detection functions, "\\proglang{R}"]
-  plain:     [distance sampling, abundance estimation, line transects, point transects, detection functions, R]
+  formatted: [distance sampling, abundance estimation, line transects, point transects, detection functions, Horvitz-Thomspn, "\\proglang{R}"]
+  plain:     [distance sampling, abundance estimation, line transects, point transects, detection functions, Horvitz-Thomspn, R]
 preamble: >
   \usepackage{amsmath}
   \usepackage{amssymb}
@@ -66,15 +66,15 @@ opts_chunk$set(cache=TRUE)
 
 Distance sampling [@Buckland:2001vm; @Buckland:2004ts] encompasses a suite of field methods and statistical models used to estimate the abundance of biological populations. Distance sampling field procedure can be thought of as an extension of plot sampling, where we wish to take into account the decreasing probability of detecting objects at increasing distance from the sampler. We do this by building a model for detectability and use quantities calculated from the detection function to adjust the observed counts to obtain an estimate of abundance.
 
-For many years distance sampling analyses have been available via the Windows program Distance (or "DISTANCE"); for clarity henceforth "Distance for Windows"). From version 5 of Distance for Windows, R packages have been included to perform particular analyses [@Thomas:2010cf, further details of the history of Distance for Windows are included in that paper]. This paper shows how to fit detection functions, perform model checking and selection and estimate abundance in \proglang{R} using the package \pkg{Distance}. \pkg{Distance} is a wrapper package around the more complex (and more powerful) \pkg{mrds} and offers a subset of the analyses possible with that package.
+The Windows program Distance (or "DISTANCE"; for clarity henceforth "Distance for Windows") has been available for many years to perform distance sampling analyses (and before that program "TRANSECT"). From version 5 of Distance for Windows, \proglang{R} packages have been included to perform some parts of an analysis [@Thomas:2010cf, further details of the history of Distance for Windows are included in that article]. This article shows how to fit detection functions, perform model checking and selection, and estimate abundance in \proglang{R} using the package \pkg{Distance}. \pkg{Distance} is a wrapper package around the more complex (and more powerful) \pkg{mrds} and offers a subset of the analyses possible with that package.
 
 ## Distance sampling
 
-Census-type surveys (quadrat or strip transects assuming perfect detectability within strips or quadrats) are inefficient (requiring considerable field effort) and we should expect that not all objects (animals, plants, dung, etc) can be observed. Accounting for imperfect detectability is an important consideration when obtaining accurate estimates of abundance [@LahozMonfort:2013bg]. Using the extra information gained by recording distance from the sampler to the observation, it is possible to model detectability. Because we expect detectability to decrease with increasing distance from the sampler, we model detectability as a function of distance (plus perhaps other covariates, see below). We use the probabilities of detection calculated from the detection function to estimate an abundance for the area covered by the survey, which we then scale-up to the study region of interest.
+Census-type surveys (quadrat or strip transects assuming perfect detectability within strips or quadrats) are inefficient (requiring considerable field effort) and we should expect that not all objects (animals, plants, dung, etc) can be observed. Accounting for imperfect detectability is an important consideration when obtaining accurate estimates of abundance [@LahozMonfort:2013bg]. Using the extra information gained by recording distance from the sampler to the observation, it is possible to model detectability. Because we expect detectability to decrease with increasing distance from the sampler, we model detectability as a function of distance (plus perhaps other covariates, see below). We use the probabilities of detection calculated from the detection function to estimate abundance in the area covered by the survey, which we then scale-up to the study region of interest.
 
-Distance sampling surveys are conducted using two transect types: line and point transects. In line transect sampling observers walk (or fly, sail, etc)  lines observing objects and recording the distances to the line; whereas in point transect sampling observers remain stationary at a location and record distances from that point. Field methods are chosen to be suitable to species and habitat constraints [@buckland2015distance].
+Distance sampling surveys are conducted using two transect types: line and point transects. In line transect sampling observers walk (or fly, sail, etc)  lines, observing objects and recording the distances to the line; whereas in point transect sampling observers remain stationary at a location and record distances to objects from that point. Field methods are chosen to be suitable to species and habitat constraints [@buckland2015distance].
 
-```{r points-and-lines, fig.height=6, fig.width=7, echo=FALSE, message=FALSE, fig.cap="Left side plots show an example of a survey of an area containing a population of 500 objects, blue indicates sampler placement (top lines, bottom points) and red dots indicate detected individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).\\label{fig:pointslines}"}
+```{r points-and-lines, fig.height=6, fig.width=7, echo=FALSE, message=FALSE, fig.cap="Left side plots show an example of a survey of an area containing a population of 500 objects, blue indicates sampler placement (top lines, bottom points), red dots indicate detected individuals and grey dots give the locations of unobserved individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).\\label{fig:pointslines}"}
 opar <- par(mfrow=c(2,2))
 # line and point transect examples
 # top row points/samplers in space
@@ -151,20 +151,20 @@ par(opar)
 
 ```
 
-For both points and lines, given the geometry of the sampler (see "Detection functions"), the histogram of distances should show a decreasing number of observations with increasing distance from the sampler. For line transects we expect objects to be distributed uniformly with respect to distance from the line with detectability causing the number of detections to decrease. For point transects, we recognise that as distance from the point increases, the area of the circle encompassed increases with distance squared; hence the number of objects available to be detected is a linearly increasing function of distance from the point.
+For both points and lines, given the geometry of the sampler (see "Detection functions"), the histogram of distances should show a decreasing number of observations with increasing distance from the sampler. For line transects we expect objects to be distributed uniformly with respect to distance from the line with detectability causing the number of detections to decrease (as distance from the sampler increases). For point transects we recognise that as distance from the point increases, the area of the circle with a corresponding radius increases with distance squared, hence the number of objects available to be detected is a linearly increasing function of distance from the point.
 
-Using this histogram we can crudely estimate the drop-off in detectability by eye by tracing a line that approximates the tops of the histogram bars -- this is the detection function. \pkg{Distance} estimates the parameters for a fixed-form detection function using maximum likelihood estimation. We address possible models below.
+Plotting a histogram of observed distances, we can crudely estimate the drop-off in detectability by eye if we trace a line that approximates the tops of the histogram bars: this is a detection function. \pkg{Distance} estimates the parameters for a fixed-form detection function using maximum likelihood estimation. We address possible models below.
 
-Figure \ref{fig:pointslines} shows sampling of a population of 500 individuals using line and point transects (left column) and their corresponding histograms (right column).
+Figure \ref{fig:pointslines} shows sampling of a population of 500 individuals using line and point transects (left column) and their corresponding histograms (right column). Blue indicates the transects (lines or points), red points indicate that an object was observed and grey points give the locations of unobserved objects.
 
 
 ## Data
 
-We demonstrate \pkg{Distance} using two data sets: one line transect and one point transect. These data sets have been chosen to be representative of data seen in practice.
+We show examples of analyses in \pkg{Distance} using two data sets: one line transect and one point transect. These data sets have been chosen to be representative of data seen in practice.
 
 ### Minke whales
 
-The line transect data is based on a survey of Antarctic minke whales (*Balaenoptera bonaerensis*). The data are simulated from models fitted to data from the International Whaling Commission's International Decade of Cetacean Research Southern Ocean Whale and Ecosystem Research (IWC IDCR-SOWER) programme 1992-1993 austral summer surveys [@Branch:2001ua]. They consist of 99 observations and include geographical strata (near or distant from ice edge) and transect lengths on the effort expended.
+The line transect data is based on a survey of Antarctic minke whales (*Balaenoptera bonaerensis*). The data are simulated from models fitted to data from the International Whaling Commission's International Decade of Cetacean Research Southern Ocean Whale and Ecosystem Research (IWC IDCR-SOWER) programme 1992-1993 austral summer surveys [@Branch:2001ua]. They consist of 99 observations and include a stratification based on location (near or distant from ice edge) and effort data (transect lengths).
 
 ### Amakihi
 
@@ -173,19 +173,21 @@ The point transect data set consists of 1485 observations of Amakihi (*Hemignath
 
 ## The rest of the paper
 
-The rest of the paper has this structure: we describe data organisation for use with \pkg{Distance}; models for the detection function are described in terms of formulation and examples of fitting in \proglang{R}. We then examine model checking, goodness of fit and model selection. Having illustrated how to obtain a good detection function, we show how to estimate abundance using that model, including stratification. The final two sections of the article look at extensions (both in terms of methodology and software) and put the package in a broader context amongst other software packages used for estimating the abundance of biological populations.
+The rest of the paper has this structure: we describe data organisation for use with \pkg{Distance}; models for the detection function are described in terms of formulation and examples of fitting in \proglang{R}. We then show how to perform model checking, goodness of fit and model selection. We go on to show how to estimate abundance, including stratified estimates of abundance. The final two sections of the article look at extensions (both in terms of methodology and software) and put the package in a broader context amongst other software packages used for estimating the abundance of biological populations.
 
 # Data setup
 
-The two example data sets used here are distributed with \pkg{Distance} so readers can reproduce our results. However, data will be collected in the field and formatted correctly for use with \pkg{Distance}. The package allows for a flexible format for data input ranging from very simple to complex:
+The two example data sets used here are distributed with \pkg{Distance} so readers can reproduce our results. However, generally data will be collected in the field and will need to be formatted correctly for use with \pkg{Distance}. The package allows for a flexible format for data input ranging from very simple to complex:
 
 * In the simplest case, where the objective is to estimate a detection function, all that is needed is a vector of distances.
-* To include additional covariates into the detection function (see "Detection functions") we use a \code{data.frame}. The \code{data.frame} contains a column called \code{distance} and additional named columns for covariates potentially useful in modelling detectability (for example \code{observer} or \code{seastate}). Some column names are reserved: \code{object} for an observation identifier (see "Extensions"), \code{size} for group or cluster size (see "Detection functions" and "Abundance and variance estimation"), \code{detected} for whether an observation was detected (see "Extensions") and the columns described in the next bullet.
-* To estimate abundance beyond area covered by expended survey effort, additional information is required. This consists of information about which transect and occasion the observation was made (the \code{Sample.Label}), a column named \code{Effort} which gives the effort associated with that sample (for lines their length and for points the number of times that point was visited), the stratum the sample was located in (this may have any name and may be from pre- or post-survey stratification, see "Estimating abundance and variance") and strata areas (which has the same name as the stratum column, appended with \code{.Area}). We refer to this data format as "flatfile" where all information is contained in one table.
+* To include additional covariates into the detection function (see "Detection functions") we use a \code{data.frame}. The \code{data.frame} contains a column called \code{distance} (containing the observed distances) and additional named columns for covariates potentially useful in modelling detectability (for example \code{observer} or \code{seastate}). Some column names are reserved: \code{object} for an observation identifier (see "Extensions"), \code{size} for group or cluster size (see "Detection functions" and "Abundance and variance estimation"), \code{detected} for whether an observation was detected (see "Extensions") and the columns described in the next bullet.
+* To estimate abundance beyond area covered by expended survey effort, additional information is required. This consists of information about which transect and occasion the observation was made (the \code{Sample.Label}), a column named \code{Effort} which gives the effort associated with that sample (for lines their length and for points the number of times that point was visited), the stratum the sample was located in (the \code{Region.Label}, which may be from pre- or post-survey stratification, see "Estimating abundance and variance") and the stratum areas (\code{Area}). For transects which were surveyed but have no observations we enter \code{NA} in their \code{distance} column. We refer to this data format (where all information is contained in one table) as "flatfile" as it can be easily created in a single spreadsheet.
 
 As we will see in "Extensions", further information is also required when using more complex models.
 
-It is also possible to use distances collected in intervals ("binned", as opposed to "exact" distance data) to model the detection function. In this case a set of cutpoints for the bins must be provided rather than the \code{distance} column, these are specified as two columns \code{distbegin} and \code{distend}.
+It is also possible to use distances collected in intervals ("binned" or "grouped" data, as opposed to "exact" distances) to model the detection function. In this case a set of cutpoints for the bins must be provided rather than the \code{distance} column, these are specified as two columns \code{distbegin} and \code{distend}. More information on binned data is included in @Buckland:2001vm sections 4.5 and 7.4.1.2.
+
+The columns \code{distance}, \code{Area} and (in the case of line transects) \code{Effort} have associated units. We recommended that these are converted to SI units before starting any analysis to ensure that resulting abundance and density estimates have sensible units.
 
 The minke whale data follows the "flatfile" format given in the last bullet point:
 ```{r load-data, echo=FALSE}
@@ -202,7 +204,7 @@ Whereas the amakihi data lacks effort and stratum data:
 head(amakihi)
 ```
 
-We will explore below the effects of including effort data during analysis.
+We will explore the effects of including effort and stratum data during analysis below.
 
 # Detection functions
 
@@ -302,8 +304,8 @@ A disadvantage of K+A models is that we must resort to constrained optimisation 
 
 We do not always include adjustments (except in the case of the uniform key), in which case we refer to "key only" models (see the next section and "Model checking and model selection").
 
-```{r adjust-mix-comp, fig.width=9, fig.height=3, fig.cap="Possible shapes for the detection function when adjustments are included for half-normal and hazard-rate models.\\label{fig:keyadj}", echo=FALSE}
-par(mfrow=c(1,4), mar=c(3.5, 3, 2, 1) + 0.1)
+```{r adjust-mix-comp, fig.width=10, fig.height=3, fig.cap="Possible shapes for the detection function when adjustments are included for half-normal and hazard-rate models.\\label{fig:keyadj}", echo=FALSE}
+par(mfrow=c(1,4), mar=c(3.5, 3, 3, 1) + 0.1)
 
 ## half-normal with cosine
 g <- function(x) exp(-x^2/(2*0.01^2))*(1+0.5*cos((2*pi*x)/0.025))
@@ -467,7 +469,7 @@ We can use the Horvitz-Thompson-like estimator to calculate the "average" detect
 $$
 \hat{P_a} = n/\hat{N}_\text{C}.
 $$
-This can be a useful summary statistic and is included in the \code{summary} output and the table produced by \code{summarize_ds_models}.  *anything else to say about this, seems to mess up folks, including me*
+This can be a useful summary statistic, giving us an idea of how detectable our $n$ observed animals would have to be in order to estimate the same $\hat{N}$ if there were no observed covariates. It can also be compared to similar estimates in mark-recapture studies. $P_a$ is included in the \code{summary} output and the table produced by \code{summarize_ds_models}. 
 
 ### Stratification
 
