@@ -43,11 +43,11 @@ title:
   # For running headers, if needed
   #short:     "\\pkg{foo}: A Capitalized Title"
 abstract: >
-  The estimation of the abundance of biological population is an essential part of applied ecology and wildlife management. To ensure that abundance estimates are accurate, we must account for uncertain detectability of plants and animals; distance sampling is a popular method for doing this. Here we show how models for detectabilty can be fitted using the \proglang{R} package \pkg{Distance}. We also show how \pkg{Distance} can be used to calculate Horvitz-Thompson-like estimates of abundance, its interface to other packages to provide sophisticated analyses and a migration pathway from previous software.
+  The estimation of the abundance of a biological population is an essential part of applied ecology and wildlife management. To ensure that abundance estimates are accurate, we must account for uncertain detectability of plants and animals; distance sampling is a popular method for doing this. Here we show how models for detectabilty can be fitted using the \proglang{R} package \pkg{Distance}. We also show how \pkg{Distance} can be used to calculate Horvitz-Thompson-like estimates of abundance, its interface to other packages to provide sophisticated analyses and a migration pathway from previous software.
 keywords:
   # at least one keyword must be supplied
-  formatted: [distance sampling, abundance estimation, line transects, point transects, detection functions, Horvitz-Thompson, "\\proglang{R}"]
-  plain:     [distance sampling, abundance estimation, line transects, point transects, detection functions, Horvitz-Thompson, R]
+  formatted: [distance sampling, abundance estimation, line transects, point transects, detection functions, Horvitz-Thompson, "\\proglang{R}", Distance]
+  plain:     [distance sampling, abundance estimation, line transects, point transects, detection functions, Horvitz-Thompson, R, Distance]
 preamble: >
   \usepackage{amsmath}
   \usepackage{amssymb}
@@ -64,9 +64,9 @@ library("knitr")
 opts_chunk$set(cache=TRUE)
 ```
 
-Distance sampling [@Buckland:2001vm; @Buckland:2004ts] encompasses a suite of field methods and statistical models used to estimate the abundance of biological populations. Distance sampling field procedure can be thought of as an extension of plot sampling, where we wish to take into account the decreasing probability of detecting objects at increasing distance from the sampler. We do this by building a model for detectability and use quantities calculated from the detection function to adjust the observed counts to obtain an estimate of abundance.
+Distance sampling [@Buckland:2001vm; @Buckland:2004ts; @buckland2015distance] encompasses a suite of field methods and statistical models used to estimate the abundance of biological populations. Distance sampling field procedure can be thought of as an extension of plot sampling, where we wish to take into account the decreasing probability of detecting objects at increasing distance from the sampler. We do this by building a model for detectability and use quantities calculated from the detection function to adjust the observed counts to obtain an estimate of abundance.
 
-The Windows program Distance (or "DISTANCE"; for clarity henceforth "Distance for Windows") has been available for many years to perform distance sampling analyses (and before that program "TRANSECT"). From version 5 of Distance for Windows, \proglang{R} packages have been included to perform some parts of an analysis [@Thomas:2010cf, further details of the history of Distance for Windows are included in that article]. This article shows how to fit detection functions, perform model checking and selection, and estimate abundance in \proglang{R} [@rcore] using the package \pkg{Distance} [@distance-pkg]. \pkg{Distance} is a wrapper package around the more complex (and more powerful) \pkg{mrds} [@mrds-pkg] and offers a subset of the analyses possible with that package.
+The Windows program Distance (or "DISTANCE"; for clarity henceforth "Distance for Windows") has been available for many years to perform distance sampling analyses (and before that program "TRANSECT"). From version 5 of Distance for Windows, \proglang{R} packages have been included to perform some parts of an analysis [further details of the history of Distance for Windows are included in @Thomas:2010cf]. Here we show how to fit detection functions, perform model checking and selection, and estimate abundance in \proglang{R} [@rcore] using the package \pkg{Distance} [@distance-pkg]. \pkg{Distance} is a wrapper package around the more complex (and more powerful) \pkg{mrds} package [@mrds-pkg] and offers a subset of the analyses possible with that package.
 
 ## Distance sampling
 
