@@ -87,11 +87,9 @@ Until now those wishing to use our \proglang{R} packages for straight forward di
 
 <!-- While plot sampling techniques are adequate for static populations occuring at high density they are inefficient for more sparsely distributed populations. Distance sampling provides a more efficient solution in such circumstances. In addition, for cryptic species it simply may not be possible to detect all individuals within a given plot and we must find a way to account for imperfect detectability when estimating abundance [@LahozMonfort:2013bg]. This paper does not provide a detailed explanation of the theory behind distance sampling but instead concentrates on it's application using the package \pkg{Distance}. Further information on distance sampling, including the theory, various extensions to deal with more complex situations and recent methodological developments can be found at http://distancesampling.org/dbib.html -->
 
-Conventional distance sampling relies on a number of assumptions. Firstly, like plot sampling, distance sampling assumes that the samplers have been located at random within the study area. By ensuring that the samplers are located independently of the objects in the study region we know that the "availability" of objects with respect to line transect samplers should be constant with increasing perpendicular distance. In contrast, 
+Like plot sampling, distance sampling assumes that the samplers have been located at random within the study area. Given that the samplers are located independently of the objects, for line transect studies we know that the "availability" of objects should be constant with increasing perpendicular distance. However, for point transect surveys the available survey area increases linearly with radial distance implying that the number of objects available for detection should also increase linerary. Figure \ref{fig:detectiondist} shows how these availability functions when combined with a detection function give rise to the observed distribution of recorded distances. 
 
-
-
-Conventional distance sampling analysis simply relies on estimating the probability of detection given how far an object is from the sampler. Note that in the case of populations that occur in groups (clusters) the whole group or cluster is treated as an individual object. Figure \ref{fig:lines} shows example data collection on a simulated population of 500 individuals using line transects and the corresponding histogram of distances recorded by the observer. As expected we see in the histogram of Fig. \ref{fig:lines} that as the perpendicular distance from the transect line increases, the number of detections made in each distance interval decreases. \pkg{Distance} provides a selection of functions to model this probability of detection detailed in Section... below.
+Given that we can assume these particular availability function there are a number of ways we can use either the estimated detection function or the composite function we fit to our data to estimate abundance. One simple idea begins with finding the area under the composite function we fit to our data out to a truncation distance w. If we then find the area under the availability function out to distance w then by dividing the former area by the latter gives us an estimate of the propoertion of objects seen within distance w of the transect. We can then scale up the number of objects we saw, first to give us an estimate of how many objects were within distance w of the transects and then again by the proportion of the study area we have sampled to give an estimate of abundance for the entire study area.
 
 ```{r detectdists, fig.height=5.5, fig.width=8, echo=FALSE, message=FALSE, fig.cap="Top panels show an example detection function (left), the expected avaiability of objects (middle) and the resulting destribution of detections (right) for line transects. Bottom panels show an example detection function (left), the expected avaiability of objects (middle) and the resulting destribution of detections (right) for point transects. \\label{fig:detectiondist}"}
 
@@ -117,20 +115,7 @@ plot(x, point.observed, xlab = "Radial distance (m)", ylab= "", type = "l", ylim
 
 ```
 
- 
-
-
-The probability of detecting an object may not only depend on how far it is from the obsever but also on other factors such as weather conditions, ground cover, cluster size etc. The \pkg{Distance} package also allows the incorporation of such covariates into the modelling process of the detection function.
-
-_(LM How does Distance use the detection function to estimate abundance is it any different to mrds does it infact use dht?)_ 
-
-
-
-(LM: do we need to talk about assumptions here?)
-
-(LM: detail what Distance deals with?)
-
-Field methods are chosen to be suitable to species and habitat constraints [@buckland2015distance].
+Figure \ref{fig:pointslines} shows simulated sampling of a population of 500 objects using line and point transects and their corresponding histograms of observed detection distances. Note that for the purposes of distance sampling an object may either refer to an individual in a population or a cluster of individuals. In the latter instance, the density or abundance of clusters is estimated separately to the mean cluster size which can later be used to estimate the density or abundance of individuals. 
 
 ```{r points-and-lines, fig.height=6, fig.width=7, echo=FALSE, message=FALSE, fig.cap="Left side plots show an example of a survey of an area containing a population of 500 objects; blue lines (top plot) and triangles (bottom plot) indicate sampler placement, red dots indicate detected individuals and grey dots give the locations of unobserved individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).\\label{fig:pointslines}"}
 opar <- par(mfrow=c(2,2))
@@ -211,13 +196,24 @@ par(opar)
 
 ```
 
-(LT: What is said about the decreasing number of observations is incorrect, really, and the "taking account of" just makes it confusing, I think.  Needs a bit more editing - possibly re-order to explain what we see first.) For both points and lines, given the geometry of the sampler (see "Detection functions"), the histogram of distances should show a decreasing number of observations with increasing distance from the sampler (having taken into account sample geometry, see below). For line transects we expect objects to be distributed uniformly with respect to distance from the line (assuming that lines and points are placed independently of animal distribution) with detectability causing the number of detections to decrease (as distance from the sampler increases). For point transects we recognise that as distance from the point increases, the area of the circle with a corresponding radius increases with distance squared, hence the number of objects available to be detected is a linearly increasing function of distance from the point.
+
+
+\pkg{Distance} provides a selection of candidate functions to describe the probability of detection and estimates the parameters using maximum likelihood estimation. The probability of detecting an object may not only depend on how far it is from the obsever but also on other factors such as weather conditions, ground cover, cluster size etc. The \pkg{Distance} package also allows the incorporation of such covariates into the detection function allowing the detection function parameters to vary based on these covariates.
+
+Field methods are chosen to be suitable to species and habitat constraints [@buckland2015distance].
+
+The rest of the paper has the following structure: we describe data formatting for \pkg{Distance}; candidate detection function models are described in terms of formulation and fitted examples in \proglang{R}. We then show how to perform model checking, goodness of fit and model selection. We go on to show how to estimate abundance, including stratified estimates of abundance. The final two sections of the article look at extensions (both in terms of methodology and software) and put the package in a broader context amongst other software packages used for estimating the abundance of biological populations. (LT: Do we mean software packages in general (e.g., Mark) or R packages?  Do we actually do this -- i.e., talk about how Distance fits in among all this, or is this now an appendix, and does it cover all methods or just distance-based methods.)
+
+
+
+
+<!-- (LT: What is said about the decreasing number of observations is incorrect, really, and the "taking account of" just makes it confusing, I think.  Needs a bit more editing - possibly re-order to explain what we see first.) For both points and lines, given the geometry of the sampler (see "Detection functions"), the histogram of distances should show a decreasing number of observations with increasing distance from the sampler (having taken into account sample geometry, see below). For line transects we expect objects to be distributed uniformly with respect to distance from the line (assuming that lines and points are placed independently of animal distribution) with detectability causing the number of detections to decrease (as distance from the sampler increases). For point transects we recognise that as distance from the point increases, the area of the circle with a corresponding radius increases with distance squared, hence the number of objects available to be detected is a linearly increasing function of distance from the point.
 
 (LT: A detection function is not a line; it is also scaled differently.  This needs editing.) Plotting a histogram of observed distances, we can crudely estimate the drop-off in detectability by eye if we trace a line that approximates the tops of the histogram bars: this is a detection function. \pkg{Distance} estimates the parameters for a fixed-form detection function using maximum likelihood estimation. We address possible models below.
 
-(LT: stranded one-sentence paragraph -- needs integrating.) 
+(LT: stranded one-sentence paragraph -- needs integrating.) -->
 
-The rest of the paper has the following structure: we describe data organisation for use with \pkg{Distance}; models for the detection function are described in terms of formulation and examples of fitting in \proglang{R}. We then show how to perform model checking, goodness of fit and model selection. We go on to show how to estimate abundance, including stratified estimates of abundance. The final two sections of the article look at extensions (both in terms of methodology and software) and put the package in a broader context amongst other software packages used for estimating the abundance of biological populations. (LT: Do we mean software packages in general (e.g., Mark) or R packages?  Do we actually do this -- i.e., talk about how Distance fits in among all this, or is this now an appendix, and does it cover all methods or just distance-based methods.)
+
 
 (LT: Only got this far: will do more later...) 
 
