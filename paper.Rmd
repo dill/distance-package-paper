@@ -397,7 +397,7 @@ title(ylab="Detection probability", line=2)
 
 ### Covariates
 
-There are many factors that can affect the probability of detecting an object. These include things like the observer, size of group (if objects occur in groups), the vessel or platform used, the sea state, weather conditions and time of day. We assume that these variables affect detection only via the scale of the detection function (and do not affect the shape).
+There are many factors that can affect the probability of detecting an object. These include things like observer skill, cluster/group size (if objects occur in groups), the vessel or platform used, sea state, other weather conditions and time of day. In \pkg{Distance} we assume that these variables affect detection only via the scale of the detection function (and do not affect the shape).
 
 Covariates can be included in this formulation by considering the scale parameter from the half-normal or hazard-rate detection functions as a linear model (on the exponential scale) of the ($J$) covariates ($\mathbf{z}$; a vector of length $J$ for each observation):
 $$
@@ -408,9 +408,9 @@ Including covariates has an important implication for our calculation of detecta
 $$
 p(\mathbf{z_i}) = \int_0^w \pi(y) g(y, \mathbf{z_i}; \boldsymbol{\theta}) dy,
 $$
-where $\mathbf{z_i}$ is the vector of $J$ covariates associated with observation $i$. For covariate models, we are calculating a value of "average" probability of detection (average in the sense of distance being integrated out) per observation. There will be as many unique values of $p(\mathbf{z_i})$ as there are unique covariate combinations in our data.
+where $\mathbf{z_i}$ is the vector of $J$ covariates associated with observation $i$. For covariate models, we calculate a value of "average" probability of detection (average in the sense of distance being integrated out) per observation. There are as many unique values of $p(\mathbf{z_i})$ as there are unique covariate combinations in our data.
 
-K+A models that include covariates and one or more adjustments cannot be guaranteed to be monotonic non-increasing for all covariate combinations, as we do not have any model for the distribution of the covariates. Without a distribution for the covariates, it's not possible to know what the behaviour of the detection function will be, so we cannot setup meaningful constraints -- so we cannot constrain the detection function to be monotonic. For this reason, we advise against using both adjustments and covariates in a detection function [see @Miller:2015hw for an example of when this can be problematic].
+K+A models that include covariates and one or more adjustments cannot be guaranteed to be monotonic non-increasing for all covariate combinations. Without a model for the distribution of the covariates, it is not possible to know what the behaviour of the detection function will be across the ranges of the covariates. As such we cannot set meaningful constraints on monotonicity. For this reason, we advise against using both adjustments and covariates in a detection function [see @Miller:2015hw for an example of when this can be problematic].
 
 
 ## Fitting detection functions in R
