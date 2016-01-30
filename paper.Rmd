@@ -89,9 +89,9 @@ Until now those wishing to use our \proglang{R} packages for straight forward di
 
 Like plot sampling, distance sampling assumes that the samplers have been located at random within the study area. Given that the samplers are located independently of the objects, for line transect studies we know that the "availability" of objects should be constant with increasing perpendicular distance. However, for point transect surveys the available survey area increases linearly with radial distance implying that the number of objects available for detection should also increase linerary. Figure \ref{fig:detectiondist} shows how these availability functions when combined with a detection function give rise to the observed distribution of recorded distances. 
 
-Given that we can assume these particular availability function there are a number of ways we can use either the estimated detection function or the composite function we fit to our data to estimate abundance. One simple idea begins with finding the area under the composite function we fit to our data out to a truncation distance w. If we then find the area under the availability function out to distance w then by dividing the former area by the latter gives us an estimate of the propoertion of objects seen within distance w of the transect. We can then scale up the number of objects we saw, first to give us an estimate of how many objects were within distance w of the transects and then again by the proportion of the study area we have sampled to give an estimate of abundance for the entire study area.
+Given that we can assume these particular availability function there are a number of ways we can use either the estimated detection function or the composite function we fit to our data to estimate abundance. One simple idea begins with finding the area under the composite function we fit to our data out to a truncation distance $w$. If we then find the area under the availability function out to distance $w$, then dividing the former area by the latter gives us an estimate of the propoertion of objects seen within distance $w$ of the transect. We can then scale up the number of objects we saw, first to give us an estimate of how many objects were within distance $w$ of the transects and then again by the proportion of the study area we have sampled to give an estimate of abundance for the entire study area.
 
-```{r detectdists, fig.height=5.5, fig.width=8, echo=FALSE, message=FALSE, fig.cap="Top panels show an example detection function (left), the expected avaiability of objects (middle) and the resulting destribution of detections (right) for line transects. Bottom panels show an example detection function (left), the expected avaiability of objects (middle) and the resulting destribution of detections (right) for point transects. \\label{fig:detectiondist}"}
+```{r detectdists, fig.height=5.5, fig.width=8, echo=FALSE, message=FALSE, fig.cap="Top panels show an example detection function (left), the expected avaiability of objects (middle) and the resulting destribution of detections (right) for line transects. Bottom panels show an example detection function (left), the expected avaiability of objects (middle) and the resulting destribution of detections (right) for point transects. The distributions in the right hand plots are obtained by multiplying the detection function by the availability function and are referred to in the text as the 'composite function'. \\label{fig:detectiondist}"}
 
 opar <- par(mfrow=c(2,3))
 #line and point transect examples
@@ -200,7 +200,7 @@ par(opar)
 
 \pkg{Distance} provides a selection of candidate functions to describe the probability of detection and estimates the parameters using maximum likelihood estimation. The probability of detecting an object may not only depend on how far it is from the obsever but also on other factors such as weather conditions, ground cover, cluster size etc. The \pkg{Distance} package also allows the incorporation of such covariates into the detection function allowing the detection function parameters to vary based on these covariates.
 
-Field methods are chosen to be suitable to species and habitat constraints [@buckland2015distance].
+Other important assumptions in conventional distance sampling are as follows: all objects exactly on the transect line or point are detected, objects are stationary, measurements are exact. Field methods must therefore be chosen carefully to satisfy these assumptions within the species and habitat constraints [@buckland2015distance].
 
 The rest of the paper has the following structure: we describe data formatting for \pkg{Distance}; candidate detection function models are described in terms of formulation and fitted examples in \proglang{R}. We then show how to perform model checking, goodness of fit and model selection. We go on to show how to estimate abundance, including stratified estimates of abundance. The final two sections of the article look at extensions (both in terms of methodology and software) and put the package in a broader context amongst other software packages used for estimating the abundance of biological populations. (LT: Do we mean software packages in general (e.g., Mark) or R packages?  Do we actually do this -- i.e., talk about how Distance fits in among all this, or is this now an appendix, and does it cover all methods or just distance-based methods.)
 
@@ -211,11 +211,11 @@ The rest of the paper has the following structure: we describe data formatting f
 
 (LT: A detection function is not a line; it is also scaled differently.  This needs editing.) Plotting a histogram of observed distances, we can crudely estimate the drop-off in detectability by eye if we trace a line that approximates the tops of the histogram bars: this is a detection function. \pkg{Distance} estimates the parameters for a fixed-form detection function using maximum likelihood estimation. We address possible models below.
 
-(LT: stranded one-sentence paragraph -- needs integrating.) -->
+(LT: stranded one-sentence paragraph -- needs integrating.) 
 
 
 
-(LT: Only got this far: will do more later...) 
+(LT: Only got this far: will do more later...) -->
 
 # Data
 
@@ -239,14 +239,14 @@ The point transect data set consists of 1485 observations of Amakihi (*Hemignath
 The two example data sets used here are distributed preformatted with \pkg{Distance} so readers can reproduce our analyses. Generally, data collected in the field will require some formatting for use with \pkg{Distance}. However, the package allows for a flexible format of data input ranging from very simple to complex dependent on the type of analysis you wish to perform:
 
 * In the simplest case, where the objective is to estimate a detection function, all that is needed is a vector of distances.
-* To include additional covariates into the detection function (see "Detection functions") we use a \code{data.frame}. The \code{data.frame} contains a column called \code{distance} (containing the observed distances) and additional named columns for covariates potentially useful in modelling detectability (for example \code{observer} or \code{seastate}). Some column names are reserved: \code{object} for an observation identifier (see "Extensions"), \code{size} for group or cluster size (see "Detection functions" and "Abundance and variance estimation"), \code{detected} for whether an observation was detected (see "Extensions") and the columns described in the next bullet.
-* To estimate abundance beyond the area covered by expended survey effort, additional information is required. This consists of information about transect and occasion the observation was made (the \code{Sample.Label}), a column named \code{Effort} which gives the effort associated with that sample (for lines their length and for points the number of times that point was visited), the stratum the sample was located in (the \code{Region.Label}, which may be from pre- or post-survey stratification, see "Estimating abundance and variance") and the stratum areas (\code{Area}). For transects which were surveyed but have no observations we enter \code{NA} in their \code{distance} column. We refer to this data format (where all information is contained in one table) as "flatfile" as it can be easily created in a single spreadsheet.
+* To include additional covariates into the detection function (see "Detection functions") a \code{data.frame} is required. The \code{data.frame} must contain a column named \code{distance} (containing the observed distances) and additional named columns for any covariates that may affect detectability (for example \code{observer} or \code{seastate}). The column name \code{size} is reserved for the cluster sizes for when the detection distances relate to observations of clusters rather than individuals. Additional reserved names include \code{object} and \code{detected}, these are not required for conventional distance sampling and should be avoided (see "Extensions" for an explanation of their use).
+* To estimate density or to estimate abundance beyond the sampled area, additional information is required. Additional columns should be included in the \code{data.frame} specifying: \code{Sample.Label}, the ID of the transect; \code{Effort}, transect effort (for lines their length and for points the number of times that point was visited); \code{Region.Label}, the strata containing the transect (which may be from pre- or post-survey stratification, see "Estimating abundance and variance"); \code{Area}, the area of the strata. For transects which were surveyed but have no observations must be included in the data set with \code{NA} for \code{distance} and any other covariates. We refer to this data format (where all information is contained in one table) as "flatfile" as it can be easily created in a single spreadsheet.
 
-As we will see in "Extensions", further information is also required when using more complex models.
+As we will see in "Extensions", further information is also required for fitting more complex models.
 
-It is also possible to use distances collected in intervals ("binned" or "grouped" data, as opposed to "exact" distances) to model the detection function. In this case a set of cutpoints for the bins must be provided rather than the \code{distance} column, these are specified as two columns \code{distbegin} and \code{distend}. More information on binned data is included in @Buckland:2001vm sections 4.5 and 7.4.1.2.
+It is also possible to use distances collected in intervals ("binned" or "grouped" data, as opposed to "exact" distances) to model the detection function. In this case the column \code{distance} is replaced by two columns \code{distbegin} and \code{distend} referring to the distance interval start and end cutpoints. More information on binned data is included in @Buckland:2001vm sections 4.5 and 7.4.1.2.
 
-The columns \code{distance}, \code{Area} and (in the case of line transects) \code{Effort} have associated units (though these are not explicitly included in a \pkg{Distance} analysis. For this reason, we recommended that these are converted to SI units before starting any analysis to ensure that resulting abundance and density estimates have sensible units.
+The columns \code{distance}, \code{Area} and (in the case of line transects) \code{Effort} have associated units (though these are not explicitly included in a \pkg{Distance} analysis. For this reason, we recommended that these are converted to SI units before starting any analysis to ensure that resulting abundance and density estimates have sensible units. _(LM: does this mean that the units for distance must be the same for effort, and if these units are km then the area should be in square km? If so might be useful to give an e.g.)_
 
 The minke whale data follows the "flatfile" format given in the last bullet point:
 ```{r load-data, echo=FALSE}
@@ -267,18 +267,18 @@ We will explore the consequences of including effort and stratum data during ana
 
 # Detection functions
 
-The detection function describes the relationship between observed distances and probability of detection. The detection function itself models the probability $\mathbb{P}(\text{object detected } \vert \text{ object at distance } y)$ and is usually denoted $g(y; \boldsymbol{\theta})$ where $y$ is distance (from a line or point) and $\boldsymbol{\theta}$ is a vector of parameters to be estimated. Our goal is to estimate an *average probability of detection* ($p$, average in the sense of an average over distance from $0$ to $w$), so we must integrate out distance ($y$) from the detection function:
+The detection function models the probability $\mathbb{P}(\text{object detected } \vert \text{ object at distance } y)$ and is usually denoted $g(y; \boldsymbol{\theta})$ where $y$ is distance (from a line or point) and $\boldsymbol{\theta}$ is a vector of parameters to be estimated. Our goal is to estimate an *average probability of detection* ($p$, average in the sense of an average over distance from $0$ to truncation distance $w$), so we must integrate out distance ($y$) from the detection function:
 $$
 p = \int_0^w \pi(y) g(y; \boldsymbol{\theta}) dy
 $$
 where $\pi(y)$ describes the distribution of objects with respect to the sampler; $\pi(x)=1/w$ for line transects and $\pi(r)=\frac{2r}{w^2}$ for point transects, taking into account the geometry of the sampler [@Buckland:2001vm, Chapter 3]. When considering a particular transect type we let $x$ denote a perpendicular distance from a line and $r$ denote radial distance from a point (rather than using $y$).
 
-It is crucial that the detection function accurately models detectability at small distances; we are less worried by its behaviour further away from 0. To ensure that the model is not overly influenced by distances far from zero, we truncate the distances beyond a given distance $w$ (known as the *truncation distance*). Including these larger distances in our analysis does not demonstrably improve the precision of abundance estimates [@Buckland:2001vm, sections 4.3 and 5.3].
+It is crucial that the detection function accurately models detectability at small distances; we are less worried by its behaviour further away from 0. To ensure that the model is not overly influenced by distances far from zero, we truncate the distances beyond a given distance $w$. Including these larger distances in our analysis does not demonstrably improve the precision of abundance estimates [@Buckland:2001vm, sections 4.3 and 5.3].
 
 Models for the detection function are expected to have the following properties [@buckland2015distance, Chapter 5]:
 
 * *Shoulder*: we expect observers to be able to see objects near them, not just those directly in front of them. For this reason, we expect the detection function to be flat near the line or point.
-* *Non-increasing*: we do not think that observers should be more likely to see distant objects than those nearer the transect. If this occurs, it usually indicates an issue with field procedure (that the distribution of objects with respect to the line, $\pi(y)$ is not what we expect), so we do not want the detection function to model this.
+* *Non-increasing*: we do not think that observers should be more likely to see distant objects than those nearer the transect. If this occurs, it usually indicates an issue with survey design or field procedures (for example that the distribution of objects with respect to the line, $\pi(y)$ is not what we expect), so we do not want the detection function to model this. _(LM: Hmm could be avilability but could also be detectability... either way it is bad news but don't want to give people the impression they should just chop these bumps off without thought do we? Ideally spot early in data collection and resolve)_
 * *Model robust*: models should be flexible enough to fit many different shapes.
 * *Pooling robust*: many factors can affect the probability of detection and it is not possible to measure all of these. We would like models to produce unbiased results without inclusion of these factors.
 * *Estimator efficiency*: we would like models to have low variances, given they satisfy the other properties above (which, if satisfied, would give low bias).
@@ -306,7 +306,7 @@ k(y) = \left\{
   1/w & \quad \text{uniform.}
 \end{array} \right.
 $$
-Possible modelling options for key and adjustments are given in Table \ref{tab:keyadj} and illustrated in Figure \ref{fig:hnhr} and \ref{fig:keyadj}. We select the number of adjustment terms ($K$) by AIC (further details in "Model checking and model selection").
+Possible modelling options for key and adjustments are given in Table \ref{tab:keyadj} and illustrated in Figures \ref{fig:hnhr} and \ref{fig:keyadj}. We select the number of adjustment terms ($K$) by AIC (further details in "Model checking and model selection").
 
 ```{r hn-hr-par-comp, fig.width=10, fig.height=5, fig.cap="Half-normal (top row) and hazard-rate (bottom row) detection functions without adjustments, varying scale ($\\sigma$) and (for hazard-rate) shape ($b$) parameters (values are given above the plots). On the top row from left to right, the study species becomes more detectable (higher probability of detection at larger distances). The bottom row shows the hazard-rate model's more pronounced shoulder.\\label{fig:hnhr}", echo=FALSE}
 par(mfrow=c(2,4), mar=c(3.5, 3, 2, 1) + 0.1)
@@ -361,7 +361,7 @@ $$
 
 A disadvantage of K+A models is that we must resort to constrained optimisation [via the \pkg{Rsolnp} package; @rsolnp-pkg] to ensure that the resulting detection function is monotonic non-increasing over its range.
 
-We do not always include adjustments (except in the case of the uniform key), in which case we refer to "key only" models (see the next section and "Model checking and model selection").
+It is not always necessary to include adjustments (except in the case of the uniform key) and in such cases we refer to these as "key only" models (see the next section and "Model checking and model selection").
 
 ```{r adjust-mix-comp, fig.width=10, fig.height=3, fig.cap="Possible (though not necessarily plausible) shapes for the detection function when adjustments are included for half-normal and hazard-rate models.\\label{fig:keyadj}", echo=FALSE}
 par(mfrow=c(1,4), mar=c(3.5, 3, 3, 1) + 0.1)
