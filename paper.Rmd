@@ -415,46 +415,53 @@ K+A models that include covariates and one or more adjustments cannot be guarant
 
 ## Fitting detection functions in R
 
-The workhorse of detection function fitting in \pkg{Distance} is the \code{ds} function. Here we show some of the possible formulations for the detection function we have seen above applied to the minke whale and amakihi data.
+Fitting a detection function in \pkg{Distance} is done using the \code{ds} function. Here we show some of the possible formulations for the detection function we have seen above applied to the minke whale and amakihi data.
 
 ### Minke whale
 
-We can fit a model to the minke whale data, setting the truncation at 1.5km and using the default options in \code{ds} very simply:
+First we fit a model to the minke whale data, setting the truncation at 1.5km and using the default options in \code{ds} very simply:
 ```{r minke-hn}
 minke_hn <- ds(minke, truncation=1.5)
 ```
-Note that \code{ds} will automatically select adjustment terms by AIC and show the selection steps.
+Note that \code{ds} will automatically select adjustment terms using minimum AIC and show the selection steps.
 
 Figure \ref{fig:minkeamakihi} (left panel) shows the result of calling \code{plot} on the resulting model object. We can also call \code{summary} on the model object to get summary information about the fitted model (we postpone this to the next section).
 
-We can specify the form of the detection function via the \code{key=} argument to \code{ds}. For example, a hazard rate model can be fitted as:
+A different form for the detection function can be specified via the \code{key=} argument to \code{ds}. For example, a hazard rate model can be fitted as:
 ```{r minke-hr-cos}
 minke_hrcos <- ds(minke, truncation=1.5, key="hr")
 ```
-\code{ds} fits a model with cosine adjustments (the default) but finds the AIC improvement to be insufficient to select the adjustment. 
+Here \code{ds} had also fitted a model with cosine adjustments (the default) but finds the AIC improvement to be insufficient to select the adjustment. 
 
 ### Amakihi
 
-By default \code{ds} assumes the data given to it has been collected as line transects, but we can switch to point transects using \code{transect="point"}. We can include covariates in the scale parameter via the \code{formula=~...} argument to \code{ds}. A hazard-rate model for the amakihi that includes observer as a covariate can be specified by [truncating sightings at 82.5m, given in @Marques:2007ey]:
+By default \code{ds} assumes the data given to it has been collected as line transects, but we can switch to point transects using the argument \code{transect="point"}. We can include covariates in the scale parameter via the \code{formula=~...} argument to \code{ds}. A hazard-rate model for the amakihi that includes observer as a covariate and a truncation distance of 82.5m [@Marques:2007ey] can be specified using :
 ```{r amakihi-hr-obs}
 amakihi_hr_obs <- ds(amakihi, truncation=82.5, transect="point",
                      key="hr", formula=~obs)
 ```
-Note that here \code{ds} warns us that we have not supplied enough information to estimate abundance, unlike with the minke whale data.
+Note that here, unlike with the minke whale data, \code{ds} warns us that we have only supplied enough information to estimate the detection function (not density or abundance).
 
-As with the minke whale model, we can plot the resulting model (Figure \ref{fig:minkeamakihi}, middle panel). Rather than detection functions, Figure \ref{fig:minkeamakihi} shows the probability density functions for the amakihi models. Probability density function plots give a better sense of fit of the model than the detection functions, as for point data we must rescale the histogram when plotting the detection function to take into account the geometry of the point sampler. The amakihi model included covariates, so the plot shows the detection function averaged over levels/values of the covariate. Points on the plot indicate probability of detection for each observation. For the `amakihi_hr_obs` model we see fairly clear levels of the observer covariate in the points. Looking at the right panel of Figure \ref{fig:minkeamakihi}, we can see this is less clear when adding minutes after sunrise as a covariate into the model:
+
+ _(LM: this next model was thrown in without much explanation, I have tried to add some intro to it... is this correct?)_
+ 
+While automatic AIC selection is performed on adjustment terms, model selection for covarariates must be performed manually. Here we introduce a second covariate model with both observer and minutes after sunrise explaining detectability. We will compare these models further in the following section.
+
 ```{r amakihi-hr-obs-mas, warning=FALSE}
 amakihi_hr_obs_mas <- ds(amakihi, truncation=82.5, transect="point",
                          key="hr", formula=~obs+mas)
 ```
 
+As with the minke whale model, we can plot the resulting models (Figure \ref{fig:minkeamakihi}, middle and right panels). However, for point transect studies, probability density function plots give a better sense of model fit than the detection function plots. This is because when plotting the detection function for point transect data, the histogram must be rescaled to account for the geometry of the point sampler (i.e. the increasing availability with distance). The amakihi models included covariates, so the plots show the detection function averaged over levels/values of the covariate. Points on the plot indicate probability of detection for each observation. For the `amakihi_hr_obs` model we see fairly clear levels of the observer covariate in the points. Looking at the right panel of Figure \ref{fig:minkeamakihi}, we can see this is less clear when adding minutes after sunrise as a covariate into the model.
 
+
+_(LM: I found the plots a bit confusing to start is it worth putting titles on them to remind the reader that these are from both datasets? I couldn't figure out how to make the text bigger if we want to do this. I have also clarified the text in the para above as it referred to Figure 6 generally at one point that I think is what threw me off a bit and the fact that the other model hadn't been introduced till after it'a plot was introduced.)_
 
 ```{r minke-amakihi-hn-plot, echo=FALSE, warning=FALSE, fig.width=9, fig.height=4, fig.cap="Left: fitted detection function overlayed on the histogram of observed distances for the minke whale data using half-normal model. Centre and right: plots of the probability density function for the amakihi models. Centre, hazard-rate with observer as a covariate; right, hazard-rate model with observer and minutes after sunrise as covariates. Points indicate probability of detection for a given observation (given that observations covariate values) and lines indicate the average detection function.\\label{fig:minkeamakihi}"}
 par(mfrow=c(1, 3))
-plot(minke_hn, showpoints=FALSE)
-plot(amakihi_hr_obs, pdf=TRUE, cex=0.7)
-plot(amakihi_hr_obs_mas, pdf=TRUE, cex=0.7)
+plot(minke_hn, showpoints=FALSE, main = "Minke~distance", cex = 2)
+plot(amakihi_hr_obs, pdf=TRUE, cex=0.7, main = "Amakihi~distance+observer")
+plot(amakihi_hr_obs_mas, pdf=TRUE, cex=0.7, main = "Amakihi~distance+observer+minutes")
 ```
 
 # Model checking and model selection
