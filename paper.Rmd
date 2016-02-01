@@ -513,11 +513,11 @@ kable(summarize_ds_models(amakihi_hn, amakihi_hr_obs, amakihi_hr_obs_mas),
 
 # Estimating abundance and variance
 
-Though fitting the detection function is the primary modelling step in distance sampling, we are really interested in estimating detectability, and from that abundance. We also wish to calculate our uncertainty for each abundance estimate. This section addresses these issues mathematically before showing how to estimate abundance and its variance in \proglang{R}.
+Though fitting the detection function is the primary modelling step in distance sampling, we are really interested in estimating detectability, and from that density or abundance. It is also important to calculate our uncertainty for these estimates. This section addresses these issues mathematically before showing how to estimate abundance and its variance in \proglang{R}.
 
 ## Abundance
 
-We wish to obtain the abundance in a study region, of which we have sampled a (representative) subset. To do this we first calculate the abundance in the area we have surveyed (the *covered area*) to obtain $\hat{N}_\text{C}$, we can then scale this up (based on the survey design) to the full study area by multiplying it by the ratio of covered area to study area. We discuss other methods for spatially explicit abundance estimation in "Extensions".
+We wish to obtain the abundance in a study region, of which we have sampled a (representative) subset. To do this we first calculate the abundance in the area we have surveyed (the *covered area*) to obtain $\hat{N}_\text{C}$, we can then scale this up to the full study area by multiplying it by the ratio of covered area to study area. We discuss other methods for spatially explicit abundance estimation in "Extensions".
 
 First, to estimate abundance in the covered area ($\hat{N}_\text{C}$), we use the estimates of detection probability (the $\{\hat{p}(\mathbf{z}_i); i=1,\ldots,n\}$, above) in a Horvitz-Thompson-like estimator:
 \begin{equation}
@@ -542,15 +542,15 @@ This can be a useful summary statistic, giving us an idea of how detectable our 
 
 We may wish to calculate abundance estimates for some sub-regions of the study region, we call these areas *strata*. For example, strata may be defined by habitat types or animal gender (or some combination) which may be of interest for biological or management reasons. To calculate estimates for a given stratification each observation must occur in a stratum which must be labelled with a \code{Region.Label} and have a corresponding \code{Area} (if we are using an animal characteristic like gender, we would have the areas be the same but if we were using say forested vs. wetland habitat the areas of those strata would be different). Finally, we must also know the stratum in which each observation occurs.
 
-As an example the minke whale data consists of two strata: \code{North} and \code{South} relating to a stratum further away and nearer the Antarctic ice edge, respectively. Figure \ref{fig:minke-strata} shows the two strata, along with observations and transect lines.
+As an example, the minke whale data contain two strata: \code{North} and \code{South} relating to strata further away from and nearer to the Antarctic ice edge, respectively. Figure \ref{fig:minke-strata} shows the two strata, along with observations and transect lines.
 
 
 ## Variance
 
-Here we take an intuitive approach to uncertainty estimation, for a full derivations consult @Marques:2003vb. Uncertainty in $\hat{N}$ comes from two sources:
+We take an intuitive approach to uncertainty estimation, for a full derivation consult @Marques:2003vb. Uncertainty in $\hat{N}$ comes from two sources:
 
-1. *Model parameter uncertainty*, from the estimation of the detection function parameters $\boldsymbol{\theta}$.
-2. *Sampling uncertainty*, from the distribution of objects along the transect lines or between visiting occasions for points.
+1. *Detection function*: Uncertainty in parameter ($\boldsymbol{\theta}$) estimation.
+2. *Encounter rate*: Sampling variability arising from differences in the rate of observations between transects.
 
 We can see this by looking at the Horvitz-Thompson-like estimation in (\ref{ht}) and consider the terms which are random. These are: the detectability $\hat{p}(\mathbf{z}_i)$ (and hence the parameters of the detection function it is derived from) and $n$, the number of observations. We assume that the observed group size ($s_i$) is recorded without error.
 
@@ -560,13 +560,13 @@ $$
 $$
 where the partial derivatives of $\hat{N}_\text{C}$ are evaluated at the MLE ($\hat{\theta}$) and $\mathbf{H}$ is the first partial Hessian (outer product of first derivatives of the log likelihood) for numerical stability [@Buckland:2001vm, p 62]. Note that although we calculate uncertainty in $\hat{N}_\text{C}$, we can trivially scale-up to variance of $\hat{N}$ (by noting that $\hat{N} = \frac{A}{a} \hat{N}_\text{C}$ and therefore $\widehat{\text{Var}}_\text{model}\left(\hat{N}\right) = \left( \frac{A}{a} \right)^2 \widehat{\text{Var}}_\text{model} \left(\hat{N}_\text{C} \right)$).
 
-Sampling uncertainty can be characterised by the *encounter rate*: the number of objects per unit transect (rather than just $n$). When covariates are not included in the detection function we can define the encounter rate as $n/L$ for line transects (where $L$ is the total line length) or $n/T$ for point transects (where $T$ is the total number of visits summed over all points). When covariates are included in the detection function, it is recommended that we substitute the $n$ in the encounter rate with the estimated abundance $\hat{N}_\text{C}$ as this will take into account the effects of the covariates [@Innes:2002ka].
+*Encounter rate* is the number of objects per unit transect (rather than just $n$). When covariates are not included in the detection function we can define the encounter rate as $n/L$ for line transects (where $L$ is the total line length) or $n/T$ for point transects (where $T$ is the total number of visits summed over all points). When covariates are included in the detection function, it is recommended that we substitute the $n$ in the encounter rate with the estimated abundance $\hat{N}_\text{C}$ as this will take into account the effects of the covariates [@Innes:2002ka].
 
 For line transects, by default, \pkg{Distance} uses a variation of the estimator "R2" from @Fewster:2009ku replacing number of observations per sample with the estimated abundance per sample [@Innes:2002ka; @Marques:2003vb]:
 $$
 \widehat{\text{Var}}_{\text{encounter},R2}\left( \hat{N}_\text{C}\right) = \frac{K}{L^2(K-1)} \sum_{k=1}^{K} l_k^2 \left( \frac{\hat{N_{\text{C}, k}}}{l_k} - \frac{\hat{N_\text{C}}}{L}\right)^2,
 $$
-where $l_k$ are the lengths of the $K$ transects (such that $L = \sum_{k=1}^K l_k$) and $\hat{N_{C,k}}$ is the abundance in the covered area for transect $k$. Whereas for points we use estimator "P3" from @Fewster:2009ku but again replacing $n$ by $\hat{N}_\text{C}$ in the encounter rate definition, we obtain the following estimator:
+where $l_k$ are the lengths of the $K$ transects (such that $L = \sum_{k=1}^K l_k$) and $\hat{N_{C,k}}$ is the abundance in the covered area for transect $k$. For point transects we use the estimator "P3" from @Fewster:2009ku but again replace $n$ by $\hat{N}_\text{C}$ in the encounter rate definition, to obtain the following estimator:
 $$
 \widehat{\text{Var}}_{\text{encounter},P3}\left( \hat{N}_\text{C}\right) = \frac{1}{T(K-1)} \sum_{k=1}^{K} t_k \left( \frac{\hat{N_{\text{C}, k}}}{t_k} - \frac{\hat{N_\text{C}}}{T}\right)^2,
 $$
@@ -591,7 +591,7 @@ This prints a rather large amount of information: first the detection function s
 2. \code{Abundance}: giving estimates, standard errors, coefficients of variation, lower and upper confidence intervals and finally the degrees of freedom for each stratum's abundance estimate, then a total for the whole study area.
 3. \code{Density}: lists the same statistics as \code{Abundance} but for a density estimate.
 
-The summary can be more concisely expressed by extracting information from the summary object. This object is a \code{list} of \code{data.frames}, so we can again use the \code{kable} function from \pkg{knitr} to create summary tables of abundance estimates and measures of precision, such as Table \ref{minke-abund}. We prepare the \code{data.frame} as follows before using \code{kable}:
+The summary can be more concisely expressed by extracting information from the summary object. This object is a \code{list} of \code{data.frames}, so we can use the \code{kable} function from \pkg{knitr} to create summary tables of abundance estimates and measures of precision, such as Table \ref{minke-abund}. We prepare the \code{data.frame} as follows before using \code{kable}:
 
 ```{r minke-abundance-table-code, eval=FALSE}
 minke_table <- summary(minke_hn)$dht$individuals$N
@@ -609,6 +609,7 @@ kable(minke_table, digits=3, format="latex", booktabs=TRUE,
       row.names=FALSE, escape=FALSE,caption="Summary of abundance estimation for the half-normal model for the minke whale data.\\label{minke-abund}")
 ```
 
+<!-- LM The location of this Table needs changing it appears in the middle of the output. -->
 
 # Extensions
 
@@ -616,7 +617,7 @@ The features of \pkg{Distance} are deliberately limited to provide a simplified 
 
 We noted at the start of the article that \pkg{Distance} is a simpler wrapper around the package \pkg{mrds}. Additional features are available in \pkg{mrds} including the ability to model data where the assumption that detection is certain at zero distance from the line or point is violated, using mark-recapture type methods for double observer surveys [see @Burt:2014gu for an introduction].
 
-The abundance estimates calculated here are based on the assumption that within a given stratum density is uniform. We may extend this approach to many strata, making the area of each very small to account for small-scale variation in space. A more rigorous approach is to build a spatial model incorporating spatially-referenced environmental data (for example derived from GIS products). \pkg{Distance} interfaces with one such package to perform this type of analysis: \pkg{dsm} [@dsm-pkg]. So-called "density surface modelling" uses the generalized additive model framework [e.g. @Wood:2006vg] to build models of abundance (adjusting counts for imperfect detectability) as a function of environmental covariates, as part of a two stage model [@Hedley:2004et; @Miller:2013fq].
+The abundance estimates calculated here are based on the assumption that within a given stratum density is uniform _(LM: previous sentence incorrect)_. We may extend this approach to many strata, making the area of each very small to account for small-scale variation in space. A more rigorous approach is to build a spatial model incorporating spatially-referenced environmental data (for example derived from GIS products). \pkg{Distance} interfaces with one such package to perform this type of analysis: \pkg{dsm} [@dsm-pkg]. So-called "density surface modelling" uses the generalized additive model framework [e.g. @Wood:2006vg] to build models of abundance (adjusting counts for imperfect detectability) as a function of environmental covariates, as part of a two stage model [@Hedley:2004et; @Miller:2013fq].
 
 Further distance sampling complexities such as uncertainty in measured covariates (e.g. cluster size) and model uncertainty (when two models have similar fit but substantially different estimates) can be incorporated using the multi-analysis distance sampling package \pkg{mads} [@mads-pkg]. In addition, \pkg{mads} can also incorporate sightings for which species identification could not be achieved. This is done by estimating the abundance of these 'unidentified' sightings and pro-rating them as described in [@Gerrodette:2005].
 
