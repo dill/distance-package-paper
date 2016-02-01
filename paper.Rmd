@@ -466,7 +466,7 @@ plot(amakihi_hr_obs_mas, pdf=TRUE, cex=0.7, main = "Amakihi~distance+observer+mi
 
 # Model checking and model selection
 
-As with models fitted using \code{lm} or \code{glm} in \proglang{R}, we can use \code{summary} to give useful information about our fitted model. For our hazard-rate model for the amakihi, with observer as a covariate:
+As with models fitted using \code{lm} or \code{glm} in \proglang{R}, we can use \code{summary} to give useful information about our fitted model. For our hazard-rate model of the amakihi data, with observer as a covariate:
 ```{r amakihi-summary}
 summary(amakihi_hr_obs)
 ```
@@ -475,9 +475,9 @@ This summary information includes details of the data and model specification, a
 
 ## Goodness of fit
 
-To judge goodness of fit for detection functions when exact distances are used, we want to compare the cumulative distribution function (CDF) and empirical distribution function (EDF) for the detection function via a quantile-quantile plot (Q-Q plot). The CDF evaluates the probability of observing an object at a distance less than or equal to some value. The EDF gives the proportion of observations for which the CDF is less than or equal to that of a given distance. This can be interpreted as assessing whether the number of observations up to a given distance is in line with what the model says they should be (where the "given values" are the observed distances). As usual for Q-Q plots, "good" models will have values close to the line $y=x$, poor models will show greater deviations from that line.
+To judge how well a detection functions fits the data when we have exact distances, we use a quantile-quantile plot (Q-Q plot). Here the Q-Q plot compares the the cumulative distribution function (CDF) of the fitted detection function to the distribution of the data (empirical distribution function or EDF). The Q-Q plots in \pkg{Distance} plot a point for every observation. The EDF is is the proportion of points that have been observed at a distance equal to or less than the distance of that observation. The CFD is calculated from the fitted detection function as the probability of observing an object at a distance less than or equal to that of the given observation. This can be interpreted as assessing whether the number of observations up to a given distance is in line with what the model says they should be. As usual for Q-Q plots, "good" models will have values close to the line $y=x$, poor models will show greater deviations from that line.
 
-We can inspect Q-Q plots visually, though this is prone to subjective judgments. Instead we can quantify the Q-Q plot's information using a Kolmogorov-Smirnov or Cramer-von Mises test [@Burnham:2004vd]. Both test whether points from the EDF and CDF are from the same distribution. The Kolmogorov-Smirnov uses the test statistic of the largest difference between a point on the Q-Q plot and the line $y=x$, whereas the Cramer-von Mises test uses the sum of all the differences. As it takes into account more information and is therefore more powerful, the Cramer-von Mises is generally preferred. A significant result from either test indicates that the EDF and CDF do not come from the same distribution (and therefore the model is does not fit the data well).
+Q-Q plots can be inspected visually, though this is prone to subjective judgments. Therefore, we also quantify the Q-Q plot's information using a Kolmogorov-Smirnov or Cramer-von Mises test [@Burnham:2004vd]. Both test whether points from the EDF and CDF are from the same distribution. The Kolmogorov-Smirnov uses the test statistic of the largest difference between a point on the Q-Q plot and the line $y=x$, whereas the Cramer-von Mises test uses the sum of all the differences. As it takes into account more information and is therefore more powerful, the Cramer-von Mises is generally preferred. A significant result (usually $P < 0.05$) from either test gives evidence against the null hypothesis (that the data arose from the fitted model), suggesting that the model does not fit the data well. 
 
 We can generate a Q-Q plot and test results using the \code{gof_ds} function. Figure \ref{amakihi-qq} shows the goodness of fit tests for two models for the amakihi data. We first fit a half-normal model without covariates or adjustments (setting \code{adjustment=NULL} will force \code{ds} to fit a model with no adjustments):
 ```{r amakihi-gof, fig.keep="none"}
@@ -485,7 +485,7 @@ amakihi_hn <- ds(amakihi, truncation=82.5, transect="point", key="hn", adjustmen
 gof_ds(amakihi_hn)
 gof_ds(amakihi_hr_obs_mas)
 ```
-So we can therefore conclude that the half-normal model does not pass our goodness of fit tests and should be discarded. The corresponding Q-Q plots are shown in Figure \ref{amakihi-qq}, comparing the half-normal model with the hazard-rate model with observer and minutes after sunrise included.
+We can conclude that the half-normal model does not pass our goodness of fit tests and should be discarded. Both hazard-rate models (output only shown for hazard-rate model with observer and minutes after sunrise) had non-significant goodness of fit test statistics and are both therefore deemed plausible models. The corresponding Q-Q plots are shown in Figure \ref{amakihi-qq}, comparing the half-normal model with the hazard-rate model with observer and minutes after sunrise included.
 
 ```{r, amakihi-qq-comp, fig.width=6, fig.height=3, fig.cap="Comparison of quantile-quantile plots for a half-normal model (no adjustments, no covariates; left) and hazard-rate model with observer and minutes after sunrise (right) for the amakihi data.\\label{amakihi-qq}", echo=FALSE, results="hide"}
 par(mfrow=c(1,2))
@@ -495,7 +495,9 @@ gof_ds(amakihi_hr_obs_mas, asp=1, cex=0.3)
 
 ## Model selection
 
-Once we have a set of models which fit well, we can use Akaike's Information Criterion (AIC) to select between models. \pkg{Distance} includes a function to create table of summary information for fitted models, making it easy to get an overview of a large number of models. The \code{summarize_ds_models} function takes models as input and can be especially useful when paired with \pkg{knitr}'s \code{kable} function to create summary tables for publication [@knitr-pkg]. An example of this output is shown in Table \ref{tab:amakihi} and was generated by the following call to \code{summarize_ds_models}:
+Once we have a set of plausible models, we can use Akaike's Information Criterion (AIC) to select between models. \pkg{Distance} includes a function to create table of summary information for fitted models, making it easy to get an overview of a large number of models. The \code{summarize_ds_models} function takes models as input and can be especially useful when paired with \pkg{knitr}'s \code{kable} function to create summary tables for publication [@knitr-pkg]. An example of this output is shown in Table \ref{tab:amakihi} and was generated by the following call to \code{summarize_ds_models}:
+
+_(LM: hmm we say that the hn model should be discarded based on fit but it is then included in the table... is this confusing? There is also no guidance here on model selection... although the AIC is smallest for amakihi.hr.obs.mas, some would argue that a difference of less than 2 does not really justify the inclusion of the additional covariate. Are we simply saying minimum AIC wins (if so this is not clear)? Should we point them at further discussion on the topic?)_
 ```{r summary-table-null, eval=FALSE}
 summarize_ds_models(amakihi_hn, amakihi_hr_obs, amakihi_hr_obs_mas)
 ```
