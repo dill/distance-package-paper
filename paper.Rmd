@@ -627,16 +627,16 @@ Distance for Windows has many users (over 45,000 downloads since 2002) and they 
 
 # Conclusion
 
-We have given an introduction as to how to perform a distance sampling analysis in \proglang{R}. We have covered the possible models for detectability, model checking and selection and finally abundance and variance estimation.
+We have given an introduction as to how to perform a distance sampling analysis in \proglang{R}. We have covered the possible models for detectability, model checking and selection and finally abundance and variance estimation. 
 
-In combination with tools such as \pkg{knitr} and \pkg{rmarkdown} [@rmarkdown-pkg], the helper functions in \pkg{Distance} provide a useful set of tools to perform reproducible analyses of wildlife abundance for both managers and ecologists. We hope that this paper provides useful examples for those wishing to pursue this. More information on distance sampling can be found at \url{http://distancesampling.org} and a mailing list is maintained at \url{https://groups.google.com/forum/#!forum/distance-sampling}.
+In combination with tools such as \pkg{knitr} and \pkg{rmarkdown} [@rmarkdown-pkg], the helper functions in \pkg{Distance} provide a useful set of tools to perform reproducible analyses of wildlife abundance for both managers and ecologists. In addition, users should remember the other basic functions in \proglang{R} such as \code{hist} that enable straight forward exploratory data analysis. We hope that this paper provides useful examples for those wishing to pursue distance sampling in \proglang{R}. More information on distance sampling can be found at \url{http://distancesampling.org} and a mailing list is maintained at \url{https://groups.google.com/forum/#!forum/distance-sampling}.
 
-We note that there are other packages available for performing distance sampling analyses in \proglang{R} but believe that \pkg{Distance} is the most flexible and feature-complete. Appendix A gives a feature comparison between \pkg{Distance} and other \proglang{R} packages for analysis of distance sampling data.
+We note that there are other packages available for performing distance sampling analyses in \proglang{R} but believe that \pkg{Distance} is the most flexible and feature-complete, and provides pathways to a range of more complicated analyses. Appendix A gives a feature comparison between \pkg{Distance} and other \proglang{R} packages for analysis of distance sampling data.
 
 
 # Acknowledgements
 
-The authors would like to thank the many users of \pkg{Distance}, \pkg{mrds} and DISTANCE who have contributed bug reports and suggestions for improvements over the years. We would particularly like to thank Steve Buckland, David Borchers, Tiago Marques, Jon Bishop and Lorenzo Milazzo for their contributions.
+The authors would like to thank the many users of \pkg{Distance}, \pkg{mrds} and Distance for Windows who have contributed bug reports and suggestions for improvements over the years. We would particularly like to thank Steve Buckland, David Borchers, Tiago Marques, Jon Bishop and Lorenzo Milazzo for their contributions.
 
 
 # Bibliography
