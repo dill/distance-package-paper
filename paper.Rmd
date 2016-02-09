@@ -87,7 +87,7 @@ Until now those wishing to use our \proglang{R} packages for straight forward di
 
 ## Distance sampling 
 
-The distribution of the observed distances is a product of detectability (sometimes referred to as "perception bias", @Marsh:1989ho) and the distribution of the animals (observed or unobserved) with respect to the line or point. We hope that our survey design will ensure that we can assume a distribution for the animals.
+The distribution of the observed distances is a product of detectability [sometimes referred to as "perception bias"; @Marsh:1989ho] and the distribution of the animals (observed or unobserved) with respect to the line or point. Our survey design allow us to assume a distribution for the animals with respect to the sampler.
 
 Given that the lines or points are located independently of the objects, for line transect studies we assume that objects are uniformly distributed with respect to the line (i.e. the number of animals available for detection is constant). For point transect surveys the survey area increases linearly with radial distance, implying a triangular distribution with respect to the point. Figure \ref{fig:detectiondist} shows how these distributions, when combined with a detection function, give rise to the observed distribution of recorded distances. 
 
@@ -117,7 +117,7 @@ plot(x, point.observed, xlab = "Radial distance (m)", ylab= "", type = "l", ylim
 
 Figure \ref{fig:pointslines} shows simulated sampling of a population of 500 objects using line and point transects and their corresponding histograms of observed detection distances. Note that for the purposes of distance sampling an object may either refer to an individual in a population or a cluster of individuals.  
 
-```{r points-and-lines, fig.height=6, fig.width=7, echo=FALSE, message=FALSE, fig.cap="Left side plots show an example of a survey of an area containing a population of 500 objects; blue lines (top plot) and triangles (bottom plot) indicate sampler placement, red dots indicate detected individuals and grey dots give the locations of unobserved individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).\\label{fig:pointslines}"}
+```{r points-and-lines, fig.height=6, fig.width=7, echo=FALSE, message=FALSE, fig.cap="Left side plots show an example of a survey of an area containing a population of 500 objects; blue dashed lines (top plot) and triangles (bottom plot) indicate sampler placement, red dots indicate detected individuals and grey dots give the locations of unobserved individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).\\label{fig:pointslines}"}
 opar <- par(mfrow=c(2,2))
 # line and point transect examples
 # top row points/samplers in space
