@@ -207,12 +207,7 @@ We introduce two example analyses performed in \pkg{Distance}: one line transect
 
 ### Minke whales
 
-The line transect data have been simulated from models fitted to Antarctic minke whale (*Balaenoptera bonaerensis*) data. These data were collected as part of the International Whaling Commission's International Decade of Cetacean Research Southern Ocean Whale and Ecosystem Research (IWC IDCR-SOWER) programme 1992-1993 austral summer surveys [@Branch:2001ua]. This data set consists of 99 observations that are stratified based on location (near or distant from ice edge) and effort data (transect lengths). The survey is shown in Figure \ref{fig:minke-strata}.
-
-\begin{figure}
-\includegraphics{minke-strata}
-\caption{Strata used for the minke whale data adapted from Hedley and Buckland (2004). Points show the (simulated) locations of observations along transect lines. The stepped line shows the boundary between North and South strata. Further details on the survey are available in Branch and Butterworth (2001) (simulated data is based on ``1992/93 Area III'' therein).\label{fig:minke-strata}}
-\end{figure}
+The line transect data have been simulated from models fitted to Antarctic minke whale (*Balaenoptera bonaerensis*) data. These data were collected as part of the International Whaling Commission's International Decade of Cetacean Research Southern Ocean Whale and Ecosystem Research (IWC IDCR-SOWER) programme 1992-1993 austral summer surveys. These data consist of 99 observations that are stratified based on location (near or distant from ice edge) and effort data (transect lengths). Further details on the survey are available in @Branch:2001ua (simulated data is based on ``1992/93 Area III'' therein).
 
 ### Amakihi
 
@@ -531,8 +526,7 @@ This can be a useful summary statistic, giving us an idea of how detectable our 
 
 We may wish to calculate abundance estimates for some sub-regions of the study region, we call these areas *strata*. Stratification can be used to increase the precision of estimates if we know *a priori* that density varies between different parts of the study area. For example, strata may be defined by habitat types or animal sex (or some combination) which may be of interest for biological or management reasons. To calculate estimates for a given stratification each observation must occur in a stratum which must be labelled with a \code{Region.Label} and have a corresponding \code{Area} (if we are using an animal characteristic like sex, we would have the areas be the same but if we were using say forested vs. wetland habitat the areas of those strata would be different). Finally, we must also know the stratum in which each observation occurs.
 
-
-As an example, the minke whale data contain two strata: \code{North} and \code{South} relating to strata further away from and nearer to the Antarctic ice edge, respectively. Figure \ref{fig:minke-strata} shows the two strata, along with observations and transect lines.
+As an example, the minke whale data contain two strata: \code{North} and \code{South} relating to strata further away from and nearer to the Antarctic ice edge, respectively.
 
 
 ## Variance
