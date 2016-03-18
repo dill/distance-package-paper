@@ -121,7 +121,7 @@ opar <- par(mfrow=c(2,2))
 # bottom row histograms
 
 # generate some animals to sample
-set.seed(131) # same results every time
+set.seed(15) # same results every time
 library("mgcv") # for inSide
 
 # generate population locations
@@ -137,10 +137,10 @@ polygon(x=c(0,0,1,1,0), y=c(0,1,1,0,0))
 # in this case we don't randomise the offset of the grid
 lt <- list(x=c(-0.0125,-0.0125,0.0125,0.0125,-0.0125), y=c(0,1,1,0,0))
 # set sigma
-sigma <- 0.01
+sigma <- 0.035
 # storage for detected distances
 detected_distances <- c()
-for(i in 1:5){
+for(i in 1:6){
   # calculate next strip location
   lt$x <- lt$x+0.15
   # plot the line transect
@@ -149,6 +149,7 @@ for(i in 1:5){
   distances <- abs(lt$x - x)
   # randomly decide which were detected
   detected <- exp(-distances^2/(2*sigma^2)) > runif(length(distances))
+#  detected <- (1-exp(-(distances/sigma)^(-1.2))) > runif(length(distances))
   # plot those objects detected
   points(x[detected], y[detected], pch=19, cex=0.6, col="red")
   # collect the distances to detected objects
