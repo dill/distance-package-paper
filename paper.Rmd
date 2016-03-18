@@ -101,19 +101,27 @@ set.cex = 1
 set.cex.lab = 1.2
 set.cex.main = 2
 #Line transect example
-plot(x, y, xlab = "Perpendicular distance", ylab = "Probability of detection", type = "l", ylim = c(0,1.1), cex = set.cex, cex.lab = set.cex.lab)
-line.availability <- rep(0.002,100)
-plot(x, line.availability, xlab = "Perpendicular distance", ylab = "pdf of object distances", type = "l", ylim = c(0,0.0022), xlim = c(0,500), cex = set.cex, cex.lab = set.cex.lab, main = "Line Transect", cex.main = set.cex.main)
-plot(x,y.scaled, xlab = "Perpendicular distance", ylab= "pdf of observed distances", type = "l", ylim = c(0,0.0044), cex = set.cex, cex.lab = set.cex.lab)
+plot(x, y, xlab = "Perpendicular distance", ylab = "Probability of detection", type = "l", ylim = c(0,1.1), cex = set.cex, cex.lab = set.cex.lab, axes=FALSE)
+axis(2, at=c(0,1/2,1)); axis(1); box()
+
+w <- 1/500
+line.availability <- rep(w,100)
+plot(x, line.availability, xlab = "Perpendicular distance", ylab = "pdf of object distances", type = "l", ylim = c(0,w), xlim = c(0,500), cex = set.cex, cex.lab = set.cex.lab, main = "Line Transect", cex.main = set.cex.main, axes=FALSE)
+axis(2, at=c(0,w/2,w)); axis(1); box()
+
+plot(x,y.scaled, xlab = "Perpendicular distance", ylab= "pdf of observed distances", type = "l", ylim = c(0,0.0044), cex = set.cex, cex.lab = set.cex.lab, axes=FALSE)
+axis(2, at=round(c(0,median(y.scaled),max(y.scaled)),3)); axis(1); box()
 
 #Point Transect example
-plot(x, y, xlab = "Radial distance", ylab = "Probability of detection", type = "l", ylim = c(0,1.1), cex = set.cex, cex.lab = set.cex.lab)
+plot(x, y, xlab = "Radial distance", ylab = "Probability of detection", type = "l", ylim = c(0,1.1), cex = set.cex, cex.lab = set.cex.lab, axes=FALSE)
+axis(2, at=c(0,1/2,1)); axis(1); box()
 
 point.area <- function(x) 2*pi*x
 
 point.availability <- 2*pi*x/integrate(point.area, 0, 500)$value
 
-plot(x, point.availability, xlab = "Radial distance", ylab = "pdf of object distances", type = "l", ylim = c(0,0.0044), xlim = c(0,500), cex = set.cex, cex.lab = set.cex.lab, main = "Point Transect", cex.main = set.cex.main)
+plot(x, point.availability, xlab = "Radial distance", ylab = "pdf of object distances", type = "l", ylim = c(0,2*w), xlim = c(0,500), cex = set.cex, cex.lab = set.cex.lab, main = "Point Transect", cex.main = set.cex.main, axes=FALSE)
+axis(2, at=c(0,w,2*w)); axis(1); box()
 
 point.observed.shape <- function(x, sigma) 2*pi*x*hn.detect(x, sigma)
 
@@ -121,8 +129,8 @@ pdf.point.observed <- function(x, sigma) point.observed.shape(x, sigma = sigma)/
 
 
 pdf.observed <- pdf.point.observed(x, sigma = 200)
-
-plot(x, pdf.observed, xlab = "Radial distance", ylab= "pdf of observed distances", type = "l", ylim = c(0,0.00345), cex = set.cex, cex.lab = set.cex.lab)
+plot(x, pdf.observed, xlab = "Radial distance", ylab= "pdf of observed distances", type = "l", ylim = c(0,0.00345), cex = set.cex, cex.lab = set.cex.lab, axes=FALSE)
+axis(2, at=round(c(0,max(pdf.observed)/2,max(pdf.observed)),4)); axis(1); box()
 ```
 
 Figure \ref{fig:pointslines} shows simulated sampling of a population of 500 objects using line and point transects and their corresponding histograms of observed detection distances. Note that for the purposes of distance sampling an object may either refer to an individual in a population or a cluster of individuals.  
