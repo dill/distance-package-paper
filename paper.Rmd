@@ -104,13 +104,13 @@ set.cex  = 1
 set.cex.lab = 1.2
 set.cex.main = 2
 #Line transect example
-plot(x, y, xlab = "Perpendicular distance", ylab = "Probability of detection", type = "l", ylim = c(0,1.1), xaxp = c(0,1,5), cex = set.cex, cex.lab = set.cex.lab)
+plot(x, y, xlab = "Perpendicular distance", ylab = "Probability of detection", type = "l", ylim = c(0,1.1), cex = set.cex, cex.lab = set.cex.lab)
 line.availability <- rep(1,100)
 plot(x, line.availability, xlab = "Perpendicular distance", ylab = "pdf of object distances", type = "l", ylim = c(0,1.1), xlim = c(0,500), yaxt = "n", cex = set.cex, cex.lab = set.cex.lab, main = "Line Transect", cex.main = set.cex.main)
 plot(x,y, xlab = "Perpendicular distance", ylab= "pdf of observed distances", type = "l", ylim = c(0,1.1), yaxt = "n", cex = set.cex, cex.lab = set.cex.lab)
 
 #Point Transect example
-plot(x, y, xlab = "Radial distance", ylab = "Probability of detection", type = "l", ylim = c(0,1.1), xaxp = c(0,1,5), cex = set.cex, cex.lab = set.cex.lab)
+plot(x, y, xlab = "Radial distance", ylab = "Probability of detection", type = "l", ylim = c(0,1.1), cex = set.cex, cex.lab = set.cex.lab)
 point.availability <- 2*pi*x
 plot(x, point.availability, xlab = "Radial distance", ylab = "pdf of object distances", type = "l", ylim = c(0,3300), xlim = c(0,500), yaxt = "n", cex = set.cex, cex.lab = set.cex.lab, main = "Point Transect", cex.main = set.cex.main)
 point.observed <- y*point.availability
