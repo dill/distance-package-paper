@@ -91,27 +91,30 @@ The distribution of the observed distances is a product of detectability [someti
 
 Given that the lines or points are located independently of the objects, for line transect studies we assume that objects are uniformly distributed with respect to the line (i.e. the number of animals available for detection is constant). For point transect surveys the survey area increases linearly with radial distance, implying a triangular distribution with respect to the point. Figure \ref{fig:detectiondist} shows how these distributions, when combined with a detection function, give rise to the observed distribution of recorded distances. 
 
-```{r detectdists, fig.height=5.5, fig.width=8, echo=FALSE, message=FALSE, fig.cap="Top panels show an example detection function (left), the expected availability of objects (middle) and the resulting distribution of detections (right) for line transects. Bottom panels show an example detection function (left), the expected availability of objects (middle) and the resulting distribution of detections (right) for point transects. The distributions in the right hand plots are obtained by multiplying the detection function by the availability function and are referred to in the text as the `composite function'. \\label{fig:detectiondist}"}
+```{r detectdists, fig.height=5.5, fig.width=9, echo=FALSE, message=FALSE, fig.cap="Top panels show an example detection function (left), the pdf of object distances (middle) and the resulting pdf of detection distances (right) for line transects. Bottom panels show an example detection function (left), the pdf of object distances (middle) and the resulting pdf of detection distances (right) for point transects. The pdf of observed detection distances in the right hand plots are obtained by multiplying the detection function by the pdf of object distances. \\label{fig:detectiondist}"}
 
-opar <- par(mfrow=c(2,3))
+par(mfrow=c(2,3))
 #line and point transect examples
 
 x <- seq(0,500, length = 100)
 y <- exp(-((x^2)/(2*(200^2))))
 
 
+set.cex  = 1
+set.cex.lab = 1.2
+set.cex.main = 2
 #Line transect example
-plot(x, y, xlab = "Perpendicular distance (m)", ylab = "Probability of Detection", type = "l", ylim = c(0,1.1), main = "Probability of Detection", xaxp = c(0,1,5))
+plot(x, y, xlab = "Perpendicular distance", ylab = "Probability of detection", type = "l", ylim = c(0,1.1), xaxp = c(0,1,5), cex = set.cex, cex.lab = set.cex.lab)
 line.availability <- rep(1,100)
-plot(x, line.availability, xlab = "Perpendicular distance (m)", ylab = "Availability", type = "l", ylim = c(0,1.1), xlim = c(0,500), yaxt = "n", main = "Expected Availability")
-plot(x,y, xlab = "Perpendicular distance (m)", ylab= "", type = "l", ylim = c(0,1.1), yaxt = "n", main = "Observed Distribution")
+plot(x, line.availability, xlab = "Perpendicular distance", ylab = "pdf of object distances", type = "l", ylim = c(0,1.1), xlim = c(0,500), yaxt = "n", cex = set.cex, cex.lab = set.cex.lab, main = "Line Transect", cex.main = set.cex.main)
+plot(x,y, xlab = "Perpendicular distance", ylab= "pdf of observed distances", type = "l", ylim = c(0,1.1), yaxt = "n", cex = set.cex, cex.lab = set.cex.lab)
 
 #Point Transect example
-plot(x, y, xlab = "Radial distance (m)", ylab = "Probability of Detection", type = "l", ylim = c(0,1.1), main = "Probability of Detection", xaxp = c(0,1,5))
+plot(x, y, xlab = "Radial distance", ylab = "Probability of detection", type = "l", ylim = c(0,1.1), xaxp = c(0,1,5), cex = set.cex, cex.lab = set.cex.lab)
 point.availability <- 2*pi*x
-plot(x, point.availability, xlab = "Radial distance (m)", ylab = "Availability", type = "l", ylim = c(0,3300), xlim = c(0,500), yaxt = "n", main = "Expected Availability")
+plot(x, point.availability, xlab = "Radial distance", ylab = "pdf of object distances", type = "l", ylim = c(0,3300), xlim = c(0,500), yaxt = "n", cex = set.cex, cex.lab = set.cex.lab, main = "Point Transect", cex.main = set.cex.main)
 point.observed <- y*point.availability
-plot(x, point.observed, xlab = "Radial distance (m)", ylab= "", type = "l", ylim = c(0,800), yaxt = "n", main = "Observed Distribution")
+plot(x, point.observed, xlab = "Radial distance", ylab= "pdf of observed distances", type = "l", ylim = c(0,800), yaxt = "n", cex = set.cex, cex.lab = set.cex.lab)
 
 ```
 
