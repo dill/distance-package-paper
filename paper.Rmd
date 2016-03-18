@@ -192,7 +192,7 @@ hist(detected_distances, main="", xlab="Observed radial distances")
 par(opar)
 ```
 
-Good survey design is essential to produce reliable density and abundance estimates from distance sampling data. Survey design is beyond the scope of this article but we refer readers to @Buckland:2001vm [Chapter 7] and @buckland2015distance [Chapter 2] for introductory information; @Buckland:2004ts [Chapter 7] contains information on automated survey design using geographical information systems (GIS); @Thomas:2007wz gives an example of designing a distance sampling survey in a complex region.
+Good survey design is essential to produce reliable density and abundance estimates from distance sampling data. Survey design is beyond the scope of this article but we refer readers to @Buckland:2001vm [Chapter 7] and @buckland2015distance [Chapter 2] for introductory information; @Buckland:2004ts [Chapter 7] contains information on automated survey design using geographical information systems (GIS); @Thomas:2007wz gives an example of designing a distance sampling survey in a complex region. We also note that Distance for Windows includes a GIS survey design tool [@Thomas:2010cf].
 
 \pkg{Distance} provides a selection of candidate functions to describe the probability of detection and estimates the associated parameters using maximum likelihood estimation. The probability of detecting an object may not only depend on how far it is from the obsever but also on other factors such as weather conditions, ground cover, cluster size etc. The \pkg{Distance} package also allows the incorporation of such covariates into the detection function allowing the detection function scale parameter to vary based on these covariates.
 
