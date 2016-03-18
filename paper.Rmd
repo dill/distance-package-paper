@@ -594,6 +594,8 @@ kable(minke_table, digits=3, format="latex", booktabs=TRUE,
 
 # Extensions
 
+The examples of applications for which distance sampling has been used is large.  Objects being detected need not be animals; plants [@Buckland:2007kl], beer cans [@Otto:1990gs], elephant dung [@NchPlu01] and bricks on a lake bottom [@Ber90] have been subjects of distance sampling investigations. The method of detection need not be visual sightings. Detections of objects can be through auditory as well as visual means [@Marques2013b]. Songs of birds [@Buckland2006] and whale vocalisations [@BorSub1] are just two examples. Blows made by whales are examples of processes that can be modelled using distance sampling. Songs and blows are indirect sampling methods producing estimates of cue density. Cue densities can be converted to animal densities with additional data needed to estimate the rate at which cues are produced and the rate at which they disappear. These are but a few examples of the applications to which distance sampling has been applied. 
+
 The features of \pkg{Distance} are deliberately limited to provide a simplified interface for users. For more complex analyses of distance sampling data, we provide additional packages for modelling in \proglang{R}.
 
 We noted at the start of the article that \pkg{Distance} is a simple-to-use wrapper around the package \pkg{mrds}. Additional features available in \pkg{mrds} include  models that relax the assumption that detection is certain at zero distance from the transect (by including data from additional observers). This is done using mark-recapture type methods which require additional survey methodology, known as double observer surveys [see @Burt:2014gu for an introduction].
