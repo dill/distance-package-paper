@@ -106,7 +106,7 @@ axis(2, at=c(0,1/2,1)); axis(1); box()
 
 w <- 1/500
 line.availability <- rep(w,100)
-plot(x, line.availability, xlab = "Perpendicular distance", ylab = "pdf of object distances", type = "l", ylim = c(0,w), xlim = c(0,500), cex = set.cex, cex.lab = set.cex.lab, main = "Line Transect", cex.main = set.cex.main, axes=FALSE)
+plot(x, line.availability, xlab = "Perpendicular distance", ylab = "pdf of object distances", type = "l", ylim = c(0,w*1.1), xlim = c(0,500), cex = set.cex, cex.lab = set.cex.lab, main = "Line Transect", cex.main = set.cex.main, axes=FALSE)
 axis(2, at=c(0,w/2,w)); axis(1); box()
 
 plot(x,y.scaled, xlab = "Perpendicular distance", ylab= "pdf of observed distances", type = "l", ylim = c(0,0.0044), cex = set.cex, cex.lab = set.cex.lab, axes=FALSE)
@@ -120,7 +120,7 @@ point.area <- function(x) 2*pi*x
 
 point.availability <- 2*pi*x/integrate(point.area, 0, 500)$value
 
-plot(x, point.availability, xlab = "Radial distance", ylab = "pdf of object distances", type = "l", ylim = c(0,2*w), xlim = c(0,500), cex = set.cex, cex.lab = set.cex.lab, main = "Point Transect", cex.main = set.cex.main, axes=FALSE)
+plot(x, point.availability, xlab = "Radial distance", ylab = "pdf of object distances", type = "l", ylim = c(0,2*w*1.1), xlim = c(0,500), cex = set.cex, cex.lab = set.cex.lab, main = "Point Transect", cex.main = set.cex.main, axes=FALSE)
 axis(2, at=c(0,w,2*w)); axis(1); box()
 
 point.observed.shape <- function(x, sigma) 2*pi*x*hn.detect(x, sigma)
