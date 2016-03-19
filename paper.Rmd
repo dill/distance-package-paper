@@ -642,7 +642,7 @@ We note that there are other packages available for performing distance sampling
 
 # Acknowledgements
 
-The authors would like to thank the many users of \pkg{Distance}, \pkg{mrds} and Distance for Windows who have contributed bug reports and suggestions for improvements over the years. We would particularly like to thank Steve Buckland, David Borchers, Tiago Marques, Jon Bishop and Lorenzo Milazzo for their contributions. We also thank Ken Burnham and David Anderson for fundamental contributions to the early development of these methods.
+The authors would like to thank the many users of \pkg{Distance}, \pkg{mrds} and Distance for Windows who have contributed bug reports and suggestions for improvements over the years. We would particularly like to thank Steve Buckland, David Borchers, Tiago Marques, Jon Bishop and Lorenzo Milazzo for their contributions. We thank Tiago Marques a second time for helpful comments on an early version of the paper. We also thank Ken Burnham and David Anderson for fundamental contributions to the early development of these methods.
 
 
 # Bibliography
