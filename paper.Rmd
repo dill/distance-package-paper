@@ -43,7 +43,7 @@ title:
   #short:     "\\pkg{foo}: A Capitalized Title"
 abstract: >
 
-  Estimating the abundance and spatial distribution of animal and plant populations is essential for conservation and management. We introduce the \proglang{R} package \pkg{Distance} that uses distance sampling methods to estimate abundance. We describe how users can obtain estimates of abundance (and density) using the package as well documenting the links it provides with other more specialized \proglang{R} packages. We also demonstrate how \pkg{Distance} provides a migration pathway from previous software, thereby allowing us to deliver cutting-edge methods to the users more quickly.
+  Estimating the abundance and spatial distribution of animal and plant populations is essential for conservation and management. We introduce the \proglang{R} package \pkg{Distance} that implements distance sampling methods to estimate abundance. We describe how users can obtain estimates of abundance (and density) using the package as well documenting the links it provides with other more specialized \proglang{R} packages. We also demonstrate how \pkg{Distance} provides a migration pathway from previous software, thereby allowing us to deliver cutting-edge methods to the users more quickly.
 
 keywords:
   # at least one keyword must be supplied
@@ -401,7 +401,7 @@ title(ylab="Detection probability", line=2)
 
 There are many factors that can affect the probability of detecting an object: observer skill, cluster/group size (if objects occur in groups), the vessel or platform used, sea state, other weather conditions, time of day and more. In \pkg{Distance} we assume that these variables affect detection only via the scale of the detection function (and do not affect the shape).
 
-Covariates can be included in this formulation by considering the scale parameter from the half-normal or hazard-rate detection functions as a linear model (on the exponential scale) of the ($J$) covariates ($\mathbf{z}$; a vector of length $J$ for each observation):
+Covariates can be included in this formulation by considering the scale parameter from the half-normal or hazard-rate detection functions as a(n exponentiated) linear model of the ($J$) covariates ($\mathbf{z}$; a vector of length $J$ for each observation):
 $$
 \sigma(\mathbf{z}) = \exp(\beta_0 + \sum_{j=1}^J \beta_j z_j).
 $$
@@ -412,7 +412,7 @@ p(\mathbf{z_i}) = \int_0^w \pi(y) g(y, \mathbf{z_i}; \boldsymbol{\theta}) dy,
 $$
 where $\mathbf{z_i}$ is the vector of $J$ covariates associated with observation $i$. For covariate models, we calculate a value of "average" probability of detection (average in the sense of distance being integrated out) per observation. There are as many unique values of $p(\mathbf{z_i})$ as there are unique covariate combinations in our data.
 
-K+A models that include covariates and one or more adjustments cannot be guaranteed to be monotonic non-increasing for all covariate combinations. Without a model for the distribution of the covariates, it is not possible to know what the behaviour of the detection function will be across the ranges of the covariates. As such we cannot set meaningful constraints on monotonicity. For this reason, we advise against using both adjustments and covariates in a detection function [see @Miller:2015hw for an example of when this can be problematic].
+K+A models that include covariates and one or more adjustments cannot be guaranteed to be monotonic non-increasing for all covariate combinations. Without a model for the distribution of the covariates, it is not possible to know what the behaviour of the detection function will be across the ranges of the covariates. As such we cannot set meaningful constraints on monotonicity. For this reason, we advise caution when using both adjustments and covariates in a detection function [see @Miller:2015hw for an example of when this can be problematic].
 
 
 ## Fitting detection functions in R
@@ -627,7 +627,7 @@ We noted at the start of the article that \pkg{Distance} is a simple-to-use wrap
 
 Uncertainty in measured covariates (e.g. cluster size) and model uncertainty (when two models have similar fit but substantially different estimates) can be incorporated using the multi-analysis distance sampling package \pkg{mads} [@mads-pkg]. In addition, \pkg{mads} can also incorporate sightings with unknown species identification. This is done by estimating the abundance of these 'unidentified' sightings and pro-rating them to the known species [@Gerrodette:2005].
 
-Survey design is an important part of any survey. \pkg{DSsim} allows users to test out different designs in their study region and tailor population attributes to reflect the species they are working with. \pkg{DSsim} [@DSsim-pkg] allows users to more easily identify challenges unique to their study and select a survey design which is more likely to yield accurate and precise estimates. 
+As mentioned above, survey design is critical to ensuring that resulting distance sampling data can be reliably analysed. \pkg{DSsim} allows users to test out different designs in their study region and tailor population attributes to reflect the species they are working with. \pkg{DSsim} [@DSsim-pkg] allows users to more easily identify challenges unique to their study and select a survey design which is more likely to yield accurate and precise estimates. 
 
 Distance for Windows has many users (over 45,000 downloads since 2002) and they may be overwhelmed by the prospect of switching existing analyses to \proglang{R}. For that reason we have created the \pkg{readdst} [@readdst-pkg] package to interface with projects created by Distance for Windows. The package can take analyses created using the CDS, MCDS and MRDS engines in Distance for Windows, extract the data and create equivalent models in \proglang{R}. \pkg{readdst} can also run these analyses and test the resulting statistics (for example, $\hat{N}$ or $\hat{P_a}$) calculated in \proglang{R} against those calculated by Distance for Windows. We hope that \pkg{readdst} will provide a useful transition to \proglang{R} for interested users. \pkg{readdst} is currently available on GitHub at \url{https://github.com/distancedevelopment/readdst}.
 
