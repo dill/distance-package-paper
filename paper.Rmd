@@ -559,7 +559,7 @@ We take an intuitive approach to uncertainty estimation, for a full derivation c
 1. *Detection function*: Uncertainty in parameter ($\boldsymbol{\theta}$) estimation.
 2. *Encounter rate*: Sampling variability arising from differences in the rate of observations between transects.
 
-We can see this by looking at the Horvitz-Thompson-like estimation in (\ref{ht}) and consider the terms which are random. These are: the detectability $\hat{p}(\mathbf{z}_i)$ (and hence the parameters of the detection function it is derived from) and $n$, the number of observations. We assume that the observed group size ($s_i$) is recorded without error.
+We can see this by looking at the Horvitz-Thompson-like estimation in (\ref{ht}) and consider the terms which are random. These are: the detectability $\hat{p}(\mathbf{z}_i)$ (and hence the parameters of the detection function it is derived from) and $n$, the number of observations.
 
 Model parameter uncertainty can be addressed using standard maximum likelihood theory. We can invert the Hessian matrix of the likelihood to obtain a variance-covariance matrix. We can then pre- and post-multiply this by the derivatives of $\hat{N}_\text{C}$ with respect to the parameters of the detection function
 $$
@@ -569,7 +569,7 @@ where the partial derivatives of $\hat{N}_\text{C}$ are evaluated at the MLE ($\
 
 *Encounter rate* is the number of objects per unit transect (rather than just $n$). When covariates are not included in the detection function we can define the encounter rate as $n/L$ for line transects (where $L$ is the total line length) or $n/T$ for point transects (where $T$ is the total number of visits summed over all points). When covariates are included in the detection function, it is recommended that we substitute the $n$ in the encounter rate with the estimated abundance $\hat{N}_\text{C}$ as this will take into account the effects of the covariates [@Innes:2002ka].
 
-For line transects, by default, \pkg{Distance} uses a variation of the estimator "R2" from @Fewster:2009ku replacing number of observations per sample with the estimated abundance per sample [@Innes:2002ka; @Marques:2003vb]:
+For line transects, by default, \pkg{Distance} uses a variation of the estimator "R2" from @Fewster:2009ku replacing number of observations per sample with the estimated abundance per sample, thus taking into account cluster size if this is recorded [@Innes:2002ka; @Marques:2003vb]:
 $$
 \widehat{\text{Var}}_{\text{encounter},R2}\left( \hat{N}_\text{C}\right) = \frac{K}{L^2(K-1)} \sum_{k=1}^{K} l_k^2 \left( \frac{\hat{N_{\text{C}, k}}}{l_k} - \frac{\hat{N_\text{C}}}{L}\right)^2,
 $$
@@ -581,7 +581,7 @@ where $t_k$ is the number of visits to point $k$ and $T = \sum_{k=1}^K t_k$ (the
 
 Other formulations for the encounter rate variance are discussed in detail in @Fewster:2009ku. \pkg{Distance} implements all of the estimators of encounter rate variance given in that article. The \code{varn} manual page gives further advice and technical detail on encounter rate variance. For example for systematic survey designs, estimators S1, S2 and O1, O2 and O3 will typically provide lower variance estimates.
 
-We combine these two sources of variance by noting that squared coefficients of variation (approximately) add [@Goodman:1960dd] (often referred to as "the delta method").
+We combine these two variances by noting that squared coefficients of variation (approximately) add [@Goodman:1960dd] (often referred to as "the delta method").
 
 
 ## Estimating abundance and variance in R
