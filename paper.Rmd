@@ -364,7 +364,7 @@ A disadvantage of K+A models is that we must resort to constrained optimisation 
 
 It is not always necessary to include adjustments (except in the case of the uniform key) and in such cases we refer to these as "key only" models (see the next section and "Model checking and model selection").
 
-```{r adjust-mix-comp, fig.width=10, fig.height=3, fig.cap="Possible (though not necessarily plausible) shapes for the detection function when adjustments are included for half-normal and hazard-rate models.\\label{fig:keyadj}", echo=FALSE}
+```{r adjust-mix-comp, fig.width=10, fig.height=3, fig.cap="Possible shapes for the detection function when cosine adjustments are included for half-normal and hazard-rate models.\\label{fig:keyadj}", echo=FALSE}
 par(mfrow=c(1,4), mar=c(3.5, 3, 3, 1) + 0.1)
 
 ## half-normal with cosine
@@ -374,23 +374,23 @@ curve(f, from=0, to=0.025, xlab="", ylab="", main="Half-normal with \n1 cosine a
 title(xlab="Distance", line=2)
 title(ylab="Detection probability", line=2)
 # 2 cosines
-g <- function(x) exp(-x^2/(2*0.01^2))*(1-0.06*cos((2*pi*x)/0.025)+0.25*cos((3*pi*x)/0.025))
+g <- function(x) exp(-x^2/(2*0.011^2))*(1-0.06*cos((2*pi*x)/0.025)+0.25*cos((3*pi*x)/0.025))
 f <- function(x) g(x)/g(0)
 curve(f, from=0, to=0.025, xlab="", ylab="", main="Half-normal with \n2 cosine adjustments",xlim=c(0,0.025), ylim=c(0,1))
 title(xlab="Distance", line=2)
 title(ylab="Detection probability", line=2)
 
 ## hazard-rate with cosine
-g <- function(x) (1 - exp(-(x/0.005)^-1.1))*(1-0.05*cos((2*pi*x)/0.025))
+g <- function(x) (1 - exp(-(x/0.011)^-3))*(1+0.05*cos((2*pi*x)/0.025))
 f <- function(x) g(x)/g(0)
 curve(f, from=0, to=0.025, xlab="", ylab="", main="Hazard-rate with \n1 cosine adjustment", xlim=c(0,0.025), ylim=c(0,1))
 title(xlab="Distance", line=2)
 title(ylab="Detection probability", line=2)
 # 2 cosines
-g <- function(x) (1 - exp(-(x/0.005)^-1.9))*
-                  (1+0.05*cos((2*pi*x)/0.025) + 0.25*cos((3*pi*x)/0.025))
+g <- function(x) (1 - exp(-(x/0.0199)^-1.4))*
+                 (1-0.08*cos((2*pi*x)/0.025)+0.08*cos((3*pi*x)/0.025))
 f <- function(x) g(x)/g(0)
-curve(f, from=0, to=0.025, xlab="", ylab="", main="Hazard-rate with \n2 cosine adjustments", xlim=c(0,0.025), ylim=c(0,1))
+curve(f, from=0, to=0.025, xlab="", ylab="", main="Hazard-rate with \n2 cosine adjustment", xlim=c(0,0.025), ylim=c(0,1))
 title(xlab="Distance", line=2)
 title(ylab="Detection probability", line=2)
 ```
