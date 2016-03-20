@@ -78,7 +78,6 @@ As Distance for Windows becomes increasingly reliant on analyses performed in \p
 Until now those wishing to use our \proglang{R} packages for straight forward distance sampling analyses would have had to negotiate the package \pkg{mrds} [@mrds-pkg] designed for mark-recapture distance sampling [@Burt:2014gu], requiring a complex data structure to perform analyses. \pkg{Distance} is a wrapper package around \pkg{mrds} making it easier to get started with basic distance sampling analyses in \proglang{R}. Like the histogram function, the most basic detection function estimation only requires a numeric vector of distances. Here we demonstrate how to use \pkg{Distance} to fit detection functions, perform model checking and selection, and estimate abundance.
 
 
-
 ## Distance sampling
 
 The distribution of the observed distances is a product of detectability [sometimes referred to as "perception bias"; @Marsh:1989ho] and the distribution of the animals (observed or unobserved) with respect to the line or point. Our survey design allows us to assume a distribution for the animals with respect to the sampler.
@@ -340,7 +339,7 @@ for(this.sig in c(0.1, 0.5)){
 
 
 \begin{table}
-\caption{Modelling options for key plus adjustment series models for the detection function. Adapted from Buckland et al. (2001), section 2.4. For each key function the default adjustments are cosine in \pkg{Distance}.}
+\caption{Modelling options for key plus adjustment series models for the detection function. For each key function the default adjustments are cosine in \pkg{Distance}. Note that in the adjustments functions distance is divided by the width or the scale parameter to ensure the shape of adjustment independent of the units of $y$ (Marques et al., 2007); defaults are shown here, though either can be selected to rescale the distances.}
 \begin{tabular}{llll}
 \hline
 Key function   & Form   & Adjustment series & Form\\
