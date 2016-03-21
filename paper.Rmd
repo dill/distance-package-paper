@@ -3,7 +3,10 @@ author:
   - name: David L Miller
     affiliation: Integrated Statistics and University of St Andrews
     address: >
-      16 Sumner Street, Woods Hole, MA 02543, USA
+      16 Sumner Street, Woods Hole, MA 02543, USA and
+      Centre for Research into Ecological and Environmental Modelling,
+      The Observatory,
+      St Andrews, Fife KY16 9LZ, Scotland
     email: dave@ninepointeightone.net
     url: http://converged.yt
   - name: Eric Rexstad
@@ -75,14 +78,14 @@ The Windows program Distance (or "DISTANCE"; for clarity henceforth "Distance fo
 
 As Distance for Windows becomes increasingly reliant on analyses performed in \proglang{R} and many new methods are being developed, we are encouraging the use of our \proglang{R} packages directly. \proglang{R} provides a huge variety of functionality for data exploration and reproducible research, much more than is possible in Distance for Windows.
 
-Until now those wishing to use our \proglang{R} packages for straight forward distance sampling analyses would have had to negotiate the package \pkg{mrds} [@mrds-pkg] designed for mark-recapture distance sampling [@Burt:2014gu], requiring a complex data structure to perform analyses. \pkg{Distance} is a wrapper package around \pkg{mrds} making it easier to get started with basic distance sampling analyses in \proglang{R}. Like the histogram function, the most basic detection function estimation only requires a numeric vector of distances. Here we demonstrate how to use \pkg{Distance} to fit detection functions, perform model checking and selection, and estimate abundance.
+Until now those wishing to use our \proglang{R} packages for straight forward distance sampling analyses would have had to negotiate the package \pkg{mrds} [@mrds-pkg] designed for mark-recapture distance sampling [@Burt:2014gu], requiring a complex data structure to perform analyses. \pkg{Distance} is a wrapper package around \pkg{mrds} making it easier to get started with basic distance sampling analyses in \proglang{R}. The most basic detection function estimation only requires a numeric vector of distances. Here we demonstrate how to use \pkg{Distance} to fit detection functions, perform model checking and selection, and estimate abundance.
 
 
 ## Distance sampling
 
-The distribution of the observed distances is a product of detectability [sometimes referred to as "perception bias"; @Marsh:1989ho] and the distribution of the animals (observed or unobserved) with respect to the line or point. Our survey design allows us to assume a distribution for the animals with respect to the sampler.
+The distribution of the observed distances is a product of detectability [sometimes referred to as "perception bias"; @Marsh:1989ho] and the distribution of the animals with respect to the line or point. Our survey design allows us to assume a distribution for the animals with respect to the sampler.
 
-For line transect studies we assume that objects are uniformly distributed with respect to the line (i.e., the number of animals available for detection is the same at all distances). For point transect surveys the survey area increases linearly with radial distance, implying a triangular distribution with respect to the point. Figure \ref{fig:detectiondist} shows how these distributions, when combined with a detection function, give rise to the observed distribution of recorded distances.
+For line transect studies we assume that objects are uniformly distributed with respect to the line (i.e., the number of animals available for detection is the same at all distances). For point transect surveys, area increases linearly with radial distance, implying a triangular distribution with respect to the point. Figure \ref{fig:detectiondist} shows how these distributions, when combined with a detection function, give rise to the observed distribution of recorded distances.
 
 ```{r detectdists, fig.height=5.5, fig.width=9, echo=FALSE, message=FALSE, fig.cap="Panels show an example detection function (left), the pdf of object distances (middle) and the resulting pdf of detection distances (right) for line transects (top row) and point transects (bottom row). The pdf of observed detection distances in the right hand plots are obtained by multiplying the detection function by the pdf of object distances and rescaling. In this example, detection probability becomes effectively zero at 500 (distances shown on $x$-axis are arbitrary). \\label{fig:detectiondist}"}
 
@@ -132,7 +135,7 @@ plot(x, pdf.observed, xlab = "Radial distance", ylab= "pdf of observed distances
 axis(2, at=round(c(0,max(pdf.observed)/2,max(pdf.observed)),4)); axis(1); box()
 ```
 
-Figure \ref{fig:pointslines} shows simulated sampling of a population of 500 objects using line and point transects and their corresponding histograms of observed detection distances. Note that for the purposes of distance sampling an object may either refer to an individual in a population or a cluster of individuals.  
+Figure \ref{fig:pointslines} shows simulated sampling of a population of 500 objects using line and point transects and their corresponding histograms of observed detection distances. Note that for the purposes of distance sampling an "object" may either refer to an individual in a population or a cluster of individuals.  
 
 ```{r points-and-lines, fig.height=6, fig.width=7, echo=FALSE, message=FALSE, fig.cap="Left side plots show an example of a survey of a (1x1) area containing a population of 500 objects; blue dashed lines (top plot) and triangles (bottom plot) indicate sampler placement, red dots indicate detected individuals and grey dots give the locations of unobserved individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).\\label{fig:pointslines}"}
 opar <- par(mfrow=c(2,2))
@@ -213,7 +216,7 @@ hist(detected_distances, main="", xlab="Observed radial distances")
 par(opar)
 ```
 
-Good survey design is essential to produce reliable density and abundance estimates from distance sampling data. Survey design is beyond the scope of this article but we refer readers to @Buckland:2001vm [Chapter 7] and @buckland2015distance [Chapter 2] for introductory information; @Buckland:2004ts [Chapter 7] contains information on automated survey design using geographical information systems (GIS); @Thomas:2007wz gives an example of designing a distance sampling survey in a complex region. We also note that Distance for Windows includes a GIS survey design tool [@Thomas:2010cf].
+Good survey design is essential to produce reliable density and abundance estimates from distance sampling data. Survey design is beyond the scope of this article but we refer readers to @Buckland:2001vm [, Chapter 7] and @buckland2015distance [, Chapter 2] for introductory information; @Strindberg:2004vr contains information on automated survey design using geographical information systems (GIS); @Thomas:2007wz gives an example of designing a distance sampling survey in a complex region. We also note that Distance for Windows includes a GIS survey design tool [@Thomas:2010cf].
 
 \pkg{Distance} provides a selection of candidate functions to describe the probability of detection and estimates the associated parameters using maximum likelihood estimation. The probability of detecting an object may not only depend on how far it is from the observer but also on other factors such as weather conditions, ground cover, cluster size etc. The \pkg{Distance} package also allows the incorporation of such covariates into the detection function allowing the detection function scale parameter to vary based on these covariates.
 
@@ -225,11 +228,11 @@ The rest of the paper has the following structure: we describe data formatting f
 
 # Data
 
-We introduce two example analyses performed in \pkg{Distance}: one line transect and one point transect. These data sets have been chosen as they represent typical data seen in practice. The below example analyses are not intended to serve as guidelines for practice, but to demonstrate features of the software. Extensive practical advice on approaches to analysis is given in @Thomas:2010cf.
+We introduce two example analyses performed in \pkg{Distance}: one line transect and one point transect. These data sets have been chosen as they represent typical data seen in practice. The below example analyses are not intended to serve as guidelines, but to demonstrate features of the software. Practical advice on approaches to analysis is given in @Thomas:2010cf.
 
 ### Minke whales
 
-The line transect data have been simulated from models fitted to Antarctic minke whale (*Balaenoptera bonaerensis*) data. These data were collected as part of the International Whaling Commission's International Decade of Cetacean Research Southern Ocean Whale and Ecosystem Research (IWC IDCR-SOWER) programme 1992-1993 austral summer surveys. These data consist of 99 observations that are stratified based on location (near or distant from ice edge) and effort data (transect lengths). Further details on the survey are available in @Branch:2001ua (simulated data is based on "1992/93 Area III" therein).
+The line transect data have been simulated from models fitted to Antarctic minke whale (*Balaenoptera bonaerensis*) data. These data were collected as part of the International Whaling Commission's International Decade of Cetacean Research Southern Ocean Whale and Ecosystem Research (IWC IDCR-SOWER) programme 1992-1993 austral summer surveys. These data consist of 99 observations that are stratified based on location (near or distant from ice edge) and effort data (transect lengths). Further details on the survey are available in @Branch:2001ua (data is simulated based on the design used for "1992/93 Area III" therein).
 
 ### Amakihi
 
@@ -240,7 +243,7 @@ The point transect data set consists of 1485 observations of Amakihi (*Hemignath
 Generally, data collected in the field will require some formatting before use with \pkg{Distance}, though there are a range of possible formats, dependent on the model specification and the output required:
 
 * In the simplest case, where the objective is to estimate a detection function and exact distances are collected, all that is required is a numeric vector of distances.
-* To include additional covariates into the detection function (see "Detection functions") a \code{data.frame} is required. Each row of the \code{data.frame} contains the data on one observation. The \code{data.frame} must contain a column named \code{distance} (containing the observed distances) and additional named columns for any covariates that may affect detectability (for example \code{observer} or \code{seastate}). The column name \code{size} is reserved for the cluster sizes (sometimes referred to as group sizes) for when the detection distances relate to observations of clusters rather than individuals (see @Buckland:2001vm, Section 1.4.3 for more on defining clusters and "Extensions" below for one approach to dealing with uncertain cluster size). Additional reserved names include \code{object} and \code{detected}, these are not required for conventional distance sampling and should be avoided (see "Extensions" for an explanation of their use).
+* To include additional covariates into the detection function (see "Detection functions") a \code{data.frame} is required. Each row of the \code{data.frame} contains the data on one observation. The \code{data.frame} must contain a column named \code{distance} (containing the observed distances) and additional named columns for any covariates that may affect detectability (for example \code{observer} or \code{seastate}). The column name \code{size} is reserved for the cluster sizes (sometimes referred to as group sizes) in this case each row represents an observation of a cluster rather than individual (see @Buckland:2001vm, Section 1.4.3 for more on defining clusters and "Extensions" below for one approach to dealing with uncertain cluster size). Additional reserved names include \code{object} and \code{detected}, these are not required for conventional distance sampling and should be avoided (see "Extensions" for an explanation of their use).
 * To estimate density or to estimate abundance beyond the sampled area, additional information is required. Additional columns should be included in the \code{data.frame} specifying: \code{Sample.Label}, the ID of the transect; \code{Effort}, transect effort (for lines their length and for points the number of times that point was visited); \code{Region.Label}, the stratum containing the transect (which may be from pre- or post-survey stratification, see "Estimating abundance and variance"); \code{Area}, the area of the strata. Transects which were surveyed but have no observations must be included in the data set with \code{NA} for \code{distance} and any other covariates. We refer to this data format (where all information is contained in one table) as "flatfile" as it can be easily created in a single spreadsheet.
 
 As we will see in "Extensions", further information is also required for fitting more complex models.
@@ -279,7 +282,7 @@ It is crucial that the detection function accurately models detectability at sma
 Models for the detection function are expected to have the following properties [@buckland2015distance, Chapter 5]:
 
 * *Shoulder*: we expect observers to be able to see objects near them, not just those directly in front of them. For this reason, we expect the detection function to be flat near the line or point.
-* *Non-increasing*: we do not think that observers should be more likely to see distant objects than those nearer the transect. If this occurs, it usually indicates an issue with survey design or field procedures (for example that the distribution of objects with respect to the line, $\pi(y)$ is not what we expect), so we do not want the detection function to model this [@Miller:2015hw; @Marques:2010he; @Marques:2012fy].
+* *Non-increasing*: we do not think that observers should be more likely to see distant objects than those nearer the transect. If this occurs, it usually indicates an issue with survey design or field procedures (for example that the distribution of objects with respect to the line, $\pi(y)$ is not what we expect), so we do not want the detection function to model this [@Marques:2010he; @Marques:2012fy; @Miller:2015hw].
 * *Model robust*: models should be flexible enough to fit many different shapes.
 * *Pooling robust*: many factors can affect the probability of detection and it is not possible to measure all of these. We would like models to produce unbiased results without inclusion of these factors.
 * *Estimator efficiency*: we would like models to have low variances, given they satisfy the other properties above (which, if satisfied, would give low bias).
@@ -398,14 +401,14 @@ title(ylab="Detection probability", line=2)
 
 ### Covariates
 
-There are many factors that can affect the probability of detecting an object: observer skill, cluster/group size (if objects occur in groups), the vessel or platform used, sea state, other weather conditions, time of day and more. In \pkg{Distance} we assume that these variables affect detection only via the scale of the detection function (and do not affect the shape).
+There are many factors that can affect the probability of detecting an object: observer skill, cluster size (if objects occur in clusters), the vessel or platform used, sea state, other weather conditions, time of day and more. In \pkg{Distance} we assume that these variables affect detection only via the scale of the detection function (and do not affect the shape).
 
 Covariates can be included in this formulation by considering the scale parameter from the half-normal or hazard-rate detection functions as a(n exponentiated) linear model of the ($J$) covariates ($\mathbf{z}$; a vector of length $J$ for each observation):
 $$
 \sigma(\mathbf{z}) = \exp(\beta_0 + \sum_{j=1}^J \beta_j z_j).
 $$
 
-Including covariates has an important implication for our calculation of detectability. Because we do not know the true distribution of the covariates, we can either model the distribution of the covariates and integrate the covariates out of the joint density, or we can calculate the probability of detection conditional on the observed values of the covariates [@Marques:2003vb]. We opt for the latter:
+Including covariates has an important implication for our calculation of detectability. We do not know the true distribution of the covariates, we therefore must either: $(i)$ model the distribution of the covariates and integrate the covariates out of the joint density (thus making strong assumptions about their distribution), or $(ii)$ calculate the probability of detection conditional on the observed values of the covariates [@Marques:2003vb]. We opt for the latter:
 $$
 p(\mathbf{z_i}) = \int_0^w \pi(y) g(y, \mathbf{z_i}; \boldsymbol{\theta}) dy,
 $$
@@ -424,9 +427,9 @@ First we fit a model to the minke whale data, setting the truncation at 1.5km an
 ```{r minke-hn}
 minke_hn <- ds(minke, truncation=1.5)
 ```
-Note that when there are no covariates in the model, \code{ds} will add adjustment terms to the model until there is no improvements in AIC and print the selection steps.
+Note that when there are no covariates in the model, \code{ds} will add adjustment terms to the model until there is no improvement in AIC.
 
-Figure \ref{fig:minkeamakihi} (left panel) shows the result of calling \code{plot} on the resulting model object. We can also call \code{summary} on the model object to get summary information about the fitted model (we postpone this to the next section).
+Figure \ref{fig:minkeamakihi} (left panel) shows the result of calling \code{plot} on the resulting model object. We can also call \code{summary} on the model object to get summary information about the fitted model (we postpone this until the next section).
 
 A different form for the detection function can be specified via the \code{key=} argument to \code{ds}. For example, a hazard rate model can be fitted as:
 ```{r minke-hr-cos}
@@ -451,16 +454,14 @@ amakihi_hr_obs <- ds(amakihi, truncation=82.5, transect="point",
 Note that here, unlike with the minke whale data, \code{ds} warns us that we have only supplied enough information to estimate the detection function (not density or abundance).
 
 While automatic AIC selection is performed on adjustment terms, model selection for covariates must be performed manually. Here we add a second covariate: minutes after sunrise. We will compare these two models further in the following section.
-
 ```{r amakihi-hr-obs-mas, warning=FALSE}
 amakihi_hr_obs_mas <- ds(amakihi, truncation=82.5, transect="point",
                          key="hr", formula=~obs+mas)
 ```
+As with the minke whale model, we can plot the resulting models (Figure \ref{fig:minkeamakihi}, middle and right panels). However, for point transect studies, probability density function plots give a better sense of model fit than the detection function plots. This is because when plotting the detection function for point transect data, the histogram must be rescaled to account for the geometry of the point sampler. The amakihi models included covariates, so the plots show the detection function averaged over levels/values of the covariate. Points on the plot indicate probability of detection for each observation. For the `amakihi_hr_obs` model we see fairly clear levels of the observer covariate in the points. Looking at the right panel of Figure \ref{fig:minkeamakihi}, this is less clear when adding minutes after sunrise (a continuous covariates) to the model.
 
-As with the minke whale model, we can plot the resulting models (Figure \ref{fig:minkeamakihi}, middle and right panels). However, for point transect studies, probability density function plots give a better sense of model fit than the detection function plots. This is because when plotting the detection function for point transect data, the histogram must be rescaled to account for the geometry of the point sampler. The amakihi models included covariates, so the plots show the detection function averaged over levels/values of the covariate. Points on the plot indicate probability of detection for each observation. For the `amakihi_hr_obs` model we see fairly clear levels of the observer covariate in the points. Looking at the right panel of Figure \ref{fig:minkeamakihi}, this is less clear when adding minutes after sunrise to the model.
 
-
-```{r minke-amakihi-hn-plot, echo=FALSE, warning=FALSE, fig.width=9, fig.height=4, fig.cap="Left: fitted detection function overlayed on the histogram of observed distances for the minke whale data using half-normal model. Centre and right: plots of the probability density function for the amakihi models. Centre, hazard-rate with observer as a covariate; right, hazard-rate model with observer and minutes after sunrise as covariates. Points indicate probability of detection for a given observation (given that observations covariate values) and lines indicate the average detection function.\\label{fig:minkeamakihi}"}
+```{r minke-amakihi-hn-plot, echo=FALSE, warning=FALSE, fig.width=9, fig.height=4, fig.cap="Left: fitted detection function overlayed on the histogram of observed distances for the minke whale data using half-normal model. Centre and right: plots of the probability density function for the amakihi models. Centre, hazard-rate with observer as a covariate; right, hazard-rate model with observer and minutes after sunrise as covariates. Points indicate probability of detection for a given observation (given that observation's covariate values) and lines indicate the average detection function.\\label{fig:minkeamakihi}"}
 par(mfrow=c(1, 3))
 plot(minke_hn, showpoints=FALSE)
 title("Minke whales", cex.main=1.5)
@@ -476,14 +477,14 @@ As with models fitted using \code{lm} or \code{glm} in \proglang{R}, we can use 
 ```{r amakihi-summary}
 summary(amakihi_hr_obs)
 ```
-This summary information includes details of the data and model specification, as well as the values of the coefficients ($\beta_j$) and their uncertainties, an "average" value for the detectability (see "Estimating abundance and variance" for details on how this is calculated) and its uncertainty. The final line gives an estimate of abundance in the area covered by the survey (see the next section).
+This summary information includes details of the data and model specification, as well as the values of the coefficients ($\beta_j$) and their uncertainties, an "average" value for the detectability (see "Estimating abundance and variance" for details on how this is calculated) and its uncertainty. The final line gives an estimate of abundance in the area covered by the survey (see the next section; though note this estimate does not take into account cluster size).
 
 
 ## Goodness of fit
 
-We use a quantile-quantile plot (Q-Q plot) to visually assess how well a detection functions fits the data when we have exact distances. Here the Q-Q plot compares the cumulative distribution function (CDF) of the fitted detection function to the distribution of the data (empirical distribution function or EDF). The Q-Q plots in \pkg{Distance} plot a point for every observation. The EDF is is the proportion of points that have been observed at a distance equal to or less than the distance of that observation. The CDF is calculated from the fitted detection function as the probability of observing an object at a distance less than or equal to that of the given observation. This can be interpreted as assessing whether the number of observations up to a given distance is in line with what the model says they should be. As usual for Q-Q plots, "good" models will have values close to the line $y=x$, poor models will show greater deviations from that line.
+We use a quantile-quantile plot (Q-Q plot) to visually assess how well a detection functions fits the data when we have exact distances. Here the Q-Q plot compares the cumulative distribution function (CDF) of the fitted detection function to the distribution of the data (empirical distribution function or EDF). The Q-Q plots in \pkg{Distance} plot a point for every observation. The EDF is the proportion of points that have been observed at a distance equal to or less than the distance of that observation. The CDF is calculated from the fitted detection function as the probability of observing an object at a distance less than or equal to that of the given observation. This can be interpreted as assessing whether the number of observations up to a given distance is in line with what the model says they should be. As usual for Q-Q plots, "good" models will have values close to the line $y=x$, poor models will show greater deviations from that line.
 
-Q-Q plots can be inspected visually, though this is prone to subjective judgments. Therefore, we also quantify the Q-Q plot's information using a Kolmogorov-Smirnov or Cramér-von Mises test [@Burnham:2004vd]. Both test whether points from the EDF and CDF are from the same distribution. The Kolmogorov-Smirnov uses the test statistic of the largest difference between a point on the Q-Q plot and the line $y=x$, whereas the Cramér-von Mises test uses the sum of all the differences. As it takes into account more information and is therefore more powerful, the Cramér-von Mises is generally preferred. A significant result (usually $P < 0.05$) from either test gives evidence against the null hypothesis (that the data arose from the fitted model), suggesting that the model does not fit the data well. 
+Q-Q plots can be inspected visually, though this is prone to subjective judgments. Therefore, we also quantify the Q-Q plot's information using a Kolmogorov-Smirnov or Cramér-von Mises test [@Burnham:2004vd]. Both test whether points from the EDF and CDF are from the same distribution. The Kolmogorov-Smirnov uses the test statistic of the largest difference between a point on the Q-Q plot and the line $y=x$, whereas the Cramér-von Mises test uses the sum of all the differences. As it takes into account more information and is therefore more powerful, the Cramér-von Mises is generally preferred. A significant result from either test gives evidence against the null hypothesis (that the data arose from the fitted model), suggesting that the model does not fit the data well. 
 
 We can generate a Q-Q plot and test results using the \code{gof_ds} function. Figure \ref{amakihi-qq} shows the goodness of fit tests for two models for the amakihi data. We first fit a half-normal model without covariates or adjustments (setting \code{adjustment=NULL} will force \code{ds} to fit a model with no adjustments):
 ```{r amakihi-gof, fig.keep="none"}
@@ -516,7 +517,7 @@ library("knitr")
 kable(summarize_ds_models(amakihi_hn, amakihi_hr_obs, amakihi_hr_obs_mas),
       digits = 3, format = "latex", row.names = FALSE, escape=FALSE,
       booktabs=TRUE,
-      caption="Summary for the detection function models fitted to the amakihi data. ``C-vM'' stands for Cramér-von Mises, $P_a$ indicates average detectability (see ``Estimating abundance and variance''), se indicates standard error. Models are sorted according to AIC.\\label{tab:amakihi}")
+      caption="Summary for the detection function models fitted to the amakihi data. ``C-vM'' stands for Cramér-von Mises, $P_a$ is average detectability (see ``Estimating abundance and variance''), se is standard error. Models are sorted according to AIC.\\label{tab:amakihi}")
 ```
 
 # Estimating abundance and variance
@@ -532,7 +533,7 @@ First, to estimate abundance in the covered area ($\hat{N}_\text{C}$), we use th
 \hat{N}_\text{C} = \sum_{i=1}^n\frac{s_i}{\hat{p}(\mathbf{z}_i)},
 \label{ht}
 \end{equation}
-where $s_i$ are the sizes of the observed groups of objects, which is equal to 1 if objects only occur singly [@Borchers:2004wr]. @thompson2012sampling is the canonical reference to this type of estimator. Intuitively, we can think of the estimates of detectability ($\hat{p}(\mathbf{z}_i)$) as "inflating" the group sizes ($s_i$), we then sum over the detections ($i$) to obtain the abundance estimate. For models that do not include covariates, $\hat{p}(\mathbf{z}_i)$ is equal for all $i$, so this is equivalent to summing the groups and inflating that sum by dividing through by the corresponding $\hat{p} (=\hat{p}(\mathbf{z}_i) \forall i)$.
+where $s_i$ are the sizes of the observed clusters of objects, which are all equal to 1 if objects only occur singly [@Borchers:2004wr]. @thompson2012sampling is the canonical reference to this type of estimator. Intuitively, we can think of the estimates of detectability ($\hat{p}(\mathbf{z}_i)$) as "inflating" the cluster sizes ($s_i$), we then sum over the detections ($i$) to obtain the abundance estimate. For models that do not include covariates, $\hat{p}(\mathbf{z}_i)$ is equal for all $i$, so this is equivalent to summing the clusters and inflating that sum by dividing through by the corresponding $\hat{p} (=\hat{p}(\mathbf{z}_i) \forall i)$.
 
 Having obtained the abundance in the covered area, we can then scale-up to the study area:
 $$
@@ -557,7 +558,7 @@ As an example, the minke whale data contain two strata: \code{North} and \code{S
 We take an intuitive approach to uncertainty estimation, for a full derivation consult @Marques:2003vb. Uncertainty in $\hat{N}$ comes from two sources:
 
 1. *Detection function*: Uncertainty in parameter ($\boldsymbol{\theta}$) estimation.
-2. *Encounter rate*: Sampling variability arising from differences in the rate of observations between transects.
+2. *Encounter rate*: Sampling variability arising from differences in the number of observations per transect.
 
 We can see this by looking at the Horvitz-Thompson-like estimation in (\ref{ht}) and consider the terms which are random. These are: the detectability $\hat{p}(\mathbf{z}_i)$ (and hence the parameters of the detection function it is derived from) and $n$, the number of observations.
 
@@ -594,9 +595,11 @@ summary(minke_hn)
 ```
 This prints a rather large amount of information: first the detection function summary, then three tables:
 
-1. \code{Summary statistics}: giving the areas, covered areas, effort, number of observations, number of transects, encounter rate, its standard error and coefficient of variation for each stratum, then a total for the whole study area.
-2. \code{Abundance}: giving estimates, standard errors, coefficients of variation, lower and upper confidence intervals and finally the degrees of freedom for each stratum's abundance estimate, then a total for the whole study area.
+1. \code{Summary statistics}: giving the areas, covered areas, effort, number of observations, number of transects, encounter rate, its standard error and coefficient of variation for each stratum. 
+2. \code{Abundance}: giving estimates, standard errors, coefficients of variation, lower and upper confidence intervals and finally the degrees of freedom for each stratum's abundance estimate.
 3. \code{Density}: lists the same statistics as \code{Abundance} but for a density estimate.
+
+In each table the bottom row gives a total for the whole study area.
 
 The summary can be more concisely expressed by extracting information from the summary object. This object is a \code{list} of \code{data.frames}, so we can use the \code{kable} function from \pkg{knitr} to create summary tables of abundance estimates and measures of precision, such as Table \ref{minke-abund}. We prepare the \code{data.frame} as follows before using \code{kable}:
 
@@ -643,7 +646,7 @@ We note that there are other packages available for performing distance sampling
 
 # Acknowledgements
 
-The authors would like to thank the many users of \pkg{Distance}, \pkg{mrds} and Distance for Windows who have contributed bug reports and suggestions for improvements over the years. We would particularly like to thank Steve Buckland, David Borchers, Tiago Marques, Jon Bishop and Lorenzo Milazzo for their contributions. We thank Tiago Marques a second time for helpful comments on an early version of the paper. We also thank Ken Burnham and David Anderson for fundamental contributions to the early development of these methods.
+The authors would like to thank the many users of \pkg{Distance}, \pkg{mrds} and Distance for Windows who have contributed bug reports and suggestions for improvements over the years. We would particularly like to thank Steve Buckland, David Borchers, Tiago Marques, Jon Bishop and Lorenzo Milazzo for their contributions. We thank Tiago Marques a second time for helpful comments on an early version of the paper and Colin Beale who suggested the "flatfile" data format. We also thank Ken Burnham and David Anderson for fundamental contributions to the early development of these methods.
 
 
 # Bibliography
