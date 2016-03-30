@@ -34,7 +34,7 @@ author:
   - name: Jeffrey L Laake
     affiliation: National Oceanic and Atmospheric Administration
     address: >
-      National Marine Mammal Laboratory
+      Marine Mammal Laboratory
       Alaska Fisheries Science Center
       7600 Sand Point Way N.E., Seattle, WA 98115, USA
     email: Jeff.Laake@noaa.gov
@@ -59,7 +59,9 @@ preamble: >
   \usepackage{booktabs}
   \usepackage[colorinlistoftodos, color=green!40, textwidth=60, textsize=small]{todonotes}
 
-output: rticles::jss_article
+output:
+  rticles::jss_article:
+    citation_package: natbib
 bibliography: jstatsoft.bib
 ---
 
@@ -145,7 +147,7 @@ opar <- par(mfrow=c(2,2))
 
 # generate some animals to sample
 set.seed(15) # same results every time
-library("mgcv") # for inSide
+library("mgcv", quietly=TRUE) # for inSide
 
 # generate population locations
 N <- 500
@@ -250,7 +252,7 @@ As we will see in "Extensions", further information is also required for fitting
 
 It is also possible to use distances collected in intervals ("binned" or "grouped" data, as opposed to "exact" distances) to model the detection function. In this case the column \code{distance} is replaced by two columns \code{distbegin} and \code{distend} referring to the distance interval start and end cutpoints. More information on binned data is included in @Buckland:2001vm sections 4.5 and 7.4.1.2.
 
-The columns \code{distance}, \code{Area} and (in the case of line transects) \code{Effort} have associated units (though these are not explicitly included in a \pkg{Distance} analysis). We recommended that data in these columns are converted to SI units before starting any analysis to ensure that resulting abundance and density estimates have sensible units. For example, if distances from a line transect survey are recorded in metres, the \code{Effort} columns should contain line lengths also in metres and the \code{Area} column gives the stratum areas in square metres. This would lead to density estimates of animals per square metre.
+The columns \code{distance}, \code{Area} and (in the case of line transects) \code{Effort} have associated units (though these are not explicitly included in a \pkg{Distance} analysis). We recommend that data in these columns are converted to SI units before starting any analysis to ensure that resulting abundance and density estimates have sensible units. For example, if distances from a line transect survey are recorded in metres, the \code{Effort} columns should contain line lengths also in metres and the \code{Area} column gives the stratum areas in square metres. This would lead to density estimates of animals per square metre.
 
 The minke whale data follows the "flatfile" format given in the last bullet point:
 ```{r load-data, echo=FALSE}
@@ -510,10 +512,9 @@ Once we have a set of plausible models, we can use Akaike's Information Criterio
 summarize_ds_models(amakihi_hn, amakihi_hr_obs, amakihi_hr_obs_mas)
 ```
 
-In this case we may be skeptical about the top model as selected by AIC being truly better than the second best model, as there is only a very small difference in AICs. Generally, if the difference between AICs is less than 2, we may investigate multiple "best" models, potentially resorting to the simplest of these models. In the authors' experience, it is often the case that models with similar AICs will have similar estimates probabilities of detection, so in practice there is little difference in selecting between these models.
+In this case we may be skeptical about the top model as selected by AIC being truly better than the second best model, as there is only a very small difference in AICs. Generally, if the difference between AICs is less than 2, we may investigate multiple "best" models, potentially resorting to the simplest of these models. In the authors' experience, it is often the case that models with similar AICs will have similar estimates probabilities of detection, so in practice there is little difference in selecting between these models. It is important to note that comparing AICs between models with different truncations is not appropriate, as models with different truncation use different data.
 
 ```{r summary-table, results="asis", echo=FALSE}
-library("knitr")
 kable(summarize_ds_models(amakihi_hn, amakihi_hr_obs, amakihi_hr_obs_mas),
       digits = 3, format = "latex", row.names = FALSE, escape=FALSE,
       booktabs=TRUE,
@@ -582,7 +583,7 @@ where $t_k$ is the number of visits to point $k$ and $T = \sum_{k=1}^K t_k$ (the
 
 Other formulations for the encounter rate variance are discussed in detail in @Fewster:2009ku. \pkg{Distance} implements all of the estimators of encounter rate variance given in that article. The \code{varn} manual page gives further advice and technical detail on encounter rate variance. For example for systematic survey designs, estimators S1, S2 and O1, O2 and O3 will typically provide smaller estimates of the variance.
 
-We combine these two variances by noting that squared coefficients of variation (approximately) add [@Goodman:1960dd] (often referred to as "the delta method").
+We combine these two variances by noting that squared coefficients of variation (approximately) add [often referred to as "the delta method"; @seber2002estimation].
 
 
 ## Estimating abundance and variance in R
@@ -621,7 +622,7 @@ kable(minke_table, digits=3, format="latex", booktabs=TRUE,
 
 # Extensions
 
-The examples of applications for which distance sampling has been used are many.  Objects being detected need not be animals; plants [@Buckland:2007kl], beer cans [@Otto:1990gs], elephant dung [@NchPlu01] and bricks on a lake bottom [@Ber90] have been subjects of distance sampling investigations. The method of detection need not be visual sightings. Detections of objects can be through auditory as well as visual means [@Marques2013b]. Songs of birds [@Buckland2006] and whale vocalisations [@BorSub1] are just two examples. Blows made by whales are examples of processes that can be modelled using distance sampling. Songs and blows are indirect sampling methods producing estimates of cue density. Cue densities can be converted to animal densities with additional data needed to estimate the rate at which cues are produced and the rate at which they disappear. These are but a few examples of the applications to which distance sampling has been applied (a larger, but incomplete list of references is given at \url{http://distancesampling.org/dbib.html}).
+Distance sampling has been applied in a wide variety of situations. Objects being detected need not be animals; plants [@Buckland:2007kl], beer cans [@Otto:1990gs], elephant dung [@NchPlu01] and bricks on a lake bottom [@Ber90] have been subjects of distance sampling investigations. The method of detection need not be visual sightings. Detections of objects can be through auditory as well as visual means [@Marques2013b]. Songs of birds [@Buckland2006] and whale vocalisations [@BorSub1] are just two examples. Blows made by whales are examples of processes that can be modelled using distance sampling. Songs and blows are indirect sampling methods producing estimates of cue density. Cue densities can be converted to animal densities with additional data needed to estimate the rate at which cues are produced and the rate at which they disappear. These are but a few examples of the applications to which distance sampling has been applied (a larger, but incomplete list of references is given at \url{http://distancesampling.org/dbib.html}).
 
 The features of \pkg{Distance} are deliberately limited to provide a simplified interface for users. For more complex analyses of distance sampling data, we provide additional packages for modelling in \proglang{R}.
 
@@ -639,7 +640,9 @@ Distance for Windows has many users (over 45,000 downloads since 2002) and they 
 
 We have given an introduction as to how to perform a distance sampling analysis in \proglang{R}. We have covered the possible models for detectability, model checking and selection and finally abundance and variance estimation.
 
-In combination with tools such as \pkg{knitr} and \pkg{rmarkdown} [@rmarkdown-pkg], the helper functions in \pkg{Distance} provide a useful set of tools to perform reproducible analyses of wildlife abundance for both managers and ecologists. \proglang{R} and its extension packages provide many tools exploratory data analysis that can be useful for a distance sampling analysis. We hope that this paper provides useful examples for those wishing to pursue distance sampling in \proglang{R}. More information on distance sampling can be found at \url{http://distancesampling.org} and a mailing list is maintained at \url{https://groups.google.com/forum/#!forum/distance-sampling}.
+In combination with tools such as \pkg{knitr} and \pkg{rmarkdown} [@rmarkdown-pkg], the helper functions in \pkg{Distance} provide a useful set of tools to perform reproducible analyses of wildlife abundance for both managers and ecologists. We also direct readers' attention to \pkg{DsShiny} [@dsshiny-pkg], a package that builds on \pkg{Shiny} [@shiny-pkg] and \pkg{mrds} to allow users to build and fit models in a graphical interface, with output to RMarkdown.
+
+\proglang{R} and its extension packages provide many tools exploratory data analysis that can be useful for a distance sampling analysis. We hope that this paper provides useful examples for those wishing to pursue distance sampling in \proglang{R}. More information on distance sampling can be found at \url{http://distancesampling.org} and a mailing list is maintained at \url{https://groups.google.com/forum/#!forum/distance-sampling}.
 
 We note that there are other packages available for performing distance sampling analyses in \proglang{R} but believe that \pkg{Distance} is the most flexible and feature-complete, and provides pathways to a range of more complicated analyses. Appendix A gives a feature comparison between \pkg{Distance} and other \proglang{R} packages for analysis of distance sampling data.
 
