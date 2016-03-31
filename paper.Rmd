@@ -32,10 +32,10 @@ author:
       St Andrews, Fife KY16 9LZ, Scotland
     email: lhm@st-andrews.ac.uk
   - name: Jeffrey L Laake
-    affiliation: National Oceanic and Atmospheric Administration
+    affiliation: Marine Mammal Laboratory
     address: >
-      Marine Mammal Laboratory
       Alaska Fisheries Science Center
+      National Oceanic and Atmospheric Administration
       7600 Sand Point Way N.E., Seattle, WA 98115, USA
     email: Jeff.Laake@noaa.gov
 title:
@@ -427,7 +427,7 @@ A detection function can be fitted in \pkg{Distance} using the \code{ds} functio
 
 First we fit a model to the minke whale data, setting the truncation at 1.5km and using the default options in \code{ds} very simply:
 ```{r minke-hn}
-minke_hn <- ds(minke, truncation=1.5)
+minke_hn <- ds(minke, truncation = 1.5)
 ```
 Note that when there are no covariates in the model, \code{ds} will add adjustment terms to the model until there is no improvement in AIC.
 
@@ -435,13 +435,14 @@ Figure \ref{fig:minkeamakihi} (left panel) shows the result of calling \code{plo
 
 A different form for the detection function can be specified via the \code{key=} argument to \code{ds}. For example, a hazard rate model can be fitted as:
 ```{r minke-hr-cos}
-minke_hrcos <- ds(minke, truncation=1.5, key="hr")
+minke_hrcos <- ds(minke, truncation = 1.5, key = "hr")
 ```
 Here \code{ds} also fits the hazard-rate model then hazard-rate with a cosine adjustment but the AIC improvement is insufficient to select the adjustment, so the hazard-rate key-only model is returned.
 
 Other adjustment series can be selected using the `adjustment=` argument and specific orders of adjustments can be set using `order=`. For example, to specify a uniform model with cosine adjustments of order 1 and 2 we can write:
 ```{r minke-unif-cos}
-minke_unifcos <- ds(minke, truncation=1.5, key="unif", adjustment="cos", order=c(1,2))
+minke_unifcos <- ds(minke, truncation = 1.5, key = "unif",
+                    adjustment = "cos", order = c(1, 2))
 ```
 Hermite polynomial adjustments use the code `"herm"` and simple polynomials `"poly"`, adjustment order should be in line with Table \ref{tab:keyadj}.
 
@@ -450,15 +451,15 @@ Hermite polynomial adjustments use the code `"herm"` and simple polynomials `"po
 
 \code{ds} assumes the data given to it has been collected as line transects, but we can switch to point transects using the argument \code{transect="point"}. We can include covariates in the scale parameter via the \code{formula=~...} argument to \code{ds}. A hazard-rate model for the amakihi that includes observer as a covariate and a truncation distance of 82.5m [@Marques:2007ey] can be specified using :
 ```{r amakihi-hr-obs}
-amakihi_hr_obs <- ds(amakihi, truncation=82.5, transect="point",
-                     key="hr", formula=~obs)
+amakihi_hr_obs <- ds(amakihi, truncation = 82.5, transect = "point",
+                     key = "hr", formula = ~obs)
 ```
 Note that here, unlike with the minke whale data, \code{ds} warns us that we have only supplied enough information to estimate the detection function (not density or abundance).
 
 While automatic AIC selection is performed on adjustment terms, model selection for covariates must be performed manually. Here we add a second covariate: minutes after sunrise. We will compare these two models further in the following section.
 ```{r amakihi-hr-obs-mas, warning=FALSE}
-amakihi_hr_obs_mas <- ds(amakihi, truncation=82.5, transect="point",
-                         key="hr", formula=~obs+mas)
+amakihi_hr_obs_mas <- ds(amakihi, truncation = 82.5, transect = "point",
+                         key = "hr", formula = ~obs + mas)
 ```
 As with the minke whale model, we can plot the resulting models (Figure \ref{fig:minkeamakihi}, middle and right panels). However, for point transect studies, probability density function plots give a better sense of model fit than the detection function plots. This is because when plotting the detection function for point transect data, the histogram must be rescaled to account for the geometry of the point sampler. The amakihi models included covariates, so the plots show the detection function averaged over levels/values of the covariate. Points on the plot indicate probability of detection for each observation. For the `amakihi_hr_obs` model we see fairly clear levels of the observer covariate in the points. Looking at the right panel of Figure \ref{fig:minkeamakihi}, this is less clear when adding minutes after sunrise (a continuous covariates) to the model.
 
@@ -490,13 +491,14 @@ Q-Q plots can be inspected visually, though this is prone to subjective judgment
 
 We can generate a Q-Q plot and test results using the \code{gof_ds} function. Figure \ref{amakihi-qq} shows the goodness of fit tests for two models for the amakihi data. We first fit a half-normal model without covariates or adjustments (setting \code{adjustment=NULL} will force \code{ds} to fit a model with no adjustments):
 ```{r amakihi-gof, fig.keep="none"}
-amakihi_hn <- ds(amakihi, truncation=82.5, transect="point", key="hn", adjustment=NULL)
+amakihi_hn <- ds(amakihi, truncation = 82.5, transect = "point",
+                 key = "hn", adjustment = NULL)
 gof_ds(amakihi_hn)
 gof_ds(amakihi_hr_obs_mas)
 ```
 We can conclude that the half-normal model does not pass our goodness of fit tests and should be discarded. Both hazard-rate models (output only shown for hazard-rate model with observer and minutes after sunrise) had non-significant goodness of fit test statistics and are both therefore deemed plausible models. The corresponding Q-Q plots are shown in Figure \ref{amakihi-qq}, comparing the half-normal model with the hazard-rate model with observer and minutes after sunrise included.
 
-```{r, amakihi-qq-comp, fig.width=6, fig.height=3, fig.cap="Comparison of quantile-quantile plots for a half-normal model (no adjustments, no covariates; left) and hazard-rate model with observer and minutes after sunrise (right) for the amakihi data.\\label{amakihi-qq}", echo=FALSE, results="hide"}
+```{r amakihi-qq-comp, fig.width=6, fig.height=3, fig.cap="Comparison of quantile-quantile plots for a half-normal model (no adjustments, no covariates; left) and hazard-rate model with observer and minutes after sunrise (right) for the amakihi data.\\label{amakihi-qq}", echo=FALSE, results="hide"}
 par(mfrow=c(1,2))
 gof_ds(amakihi_hn, asp=1, cex=0.3)  # shrinking dot size to obliterate 45-deg line less
 gof_ds(amakihi_hr_obs_mas, asp=1, cex=0.3)
