@@ -1,8 +1,9 @@
 ## fix the .tex file outputted by RStudio
 
-# does 2 things:
+# does these things:
 #  1. fix the table captions to be at the end
 #  2. make the authors go on separate lines
+#  3. set the shortnames option on
 
 ## 1. fix the table captions
 
@@ -60,3 +61,11 @@ rr[which(grepl("\\author{", rr, fixed=TRUE))+1] <- authorline
 
 # write it out
 writeLines(rr, "paper.tex")
+
+
+## 3. turn on shortnames for citations
+
+rr <- readLines("paper.tex")
+rr[1] <- sub("[article]", "[article,shortnames]", rr[1], fixed=TRUE)
+writeLines(rr, "paper.tex")
+
