@@ -141,7 +141,7 @@ axis(2, at=round(c(0,max(pdf.observed)/2,max(pdf.observed)),4)); axis(1); box()
 
 Figure \ref{fig:pointslines} shows simulated sampling of a population of 500 objects using line and point transects and their corresponding histograms of observed detection distances. Note that for the purposes of distance sampling an "object" may either refer to an individual in a population or a cluster of individuals.  
 
-```{r points-and-lines, fig.height=6, fig.width=7, echo=FALSE, message=FALSE, fig.cap="Left side plots show an example of a survey of a (1x1) area containing a population of 500 objects; blue dashed lines (top plot) and triangles (bottom plot) indicate sampler placement, red dots indicate detected individuals and grey dots give the locations of unobserved individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).\\label{fig:pointslines}"}
+```{r points-and-lines, fig.height=6, fig.width=7, echo=FALSE, message=FALSE, warning=FALSE, fig.cap="Left side plots show an example of a survey of a (1x1) area containing a population of 500 objects; blue dashed lines (top plot) and triangles (bottom plot) indicate sampler placement, red dots indicate detected individuals and grey dots give the locations of unobserved individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).\\label{fig:pointslines}"}
 opar <- par(mfrow=c(2,2))
 # line and point transect examples
 # top row points/samplers in space
@@ -257,17 +257,14 @@ It is also possible to use distances collected in intervals ("binned" or "groupe
 The columns \code{distance}, \code{Area} and (in the case of line transects) \code{Effort} have associated units (though these are not explicitly included in a \pkg{Distance} analysis). We recommend that data in these columns are converted to SI units before starting any analysis to ensure that resulting abundance and density estimates have sensible units. For example, if distances from a line transect survey are recorded in metres, the \code{Effort} columns should contain line lengths also in metres and the \code{Area} column gives the stratum areas in square metres. This would lead to density estimates of animals per square metre.
 
 The minke whale data follows the "flatfile" format given in the last bullet point:
-```{r load-data, echo=FALSE}
-# quietly load the data
-load("data/minke.RData")
-load("data/amakihi.RData")
-```
 ```{r minke-data-head, message=FALSE}
 library("Distance")
+data(minke)
 head(minke)
 ```
 Whereas the amakihi data lacks effort and stratum data:
 ```{r amakihi-data-head}
+data(amakihi)
 head(amakihi)
 ```
 
