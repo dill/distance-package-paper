@@ -67,9 +67,11 @@ bibliography: jstatsoft.bib
 
 # Introduction
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, cache=FALSE}
 library("knitr")
-opts_chunk$set(cache=TRUE)
+knitr::opts_chunk$set(cache=TRUE)
+knitr::opts_chunk$set(prompt = TRUE)
+options(prompt = 'R> ')
 ```
 
 Distance sampling [@Buckland:2001vm; @Buckland:2004ts; @buckland2015distance] encompasses a suite of methods used to estimate the density and/or abundance of biological populations. Distance sampling can be thought of as an extension of plot sampling. Plot sampling involves selecting a number of plots (small areas) at random within the study area and counting the objects of interest that are contained within each plot. By selecting the plots at random we can assume that the density of objects in the plots is representative of the study area as a whole. One of the key assumptions of plot sampling is that all objects within each of the plots are counted. Distance sampling relaxes this assumption in that observers are no longer required to detect (either by eye, video/audio recording etc) and count everything within selected plots. While plot sampling techniques are adequate for static populations occurring at high density they are inefficient for more sparsely distributed populations. Distance sampling provides a more efficient solution in such circumstances.
@@ -147,7 +149,7 @@ opar <- par(mfrow=c(2,2))
 
 # generate some animals to sample
 set.seed(15) # same results every time
-library("mgcv", quietly=TRUE) # for inSide
+suppressPackageStartupMessages(library("mgcv")) # for inSide
 
 # generate population locations
 N <- 500
