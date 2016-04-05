@@ -172,9 +172,6 @@ of distance sampling an ``object'' may either refer to an individual in
 a population or a cluster of individuals.
 
 \begin{CodeChunk}
-\begin{CodeOutput}
-Warning: package 'nlme' was built under R version 3.2.4
-\end{CodeOutput}
 \begin{figure}
 
 {\centering \includegraphics{paper_files/figure-latex/points-and-lines-1} 
@@ -337,8 +334,8 @@ bullet point:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-library("Distance")
-head(minke)
+R> library("Distance")
+R> head(minke)
 \end{CodeInput}
 \begin{CodeOutput}
   Region.Label  Area Sample.Label Effort distance
@@ -355,7 +352,7 @@ Whereas the amakihi data lacks effort and stratum data:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-head(amakihi)
+R> head(amakihi)
 \end{CodeInput}
 \begin{CodeOutput}
    survey object distance obs mas has detected
@@ -578,7 +575,7 @@ First we fit a model to the minke whale data, setting the truncation at
 
 \begin{CodeChunk}
 \begin{CodeInput}
-minke_hn <- ds(minke, truncation = 1.5)
+R> minke_hn <- ds(minke, truncation = 1.5)
 \end{CodeInput}
 \begin{CodeOutput}
 Starting AIC adjustment term selection.
@@ -618,7 +615,7 @@ be fitted as:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-minke_hrcos <- ds(minke, truncation = 1.5, key = "hr")
+R> minke_hrcos <- ds(minke, truncation = 1.5, key = "hr")
 \end{CodeInput}
 \begin{CodeOutput}
 Starting AIC adjustment term selection.
@@ -655,7 +652,7 @@ adjustments of order 1 and 2 we can write:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-minke_unifcos <- ds(minke, truncation = 1.5, key = "unif",
+R> minke_unifcos <- ds(minke, truncation = 1.5, key = "unif",
                     adjustment = "cos", order = c(1, 2))
 \end{CodeInput}
 \begin{CodeOutput}
@@ -682,7 +679,7 @@ specified using :
 
 \begin{CodeChunk}
 \begin{CodeInput}
-amakihi_hr_obs <- ds(amakihi, truncation = 82.5, transect = "point",
+R> amakihi_hr_obs <- ds(amakihi, truncation = 82.5, transect = "point",
                      key = "hr", formula = ~obs)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -710,7 +707,7 @@ models further in the following section.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-amakihi_hr_obs_mas <- ds(amakihi, truncation = 82.5, transect = "point",
+R> amakihi_hr_obs_mas <- ds(amakihi, truncation = 82.5, transect = "point",
                          key = "hr", formula = ~obs + mas)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -762,7 +759,7 @@ covariate:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-summary(amakihi_hr_obs)
+R> summary(amakihi_hr_obs)
 \end{CodeInput}
 \begin{CodeOutput}
 
@@ -836,7 +833,7 @@ force \code{ds} to fit a model with no adjustments):
 
 \begin{CodeChunk}
 \begin{CodeInput}
-amakihi_hn <- ds(amakihi, truncation = 82.5, transect = "point",
+R> amakihi_hn <- ds(amakihi, truncation = 82.5, transect = "point",
                  key = "hn", adjustment = NULL)
 \end{CodeInput}
 \begin{CodeOutput}
@@ -852,7 +849,7 @@ AIC= 10833.841
 No survey area information supplied, only estimating detection function.
 \end{CodeOutput}
 \begin{CodeInput}
-gof_ds(amakihi_hn)
+R> gof_ds(amakihi_hn)
 \end{CodeInput}
 \begin{CodeOutput}
 
@@ -865,7 +862,7 @@ Distance sampling Cramer-von Mises test (unweighted)
 Test statistic =  0.93083  P =  0.003578 
 \end{CodeOutput}
 \begin{CodeInput}
-gof_ds(amakihi_hr_obs_mas)
+R> gof_ds(amakihi_hr_obs_mas)
 \end{CodeInput}
 \begin{CodeOutput}
 
@@ -918,7 +915,7 @@ by the following call to \code{summarize_ds_models}:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-summarize_ds_models(amakihi_hn, amakihi_hr_obs, amakihi_hr_obs_mas)
+R> summarize_ds_models(amakihi_hn, amakihi_hr_obs, amakihi_hr_obs_mas)
 \end{CodeInput}
 \end{CodeChunk}
 
@@ -1123,7 +1120,7 @@ results of the abundance estimation by viewing the model summary:
 
 \begin{CodeChunk}
 \begin{CodeInput}
-summary(minke_hn)
+R> summary(minke_hn)
 \end{CodeInput}
 \begin{CodeOutput}
 
@@ -1193,9 +1190,9 @@ of precision, such as Table \ref{minke-abund}. We prepare the
 
 \begin{CodeChunk}
 \begin{CodeInput}
-minke_table <- summary(minke_hn)$dht$individuals$N
-minke_table$lcl <- minke_table$ucl <- minke_table$df <- NULL
-colnames(minke_table) <- c("Stratum", "$\\hat{N}$", "$\\text{se}(\\hat{N}$)", 
+R> minke_table <- summary(minke_hn)$dht$individuals$N
+R> minke_table$lcl <- minke_table$ucl <- minke_table$df <- NULL
+R> colnames(minke_table) <- c("Stratum", "$\\hat{N}$", "$\\text{se}(\\hat{N}$)", 
                            "$\\text{CV}(\\hat{N}$)")
 \end{CodeInput}
 \end{CodeChunk}
