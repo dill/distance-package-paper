@@ -5,6 +5,10 @@
 #  2. make the authors go on separate lines
 #  3. set the shortnames option on
 
+## NOTE: the "R> " must be added MANUALLY for each source line
+##       as this is not easily added automatically (and should be done
+##       by the rticles package...
+
 ## 1. fix the table captions
 
 rr <- readLines("paper.tex")
