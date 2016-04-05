@@ -1,7 +1,7 @@
 ---
 author:
   - name: David L Miller
-    affiliation: University of St Andrews
+    affiliation: Integrated Statistics and University of St Andrews
   - name: Eric Rexstad
     affiliation: University of St Andrews
   - name: Len Thomas
@@ -10,7 +10,7 @@ author:
     affiliation: University of St Andrews
   - name: Jeffrey L Laake
     affiliation: Marine Mammal Laboratory
-title: "Appendix A: Feature comparison between \\pkg{Distance} and other packages"
+title: "Appendix A: Feature comparison between `Distance` and other packages"
 preamble: >
   \usepackage{amsmath}
   \usepackage{amssymb}
