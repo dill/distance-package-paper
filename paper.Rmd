@@ -259,12 +259,12 @@ The columns \code{distance}, \code{Area} and (in the case of line transects) \co
 The minke whale data follows the "flatfile" format given in the last bullet point:
 ```{r minke-data-head, message=FALSE}
 library("Distance")
-data(minke)
+data("minke")
 head(minke)
 ```
 Whereas the amakihi data lacks effort and stratum data:
 ```{r amakihi-data-head}
-data(amakihi)
+data("amakihi")
 head(amakihi)
 ```
 
