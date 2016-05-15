@@ -30,7 +30,7 @@ R> example_model <- lm(response ~ variable1 + variable2 + variable3,
 
 o For R-related manuscripts: The first argument of data() and library() should always be quoted, e.g., library("foo"). [' data(minke)', ' data(amakihi)']
 
-o If using "e.g." and "i.e." add a comma after the period to keep LaTeX from interpreting them as the end of a sentence, i.e.: "e.g., " and "i.e., ".
+o ~~~If using "e.g." and "i.e." add a comma after the period to keep LaTeX from interpreting them as the end of a sentence, i.e.: "e.g., " and "i.e., ".~~~
 
 o \top should be used as the transpose symbol, e.g., X^\top.
 
