@@ -32,7 +32,7 @@ o ~~~For R-related manuscripts: The first argument of data() and library() shoul
 
 o ~~~If using "e.g." and "i.e." add a comma after the period to keep LaTeX from interpreting them as the end of a sentence, i.e.: "e.g., " and "i.e., ".~~~
 
-o \top should be used as the transpose symbol, e.g., X^\top.
+o ~~~\top should be used as the transpose symbol, e.g., X^\top.~~~
 
 o In all cases, code input/output must fit within the normal text width of the manuscript.  Thus, code input should have appropriate line breaks and code output should preferably be generated with a suitable width (or otherwise edited). E.g., see p. 21.
 
