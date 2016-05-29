@@ -1,53 +1,4 @@
-\documentclass[article]{jss}\usepackage[]{graphicx}\usepackage[]{color}
-%% maxwidth is the original width if it is less than linewidth
-%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
-\makeatletter
-\def\maxwidth{ %
-  \ifdim\Gin@nat@width>\linewidth
-    \linewidth
-  \else
-    \Gin@nat@width
-  \fi
-}
-\makeatother
-
-\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
-\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
-\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
-\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
-\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
-\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
-\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
-\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
-\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
-\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
-
-\usepackage{framed}
-\makeatletter
-\newenvironment{kframe}{%
- \def\at@end@of@kframe{}%
- \ifinner\ifhmode%
-  \def\at@end@of@kframe{\end{minipage}}%
-  \begin{minipage}{\columnwidth}%
- \fi\fi%
- \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
- \colorbox{shadecolor}{##1}\hskip-\fboxsep
-     % There is no \\@totalrightmargin, so:
-     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
- \MakeFramed {\advance\hsize-\width
-   \@totalleftmargin\z@ \linewidth\hsize
-   \@setminipage}}%
- {\par\unskip\endMakeFramed%
- \at@end@of@kframe}
-\makeatother
-
-\definecolor{shadecolor}{rgb}{.97, .97, .97}
-\definecolor{messagecolor}{rgb}{0, 0, 0}
-\definecolor{warningcolor}{rgb}{1, 0, 1}
-\definecolor{errorcolor}{rgb}{1, 0, 0}
-\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
-
-\usepackage{alltt}
+\documentclass[article]{jss}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -139,12 +90,15 @@ Estimating the abundance and spatial distribution of animal and plant population
 %% need no \usepackage{Sweave.sty}
 
 %% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+
 \begin{document}
 %\SweaveOpts{concordance=TRUE}
 
 \section{Introduction}
-
+<<label=setup, echo=FALSE>>=
+options(prompt = 'R> ')
+@
 
 Distance sampling \citep{Buckland:2001vm, Buckland:2004ts, buckland2015distance} encompasses a suite of methods used to estimate the density and/or abundance of biological populations. Distance sampling can be thought of as an extension of plot sampling. Plot sampling involves selecting a number of plots (small areas) at random within the study area and counting the objects of interest that are contained within each plot. By selecting the plots at random we can assume that the density of objects in the plots is representative of the study area as a whole. One of the key assumptions of plot sampling is that all objects within each of the plots are counted. Distance sampling relaxes this assumption in that observers are no longer required to detect (either by eye, video/audio recording etc) and count everything within selected plots. While plot sampling techniques are adequate for static populations occurring at high density they are inefficient for more sparsely distributed populations. Distance sampling provides a more efficient solution in such circumstances.
 
@@ -165,11 +119,53 @@ For line transect studies we assume that objects are uniformly distributed with 
 
 \begin{figure}
 \begin{center}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=\maxwidth]{figure/detectdists-1} 
+<<label=detectdists, fig=TRUE, echo=FALSE, message=FALSE>>=
 
-\end{knitrout}
+par(mfrow=c(2,3))
+#line and point transect examples
+
+hn.detect <- function(x, sigma) exp(-((x^2)/(2*(sigma^2))))
+hn.detect.scaled <- function(x, sigma) hn.detect(x,sigma)/integrate(hn.detect, 0, 500, sigma = sigma)$value
+
+x <- seq(0,500, length = 100)
+y <- hn.detect(x, sigma = 200)
+y.scaled <- hn.detect.scaled(x, sigma = 200)
+
+set.cex = 1
+set.cex.lab = 1.2
+set.cex.main = 2
+#Line transect example
+plot(x, y, xlab = "Perpendicular distance", ylab = "Probability of detection", type = "l", ylim = c(0,1.1), cex = set.cex, cex.lab = set.cex.lab, axes=FALSE)
+axis(2, at=c(0,1/2,1)); axis(1); box()
+
+w <- 1/500
+line.availability <- rep(w,100)
+plot(x, line.availability, xlab = "Perpendicular distance", ylab = "pdf of object distances", type = "l", ylim = c(0,w*1.1), xlim = c(0,500), cex = set.cex, cex.lab = set.cex.lab, main = "Line Transect", cex.main = set.cex.main, axes=FALSE)
+axis(2, at=c(0,w/2,w)); axis(1); box()
+
+plot(x,y.scaled, xlab = "Perpendicular distance", ylab= "pdf of observed distances", type = "l", ylim = c(0,0.0044), cex = set.cex, cex.lab = set.cex.lab, axes=FALSE)
+axis(2, at=round(c(0,median(y.scaled),max(y.scaled)),3)); axis(1); box()
+
+#Point Transect example
+plot(x, y, xlab = "Radial distance", ylab = "Probability of detection", type = "l", ylim = c(0,1.1), cex = set.cex, cex.lab = set.cex.lab, axes=FALSE)
+axis(2, at=c(0,1/2,1)); axis(1); box()
+
+point.area <- function(x) 2*pi*x
+
+point.availability <- 2*pi*x/integrate(point.area, 0, 500)$value
+
+plot(x, point.availability, xlab = "Radial distance", ylab = "pdf of object distances", type = "l", ylim = c(0,2*w*1.1), xlim = c(0,500), cex = set.cex, cex.lab = set.cex.lab, main = "Point Transect", cex.main = set.cex.main, axes=FALSE)
+axis(2, at=c(0,w,2*w)); axis(1); box()
+
+point.observed.shape <- function(x, sigma) 2*pi*x*hn.detect(x, sigma)
+
+pdf.point.observed <- function(x, sigma) point.observed.shape(x, sigma = sigma)/integrate(point.observed.shape, 0, 500, sigma = sigma)$value
+
+
+pdf.observed <- pdf.point.observed(x, sigma = 200)
+plot(x, pdf.observed, xlab = "Radial distance", ylab= "pdf of observed distances", type = "l", ylim = c(0,0.00345), cex = set.cex, cex.lab = set.cex.lab, axes=FALSE)
+axis(2, at=round(c(0,max(pdf.observed)/2,max(pdf.observed)),4)); axis(1); box()
+@
 \caption{Panels show an example detection function (left), the pdf of object distances (middle) and the resulting pdf of detection distances (right) for line transects (top row) and point transects (bottom row). The pdf of observed detection distances in the right hand plots are obtained by multiplying the detection function by the pdf of object distances and rescaling. In this example, detection probability becomes effectively zero at 500 (distances shown on $x$-axis are arbitrary).}
 \label{fig:detectiondist}
 \end{center}
@@ -179,11 +175,84 @@ Figure \ref{fig:pointslines} shows simulated sampling of a population of 500 obj
 
 \begin{figure}
 \begin{center}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=\maxwidth]{figure/points-and-lines-1} 
+<<label=points-and-lines, fig=TRUE, echo=FALSE, message=FALSE, warning=FALSE>>=
+opar <- par(mfrow=c(2,2))
+# line and point transect examples
+# top row points/samplers in space
+# bottom row histograms
 
-\end{knitrout}
+# generate some animals to sample
+set.seed(15) # same results every time
+suppressPackageStartupMessages(library("mgcv")) # for inSide
+
+# generate population locations
+N <- 500
+x <- runif(N)
+y <- runif(N)
+
+## line transects
+opar2 <- par(mar=c(1, 1, 1, 1) + 0.1)
+plot(x, y, pch=19, asp=1, cex=0.6, main="",col="grey", axes=FALSE, xlab="", ylab="")
+polygon(x=c(0,0,1,1,0), y=c(0,1,1,0,0))
+# generate some lines
+# in this case we don't randomise the offset of the grid
+lt <- list(x=c(-0.0125,-0.0125,0.0125,0.0125,-0.0125), y=c(0,1,1,0,0))
+# set sigma
+sigma <- 0.035
+# storage for detected distances
+detected_distances <- c()
+for(i in 1:6){
+  # calculate next strip location
+  lt$x <- lt$x+0.15
+  # plot the line transect
+  lines(x=rep(mean(range(lt$x)),2), y=c(0,1), col="blue",lty=2)
+  # calculate the distances to objects from the line
+  distances <- abs(lt$x - x)
+  # randomly decide which were detected
+  detected <- exp(-distances^2/(2*sigma^2)) > runif(length(distances))
+#  detected <- (1-exp(-(distances/sigma)^(-1.2))) > runif(length(distances))
+  # plot those objects detected
+  points(x[detected], y[detected], pch=19, cex=0.6, col="red")
+  # collect the distances to detected objects
+  detected_distances <- c(detected_distances, distances[detected])
+}
+
+#par(opar2)
+par(mar=c(4, 4, 1, 2) + 0.1)
+hist(detected_distances, main="", xlab="Observed perpendicular distances")
+
+## point transects
+par(mar=c(1, 1, 1, 1) + 0.1)
+plot(x, y, pch=19, asp=1, cex=0.6, main="", col="grey", axes=FALSE, xlab="", ylab="")
+polygon(x=c(0,0,1,1,0), y=c(0,1,1,0,0))
+
+# set sigma
+sigma <- 0.05
+# storage for detected distances
+detected_distances <- c()
+# lay out a grid of points
+pt <- as.list(expand.grid(x=seq(0.15, 0.85, len=3), y=seq(0.15, 0.85, len=3)))
+for(i in 1:length(pt$x)){
+  # generate point location
+  # plot the point transect
+##LT: Changed from pch19 to pch4 so that colour-blind people can see where the samples are
+#  points(pt$x[i], pt$y[i], pch=19, col="blue",cex=0.7)
+  points(pt$x[i], pt$y[i], pch=17, col="blue",cex=1.5)
+  # calculate the distances to objects from the line
+  distances <- sqrt((pt$x[i] - x)^2+(pt$y[i]-y)^2)
+  # randomly decide which were detected
+  detected <- exp(-distances^2/(2*sigma^2)) > runif(length(distances))
+  # plot those objects detected
+  points(x[detected], y[detected], pch=19, cex=0.6, col="red")
+  # collect the distances to detected objects
+  detected_distances <- c(detected_distances, distances[detected])
+}
+
+par(mar=c(4, 4, 1, 2) + 0.1)
+hist(detected_distances, main="", xlab="Observed radial distances")
+
+par(opar)
+@
 \caption{"Left side plots show an example of a survey of a (1x1) area containing a population of 500 objects; blue dashed lines (top plot) and triangles (bottom plot) indicate sampler placement, red dots indicate detected individuals and grey dots give the locations of unobserved individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).}
 \label{fig:pointslines}
 \end{center}
@@ -229,42 +298,16 @@ It is also possible to use distances collected in intervals ("binned" or "groupe
 The columns \code{distance}, \code{Area} and (in the case of line transects) \code{Effort} have associated units (though these are not explicitly included in a \pkg{Distance} analysis). We recommend that data in these columns are converted to SI units before starting any analysis to ensure that resulting abundance and density estimates have sensible units. For example, if distances from a line transect survey are recorded in metres, the \code{Effort} columns should contain line lengths also in metres and the \code{Area} column gives the stratum areas in square metres. This would lead to density estimates of animals per square metre.
 
 The minke whale data follows the "flatfile" format given in the last bullet point:
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{library}\hlstd{(}\hlstr{"Distance"}\hlstd{)}
-\hlkwd{data}\hlstd{(}\hlstr{"minke"}\hlstd{)}
-\hlkwd{head}\hlstd{(minke)}
-\end{alltt}
-\begin{verbatim}
-##   Region.Label  Area Sample.Label Effort distance
-## 1        South 84734            1  86.75     0.10
-## 2        South 84734            1  86.75     0.22
-## 3        South 84734            1  86.75     0.16
-## 4        South 84734            1  86.75     0.78
-## 5        South 84734            1  86.75     0.21
-## 6        South 84734            1  86.75     0.95
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<label=minke-data-head, message=FALSE>>=
+library("Distance")
+data("minke")
+head(minke)
+@
 Whereas the amakihi data lacks effort and stratum data:
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{data}\hlstd{(}\hlstr{"amakihi"}\hlstd{)}
-\hlkwd{head}\hlstd{(amakihi)}
-\end{alltt}
-\begin{verbatim}
-##    survey object distance obs mas has detected
-## 1 July 92      1       40 TJS  50   1        1
-## 2 July 92      2       60 TJS  50   1        1
-## 3 July 92      3       45 TJS  50   1        1
-## 4 July 92      4      100 TJS  50   1        1
-## 5 July 92      5      125 TJS  50   1        1
-## 6 July 92      6      120 TJS  50   1        1
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<label=amakihi-data-head>>=
+data("amakihi")
+head(amakihi)
+@
 
 We will explore the consequences of including effort and stratum data in the analysis below.
 
@@ -315,11 +358,33 @@ Possible modelling options for key and adjustments are given in Table \ref{tab:k
 
 \begin{figure}
 \begin{center}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=\maxwidth]{figure/hn-hr-par-comp-1} 
+<<label=hn-hr-par-comp, fig=TRUE, echo=FALSE>>=
+par(mfrow=c(2,4), mar=c(3.5, 3, 2, 1) + 0.1)
 
-\end{knitrout}
+## half-normal
+g.hn <- function(x,sigma) exp(-x^2/(2*sigma^2))
+for(this.sig in c(0.05, 0.25, 1, 10)){
+  this.g <- function(x) g.hn(x, sigma=this.sig)
+  curve(this.g, from=0, to=1, xlab="", ylab="",
+        main=bquote(sigma == .(this.sig)),
+        xlim=c(0,1), ylim=c(0,1), asp=1)
+  title(xlab="Distance", line=2)
+  title(ylab="Detection probability", line=2)
+}
+
+## hazard-rate
+g.hr <- function(x, sigma, b) 1 - exp(-(x/sigma)^-b)
+for(this.sig in c(0.1, 0.5)){
+  for(this.b in c(5, 1)){
+    this.g <- function(x) g.hr(x, sigma=this.sig, b=this.b)
+    curve(this.g, from=0, to=1, xlab="", ylab="",
+          main=bquote(sigma == .(this.sig) ~ .(", b") == .(this.b)),
+          xlim=c(0,1), ylim=c(0,1), asp=1)
+    title(xlab="Distance", line=2)
+    title(ylab="Detection probability", line=2)
+  }
+}
+@
 \caption{Half-normal (top row) and hazard-rate (bottom row) detection functions without adjustments, varying scale ($\sigma$) and (for hazard-rate) shape ($b$) parameters (values are given above the plots). On the top row from left to right, the study species becomes more detectable (higher probability of detection at larger distances). The bottom row shows the hazard-rate model's more pronounced shoulder.}
 \label{fig:hnhr}
 \end{center}
@@ -353,11 +418,36 @@ It is not always necessary to include adjustments (except in the case of the uni
 
 \begin{figure}
 \begin{center}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=\maxwidth]{figure/adjust-mix-comp-1} 
+<<label=adjust-mix-comp, fig=TRUE, echo=FALSE>>=
+par(mfrow=c(1,4), mar=c(3.5, 3, 3, 1) + 0.1)
 
-\end{knitrout}
+## half-normal with cosine
+g <- function(x) exp(-x^2/(2*0.01^2))*(1+0.5*cos((2*pi*x)/0.025))
+f <- function(x) g(x)/g(0)
+curve(f, from=0, to=0.025, xlab="", ylab="", main="Half-normal with \n1 cosine adjustment", xlim=c(0,0.025), ylim=c(0,1))
+title(xlab="Distance", line=2)
+title(ylab="Detection probability", line=2)
+# 2 cosines
+g <- function(x) exp(-x^2/(2*0.011^2))*(1-0.06*cos((2*pi*x)/0.025)+0.25*cos((3*pi*x)/0.025))
+f <- function(x) g(x)/g(0)
+curve(f, from=0, to=0.025, xlab="", ylab="", main="Half-normal with \n2 cosine adjustments",xlim=c(0,0.025), ylim=c(0,1))
+title(xlab="Distance", line=2)
+title(ylab="Detection probability", line=2)
+
+## hazard-rate with cosine
+g <- function(x) (1 - exp(-(x/0.011)^-3))*(1+0.05*cos((2*pi*x)/0.025))
+f <- function(x) g(x)/g(0)
+curve(f, from=0, to=0.025, xlab="", ylab="", main="Hazard-rate with \n1 cosine adjustment", xlim=c(0,0.025), ylim=c(0,1))
+title(xlab="Distance", line=2)
+title(ylab="Detection probability", line=2)
+# 2 cosines
+g <- function(x) (1 - exp(-(x/0.0199)^-1.4))*
+                 (1-0.08*cos((2*pi*x)/0.025)+0.08*cos((3*pi*x)/0.025))
+f <- function(x) g(x)/g(0)
+curve(f, from=0, to=0.025, xlab="", ylab="", main="Hazard-rate with \n2 cosine adjustment", xlim=c(0,0.025), ylim=c(0,1))
+title(xlab="Distance", line=2)
+title(ylab="Detection probability", line=2)
+@
 \caption{Possible shapes for the detection function when cosine adjustments are included for half-normal and hazard-rate models.}
 \label{fig:keyadj}
 \end{center}
@@ -390,118 +480,54 @@ A detection function can be fitted in \pkg{Distance} using the \code{ds} functio
 \subsubsection{Minke whale}
 
 First we fit a model to the minke whale data, setting the truncation at 1.5km and using the default options in \code{ds} very simply:
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{minke_hn} \hlkwb{<-} \hlkwd{ds}\hlstd{(minke,} \hlkwc{truncation} \hlstd{=} \hlnum{1.5}\hlstd{)}
-\end{alltt}
-
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Starting AIC adjustment term selection.}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Fitting half-normal key function}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Key only model: not constraining for monotonicity.}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# AIC= 46.872}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Fitting half-normal key function with cosine(2) adjustments}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# AIC= 48.872}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# Half-normal key function selected.}}\end{kframe}
-\end{knitrout}
+<<label=minke-hn>>=
+minke_hn <- ds(minke, truncation = 1.5)
+@
 Note that when there are no covariates in the model, \code{ds} will add adjustment terms to the model until there is no improvement in AIC.
 
 Figure \ref{fig:minkeamakihi} (left panel) shows the result of calling \code{plot} on the resulting model object. We can also call \code{summary} on the model object to get summary information about the fitted model (we postpone this until the next section).
 
 A different form for the detection function can be specified via the \code{key=} argument to \code{ds}. For example, a hazard rate model can be fitted as:
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{minke_hrcos} \hlkwb{<-} \hlkwd{ds}\hlstd{(minke,} \hlkwc{truncation} \hlstd{=} \hlnum{1.5}\hlstd{,} \hlkwc{key} \hlstd{=} \hlstr{"hr"}\hlstd{)}
-\end{alltt}
-
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Starting AIC adjustment term selection.}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Fitting hazard-rate key function}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Key only model: not constraining for monotonicity.}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# AIC= 48.637}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Fitting hazard-rate key function with cosine(2) adjustments}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# AIC= 50.386}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# \\\#\# Hazard-rate key function selected.}}\end{kframe}
-\end{knitrout}
+<<label=minke-hr-cos>>=
+minke_hrcos <- ds(minke, truncation = 1.5, key = "hr")
+@
 Here \code{ds} also fits the hazard-rate model then hazard-rate with a cosine adjustment but the AIC improvement is insufficient to select the adjustment, so the hazard-rate key-only model is returned.
 
 Other adjustment series can be selected using the `adjustment=` argument and specific orders of adjustments can be set using `order=`. For example, to specify a uniform model with cosine adjustments of order 1 and 2 we can write:
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{minke_unifcos} \hlkwb{<-} \hlkwd{ds}\hlstd{(minke,} \hlkwc{truncation} \hlstd{=} \hlnum{1.5}\hlstd{,} \hlkwc{key} \hlstd{=} \hlstr{"unif"}\hlstd{,}
-                    \hlkwc{adjustment} \hlstd{=} \hlstr{"cos"}\hlstd{,} \hlkwc{order} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{))}
-\end{alltt}
-
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Fitting uniform key function with cosine(1,2) adjustments}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# AIC= 48.268}}\end{kframe}
-\end{knitrout}
+<<label=minke-unif-cos>>=
+minke_unifcos <- ds(minke, truncation = 1.5, key = "unif",
+                    adjustment = "cos", order = c(1, 2))
+@
 Hermite polynomial adjustments use the code `"herm"` and simple polynomials `"poly"`, adjustment order should be in line with Table \ref{tab:keyadj}.
 
 
 \subsubsection{Amakihi}
 
 \code{ds} assumes the data given to it has been collected as line transects, but we can switch to point transects using the argument \code{transect="point"}. We can include covariates in the scale parameter via the \code{formula=~...} argument to \code{ds}. A hazard-rate model for the amakihi that includes observer as a covariate and a truncation distance of 82.5m [@Marques:2007ey] can be specified using :
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{amakihi_hr_obs} \hlkwb{<-} \hlkwd{ds}\hlstd{(amakihi,} \hlkwc{truncation} \hlstd{=} \hlnum{82.5}\hlstd{,} \hlkwc{transect} \hlstd{=} \hlstr{"point"}\hlstd{,}
-                     \hlkwc{key} \hlstd{=} \hlstr{"hr"}\hlstd{,} \hlkwc{formula} \hlstd{=} \hlopt{~}\hlstd{obs)}
-\end{alltt}
-
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Model contains covariate term(s): no adjustment terms will be included.}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Fitting hazard-rate key function}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# AIC= 10778.448}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# No survey area information supplied, only estimating detection function.}}\end{kframe}
-\end{knitrout}
+<<label=amakihi-hr-obs>>=
+amakihi_hr_obs <- ds(amakihi, truncation = 82.5, transect = "point",
+                     key = "hr", formula = ~obs)
+@
 Note that here, unlike with the minke whale data, \code{ds} warns us that we have only supplied enough information to estimate the detection function (not density or abundance).
 
 While automatic AIC selection is performed on adjustment terms, model selection for covariates must be performed manually. Here we add a second covariate: minutes after sunrise. We will compare these two models further in the following section.
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{amakihi_hr_obs_mas} \hlkwb{<-} \hlkwd{ds}\hlstd{(amakihi,} \hlkwc{truncation} \hlstd{=} \hlnum{82.5}\hlstd{,} \hlkwc{transect} \hlstd{=} \hlstr{"point"}\hlstd{,}
-                         \hlkwc{key} \hlstd{=} \hlstr{"hr"}\hlstd{,} \hlkwc{formula} \hlstd{=} \hlopt{~}\hlstd{obs} \hlopt{+} \hlstd{mas)}
-\end{alltt}
-
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Model contains covariate term(s): no adjustment terms will be included.}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Fitting hazard-rate key function}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# AIC= 10777.376}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# No survey area information supplied, only estimating detection function.}}\end{kframe}
-\end{knitrout}
+<<label=amakihi-hr-obs-mas, warning=FALSE>>=
+amakihi_hr_obs_mas <- ds(amakihi, truncation = 82.5, transect = "point",
+                         key = "hr", formula = ~obs + mas)
+@
 As with the minke whale model, we can plot the resulting models (Figure \ref{fig:minkeamakihi}, middle and right panels). However, for point transect studies, probability density function plots give a better sense of model fit than the detection function plots. This is because when plotting the detection function for point transect data, the histogram must be rescaled to account for the geometry of the point sampler. The amakihi models included covariates, so the plots show the detection function averaged over levels/values of the covariate. Points on the plot indicate probability of detection for each observation. For the \code{amakihi_hr_obs} model we see fairly clear levels of the observer covariate in the points. Looking at the right panel of Figure \ref{fig:minkeamakihi}, this is less clear when adding minutes after sunrise (a continuous covariates) to the model.
 
 \begin{figure}
 \begin{center}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-\includegraphics[width=\maxwidth]{figure/minke-amakihi-hn-plot-1} 
-
-\end{knitrout}
+<<label=minke-amakihi-hn-plot, echo=FALSE, warning=FALSE, fig=TRUE>>=
+par(mfrow=c(1, 3))
+plot(minke_hn, showpoints=FALSE)
+title("Minke whales", cex.main=1.5)
+plot(amakihi_hr_obs, pdf=TRUE, cex=0.7)
+title("Amakihi\n(observer)", cex.main=1.5)
+plot(amakihi_hr_obs_mas, pdf=TRUE, cex=0.7)
+title("Amakihi\n(observer+minutes)", cex.main=1.5)
+@
 \caption{Left: fitted detection function overlayed on the histogram of observed distances for the minke whale data using half-normal model. Centre and right: plots of the probability density function for the amakihi models. Centre, hazard-rate with observer as a covariate; right, hazard-rate model with observer and minutes after sunrise as covariates. Points indicate probability of detection for a given observation (given that observation's covariate values) and lines indicate the average detection function.}
 \label{fig:minkeamakihi}
 \end{center}
@@ -510,37 +536,9 @@ As with the minke whale model, we can plot the resulting models (Figure \ref{fig
 \section{Model checking and model selection}
 
 As with models fitted using \code{lm} or \code{glm} in \proglang{R}, we can use \code{summary} to give useful information about our fitted model. For our hazard-rate model of the amakihi data, with observer as a covariate:
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{summary}\hlstd{(amakihi_hr_obs)}
-\end{alltt}
-\begin{verbatim}
-## 
-## Summary for distance analysis 
-## Number of observations :  1243 
-## Distance range         :  0  -  82.5 
-## 
-## Model : Hazard-rate key function 
-## AIC   : 10778.45 
-## 
-## Detection function parameters
-## Scale coefficient(s):  
-##               estimate         se
-## (Intercept) 3.06441705 0.10878121
-## obsTJS      0.53017364 0.09956539
-## obsTKP      0.08885471 0.18071851
-## 
-## Shape coefficient(s):  
-##              estimate         se
-## (Intercept) 0.8690009 0.06261764
-## 
-##                         Estimate          SE         CV
-## Average p              0.3142723   0.0204413 0.06504326
-## N in covered region 3955.1685709 274.2284029 0.06933419
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<label=amakihi-summary>>=
+summary(amakihi_hr_obs)
+@
 This summary information includes details of the data and model specification, as well as the values of the coefficients ($\beta_j$) and their uncertainties, an "average" value for the detectability (see "Estimating abundance and variance" for details on how this is calculated) and its uncertainty. The final line gives an estimate of abundance in the area covered by the survey (see the next section; though note this estimate does not take into account cluster size).
 
 
@@ -551,82 +549,21 @@ We use a quantile-quantile plot (Q-Q plot) to visually assess how well a detecti
 Q-Q plots can be inspected visually, though this is prone to subjective judgments. Therefore, we also quantify the Q-Q plot's information using a Kolmogorov-Smirnov or Cramér-von Mises test [@Burnham:2004vd]. Both test whether points from the EDF and CDF are from the same distribution. The Kolmogorov-Smirnov uses the test statistic of the largest difference between a point on the Q-Q plot and the line $y=x$, whereas the Cramér-von Mises test uses the sum of all the differences. As it takes into account more information and is therefore more powerful, the Cramér-von Mises is generally preferred. A significant result from either test gives evidence against the null hypothesis (that the data arose from the fitted model), suggesting that the model does not fit the data well. 
 
 We can generate a Q-Q plot and test results using the \code{gof_ds} function. Figure \ref{amakihi-qq} shows the goodness of fit tests for two models for the amakihi data. We first fit a half-normal model without covariates or adjustments (setting \code{adjustment=NULL} will force \code{ds} to fit a model with no adjustments):
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlstd{amakihi_hn} \hlkwb{<-} \hlkwd{ds}\hlstd{(amakihi,} \hlkwc{truncation} \hlstd{=} \hlnum{82.5}\hlstd{,} \hlkwc{transect} \hlstd{=} \hlstr{"point"}\hlstd{,}
-                 \hlkwc{key} \hlstd{=} \hlstr{"hn"}\hlstd{,} \hlkwc{adjustment} \hlstd{=} \hlkwa{NULL}\hlstd{)}
-\end{alltt}
-
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Fitting half-normal key function}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# Key only model: not constraining for monotonicity.}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# AIC= 10833.841}}
-
-{\ttfamily\noindent\itshape\color{messagecolor}{\#\# No survey area information supplied, only estimating detection function.}}\begin{alltt}
-\hlkwd{gof_ds}\hlstd{(amakihi_hn)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/amakihi-gof-1} 
-\begin{kframe}\begin{verbatim}
-## 
-## Goodness of fit results for ddf object
-## 
-## Distance sampling Kolmogorov-Smirnov test
-## Test statistic =  0.059345  P =  0.00031527 
-## 
-## Distance sampling Cramer-von Mises test (unweighted)
-## Test statistic =  0.93083  P =  0.003578
-\end{verbatim}
-\begin{alltt}
-\hlkwd{gof_ds}\hlstd{(amakihi_hr_obs_mas)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/amakihi-gof-2} 
-\begin{kframe}\begin{verbatim}
-## 
-## Goodness of fit results for ddf object
-## 
-## Distance sampling Kolmogorov-Smirnov test
-## Test statistic =  0.036251  P =  0.076237 
-## 
-## Distance sampling Cramer-von Mises test (unweighted)
-## Test statistic =  0.15016  P =  0.38908
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<label=amakihi-gof, grdevice=NULL>>=
+amakihi_hn <- ds(amakihi, truncation = 82.5, transect = "point",
+                 key = "hn", adjustment = NULL)
+gof_ds(amakihi_hn)
+gof_ds(amakihi_hr_obs_mas)
+@
 We can conclude that the half-normal model does not pass our goodness of fit tests and should be discarded. Both hazard-rate models (output only shown for hazard-rate model with observer and minutes after sunrise) had non-significant goodness of fit test statistics and are both therefore deemed plausible models. The corresponding Q-Q plots are shown in Figure \ref{amakihi-qq}, comparing the half-normal model with the hazard-rate model with observer and minutes after sunrise included.
 
 \begin{figure}
 \begin{center}
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{verbatim}
-## 
-## Goodness of fit results for ddf object
-## 
-## Distance sampling Kolmogorov-Smirnov test
-## Test statistic =  0.059345  P =  0.00031527 
-## 
-## Distance sampling Cramer-von Mises test (unweighted)
-## Test statistic =  0.93083  P =  0.003578
-\end{verbatim}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/amakihiqq-1} 
-\begin{kframe}\begin{verbatim}
-## 
-## Goodness of fit results for ddf object
-## 
-## Distance sampling Kolmogorov-Smirnov test
-## Test statistic =  0.036251  P =  0.076237 
-## 
-## Distance sampling Cramer-von Mises test (unweighted)
-## Test statistic =  0.15016  P =  0.38908
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<label=amakihiqq, fig=TRUE, echo=FALSE, message=FALSE>>=
+par(mfrow=c(1,2))
+gof_ds(amakihi_hn, asp=1, cex=0.3)  # shrinking dot size to obliterate 45-deg line less
+gof_ds(amakihi_hr_obs_mas, asp=1, cex=0.3)
+@
 \caption{Comparison of quantile-quantile plots for a half-normal model (no adjustments, no covariates; left) and hazard-rate model with observer and minutes after sunrise (right) for the amakihi data.}
 \label{amakihi-qq}
 \end{center}
@@ -644,24 +581,12 @@ summarize_ds_models(amakihi_hn, amakihi_hr_obs, amakihi_hr_obs_mas)
 
 In this case we may be skeptical about the top model as selected by AIC being truly better than the second best model, as there is only a very small difference in AICs. Generally, if the difference between AICs is less than 2, we may investigate multiple ``best'' models, potentially resorting to the simplest of these models. In the authors' experience, it is often the case that models with similar AICs will have similar estimates probabilities of detection, so in practice there is little difference in selecting between these models. It is important to note that comparing AICs between models with different truncations is not appropriate, as models with different truncation use different data.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{table}
-
-\caption{Summary for the detection function models fitted to the amakihi data. ``C-vM'' stands for Cramér-von Mises, $P_a$ is average detectability (see ``Estimating abundance and variance''), se is standard error. Models are sorted according to AIC.\label{tab:amakihi}}
-\centering
-\begin{tabular}[t]{lllrrrr}
-\toprule
-Model & Key function & Formula & C-vM $p$-value & $\hat{P_a}$ & se($\hat{P_a}$) & $\Delta$AIC\\
-\midrule
-\texttt{amakihi\char`_hr\char`_obs\char`_mas} & Hazard-rate & ~obs + mas & 0.389 & 0.319 & 0.020 & 0.000\\
-\texttt{amakihi\char`_hr\char`_obs} & Hazard-rate & ~obs & 0.271 & 0.314 & 0.020 & 1.073\\
-\texttt{amakihi\char`_hn} & Half-normal & ~1 & 0.004 & 0.351 & 0.011 & 56.465\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-\end{knitrout}
+<<label=summary-table, results="tex", echo=FALSE>>=
+kable(summarize_ds_models(amakihi_hn, amakihi_hr_obs, amakihi_hr_obs_mas),
+      digits = 3, format = "latex", row.names = FALSE, escape=FALSE,
+      booktabs=TRUE,
+      caption="Summary for the detection function models fitted to the amakihi data. ``C-vM'' stands for Cramér-von Mises, $P_a$ is average detectability (see ``Estimating abundance and variance''), se is standard error. Models are sorted according to AIC.\\label{tab:amakihi}")
+@
 
 \section{Estimating abundance and variance}
 
@@ -735,49 +660,9 @@ We combine these two variances by noting that squared coefficients of variation 
 Returning to the minke whale data, we have the necessary information to calculate $A$ and $a$ above, so we can estimate abundance and its variance. When we supply data to \code{ds} in the "flatfile" format given above, \code{ds} will automatically calculate abundance estimates based on the survey information in the data.
 
 Having already fitted a model to the minke whale data, we can see the results of the abundance estimation by viewing the model summary:
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{summary}\hlstd{(minke_hn)}
-\end{alltt}
-\begin{verbatim}
-## 
-## Summary for distance analysis 
-## Number of observations :  88 
-## Distance range         :  0  -  1.5 
-## 
-## Model : Half-normal key function 
-## AIC   : 46.87216 
-## 
-## Detection function parameters
-## Scale coefficient(s):  
-##               estimate        se
-## (Intercept) -0.3411766 0.1070304
-## 
-##                        Estimate          SE         CV
-## Average p             0.5733038  0.04980421 0.08687229
-## N in covered region 153.4962706 17.08959835 0.11133559
-## 
-## Summary statistics:
-##   Region   Area CoveredArea  Effort  n  k         ER      se.ER     cv.ER
-## 1  North 630582     4075.14 1358.38 49 12 0.03607238 0.01317937 0.3653591
-## 2  South  84734     1453.23  484.41 39 13 0.08051031 0.01809954 0.2248102
-## 3  Total 715316     5528.37 1842.79 88 25 0.04775368 0.01129627 0.2365529
-## 
-## Abundance:
-##   Label Estimate        se        cv      lcl      ucl       df
-## 1 North 13225.44 4966.7495 0.3755450 6005.590 29124.93 12.27398
-## 2 South  3966.46  955.9616 0.2410113 2395.606  6567.36 15.80275
-## 3 Total 17191.90 5135.5862 0.2987212 9183.475 32184.07 14.00459
-## 
-## Density:
-##   Label   Estimate          se        cv         lcl        ucl       df
-## 1 North 0.02097339 0.007876453 0.3755450 0.009523884 0.04618738 12.27398
-## 2 South 0.04681073 0.011281913 0.2410113 0.028272077 0.07750560 15.80275
-## 3 Total 0.02403400 0.007179465 0.2987212 0.012838347 0.04499280 14.00459
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+<<label=minke-N-summary>>=
+summary(minke_hn)
+@
 This prints a rather large amount of information: first the detection function summary, then three tables:
 
 1. \code{Summary statistics}: giving the areas, covered areas, effort, number of observations, number of transects, encounter rate, its standard error and coefficient of variation for each stratum. 
@@ -795,24 +680,12 @@ colnames(minke_table) <- c("Stratum", "$\\hat{N}$", "$\\text{se}(\\hat{N}$)",
                            "$\\text{CV}(\\hat{N}$)")
 \end{Code}
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{table}
-
-\caption{Summary of abundance estimation for the half-normal model for the minke whale data.\label{minke-abund}}
-\centering
-\begin{tabular}[t]{lrrr}
-\toprule
-Stratum & $\hat{N}$ & $\text{se}(\hat{N}$) & $\text{CV}(\hat{N}$)\\
-\midrule
-North & 13225.44 & 4966.750 & 0.376\\
-South & 3966.46 & 955.962 & 0.241\\
-Total & 17191.90 & 5135.586 & 0.299\\
-\bottomrule
-\end{tabular}
-\end{table}
-
-
-\end{knitrout}
+<<label=minke-abundance-table, echo=FALSE>>=
+minke_table <- summary(minke_hn)$dht$individuals$N
+minke_table$lcl <- minke_table$ucl <- minke_table$df <- NULL
+colnames(minke_table) <- c("Stratum", "$\\hat{N}$", "$\\text{se}(\\hat{N}$)", "$\\text{CV}(\\hat{N}$)")
+kable(minke_table, digits=3, format="latex", booktabs=TRUE, row.names=FALSE, escape=FALSE,caption="Summary of abundance estimation for the half-normal model for the minke whale data.\\label{minke-abund}")
+@
 
 \section{Extensions}
 
