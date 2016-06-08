@@ -1,4 +1,19 @@
-\documentclass[article]{jss}
+\documentclass[article]{jss}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\usepackage{Sweave}
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% declarations for jss.cls %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -25,7 +40,6 @@
 %% for pretty printing and a nice hypersummary also set:
 \Plainauthor{David L Miller, Eric Rexstad, Len Thomas, Laura Marshall, Jeffrey L Laake}
 \Plaintitle{Distance Sampling in R} %% without formatting
-%\Shorttitle{\pkg{foo}: A Capitalized Title} %% a short title (if necessary)
 
 %% an abstract and keywords
 \Abstract{
@@ -81,20 +95,15 @@ Estimating the abundance and spatial distribution of animal and plant population
   7600 Sand Point Way N.E., Seattle, WA 98115, USA\\
   E-mail: \email{Jeff.Laake@noaa.gov}
 }
-%% It is also possible to add a telephone and fax number
-%% before the e-mail in the following format:
-%% Telephone: +43/512/507-7103
-%% Fax: +43/512/507-2851
-
 %% for those who use Sweave please include the following line (with % symbols):
 %% need no \usepackage{Sweave.sty}
 
 %% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 
 \section{Introduction}
+
 
 Distance sampling \citep{Buckland:2001vm, Buckland:2004ts, buckland2015distance} encompasses a suite of methods used to estimate the density and/or abundance of biological populations. Distance sampling can be thought of as an extension of plot sampling. Plot sampling involves selecting a number of plots (small areas) at random within the study area and counting the objects of interest that are contained within each plot. By selecting the plots at random we can assume that the density of objects in the plots is representative of the study area as a whole. One of the key assumptions of plot sampling is that all objects within each of the plots are counted. Distance sampling relaxes this assumption in that observers are no longer required to detect (either by eye, video/audio recording etc) and count everything within selected plots. While plot sampling techniques are adequate for static populations occurring at high density they are inefficient for more sparsely distributed populations. Distance sampling provides a more efficient solution in such circumstances.
 
@@ -115,7 +124,9 @@ For line transect studies we assume that objects are uniformly distributed with 
 
 \begin{figure}
 \begin{center}
-\includegraphics{paper-detectdists}
+\begin{Schunk}
+
+\includegraphics[width=\maxwidth]{figure/detectdists-1} \end{Schunk}
 \caption{Panels show an example detection function (left), the pdf of object distances (middle) and the resulting pdf of detection distances (right) for line transects (top row) and point transects (bottom row). The pdf of observed detection distances in the right hand plots are obtained by multiplying the detection function by the pdf of object distances and rescaling. In this example, detection probability becomes effectively zero at 500 (distances shown on $x$-axis are arbitrary).}
 \label{fig:detectiondist}
 \end{center}
@@ -125,7 +136,9 @@ Figure \ref{fig:pointslines} shows simulated sampling of a population of 500 obj
 
 \begin{figure}
 \begin{center}
-\includegraphics{paper-points-and-lines}
+\begin{Schunk}
+
+\includegraphics[width=\maxwidth]{figure/points-and-lines-1} \end{Schunk}
 \caption{Left side plots show an example of a survey of a (1x1) area containing a population of 500 objects; blue dashed lines (top plot) and triangles (bottom plot) indicate sampler placement, red dots indicate detected individuals and grey dots give the locations of unobserved individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).}
 \label{fig:pointslines}
 \end{center}
@@ -253,7 +266,9 @@ Possible modelling options for key and adjustments are given in Table \ref{tab:k
 
 \begin{figure}
 \begin{center}
-\includegraphics{paper-hn-hr-par-comp}
+\begin{Schunk}
+
+\includegraphics[width=\maxwidth]{figure/hn-hr-par-comp-1} \end{Schunk}
 \caption{Half-normal (top row) and hazard-rate (bottom row) detection functions without adjustments, varying scale ($\sigma$) and (for hazard-rate) shape ($b$) parameters (values are given above the plots). On the top row from left to right, the study species becomes more detectable (higher probability of detection at larger distances). The bottom row shows the hazard-rate model's more pronounced shoulder.}
 \label{fig:hnhr}
 \end{center}
@@ -287,7 +302,9 @@ It is not always necessary to include adjustments (except in the case of the uni
 
 \begin{figure}
 \begin{center}
-\includegraphics{paper-adjust-mix-comp}
+\begin{Schunk}
+
+\includegraphics[width=\maxwidth]{figure/adjust-mix-comp-1} \end{Schunk}
 \caption{Possible shapes for the detection function when cosine adjustments are included for half-normal and hazard-rate models.}
 \label{fig:keyadj}
 \end{center}
@@ -324,6 +341,28 @@ First we fit a model to the minke whale data, setting the truncation at 1.5km an
 \begin{Sinput}
 R> minke_hn <- ds(minke, truncation = 1.5)
 \end{Sinput}
+\begin{Soutput}
+Starting AIC adjustment term selection.
+\end{Soutput}
+\begin{Soutput}
+Fitting half-normal key function
+\end{Soutput}
+\begin{Soutput}
+Key only model: not constraining for monotonicity.
+\end{Soutput}
+\begin{Soutput}
+AIC= 46.872
+\end{Soutput}
+\begin{Soutput}
+Fitting half-normal key function with cosine(2) adjustments
+\end{Soutput}
+\begin{Soutput}
+AIC= 48.872
+\end{Soutput}
+\begin{Soutput}
+
+Half-normal key function selected.
+\end{Soutput}
 \end{Schunk}
 Note that when there are no covariates in the model, \code{ds} will add adjustment terms to the model until there is no improvement in AIC.
 
@@ -334,6 +373,28 @@ A different form for the detection function can be specified via the \code{key=}
 \begin{Sinput}
 R> minke_hrcos <- ds(minke, truncation = 1.5, key = "hr")
 \end{Sinput}
+\begin{Soutput}
+Starting AIC adjustment term selection.
+\end{Soutput}
+\begin{Soutput}
+Fitting hazard-rate key function
+\end{Soutput}
+\begin{Soutput}
+Key only model: not constraining for monotonicity.
+\end{Soutput}
+\begin{Soutput}
+AIC= 48.637
+\end{Soutput}
+\begin{Soutput}
+Fitting hazard-rate key function with cosine(2) adjustments
+\end{Soutput}
+\begin{Soutput}
+AIC= 50.386
+\end{Soutput}
+\begin{Soutput}
+
+Hazard-rate key function selected.
+\end{Soutput}
 \end{Schunk}
 Here \code{ds} also fits the hazard-rate model then hazard-rate with a cosine adjustment but the AIC improvement is insufficient to select the adjustment, so the hazard-rate key-only model is returned.
 
@@ -343,6 +404,12 @@ Other adjustment series can be selected using the \code{adjustment=} argument an
 R> minke_unifcos <- ds(minke, truncation = 1.5, key = "unif",
 +                     adjustment = "cos", order = c(1, 2))
 \end{Sinput}
+\begin{Soutput}
+Fitting uniform key function with cosine(1,2) adjustments
+\end{Soutput}
+\begin{Soutput}
+AIC= 48.268
+\end{Soutput}
 \end{Schunk}
 Hermite polynomial adjustments use the code \code{"herm"} and simple polynomials \code{"poly"}, adjustment order should be in line with Table \ref{tab:keyadj}.
 
@@ -355,6 +422,18 @@ Hermite polynomial adjustments use the code \code{"herm"} and simple polynomials
 R> amakihi_hr_obs <- ds(amakihi, truncation = 82.5, transect = "point",
 +                      key = "hr", formula = ~obs)
 \end{Sinput}
+\begin{Soutput}
+Model contains covariate term(s): no adjustment terms will be included.
+\end{Soutput}
+\begin{Soutput}
+Fitting hazard-rate key function
+\end{Soutput}
+\begin{Soutput}
+AIC= 10778.448
+\end{Soutput}
+\begin{Soutput}
+No survey area information supplied, only estimating detection function.
+\end{Soutput}
 \end{Schunk}
 Note that here, unlike with the minke whale data, \code{ds} warns us that we have only supplied enough information to estimate the detection function (not density or abundance).
 
@@ -364,12 +443,26 @@ While automatic AIC selection is performed on adjustment terms, model selection 
 R> amakihi_hr_obs_mas <- ds(amakihi, truncation = 82.5, transect = "point",
 +                          key = "hr", formula = ~obs + mas)
 \end{Sinput}
+\begin{Soutput}
+Model contains covariate term(s): no adjustment terms will be included.
+\end{Soutput}
+\begin{Soutput}
+Fitting hazard-rate key function
+\end{Soutput}
+\begin{Soutput}
+AIC= 10777.376
+\end{Soutput}
+\begin{Soutput}
+No survey area information supplied, only estimating detection function.
+\end{Soutput}
 \end{Schunk}
 As with the minke whale model, we can plot the resulting models (Figure \ref{fig:minkeamakihi}, middle and right panels). However, for point transect studies, probability density function plots give a better sense of model fit than the detection function plots. This is because when plotting the detection function for point transect data, the histogram must be rescaled to account for the geometry of the point sampler. The amakihi models included covariates, so the plots show the detection function averaged over levels/values of the covariate. Points on the plot indicate probability of detection for each observation. For the \code{amakihi_hr_obs} model we see fairly clear levels of the observer covariate in the points. Looking at the right panel of Figure \ref{fig:minkeamakihi}, this is less clear when adding minutes after sunrise (a continuous covariates) to the model.
 
 \begin{figure}
 \begin{center}
-\includegraphics{paper-minke-amakihi-hn-plot}
+\begin{Schunk}
+
+\includegraphics[width=\maxwidth]{figure/minke-amakihi-hn-plot-1} \end{Schunk}
 \caption{Left: fitted detection function overlayed on the histogram of observed distances for the minke whale data using half-normal model. Centre and right: plots of the probability density function for the amakihi models. Centre, hazard-rate with observer as a covariate; right, hazard-rate model with observer and minutes after sunrise as covariates. Points indicate probability of detection for a given observation (given that observation's covariate values) and lines indicate the average detection function.}
 \label{fig:minkeamakihi}
 \end{center}
@@ -383,6 +476,7 @@ As with models fitted using \code{lm} or \code{glm} in \proglang{R}, we can use 
 R> summary(amakihi_hr_obs)
 \end{Sinput}
 \begin{Soutput}
+
 Summary for distance analysis 
 Number of observations :  1243 
 Distance range         :  0  -  82.5 
@@ -420,9 +514,24 @@ We can generate a Q-Q plot and test results using the \code{gof_ds} function. Fi
 \begin{Sinput}
 R> amakihi_hn <- ds(amakihi, truncation = 82.5, transect = "point",
 +                  key = "hn", adjustment = NULL)
+\end{Sinput}
+\begin{Soutput}
+Fitting half-normal key function
+\end{Soutput}
+\begin{Soutput}
+Key only model: not constraining for monotonicity.
+\end{Soutput}
+\begin{Soutput}
+AIC= 10833.841
+\end{Soutput}
+\begin{Soutput}
+No survey area information supplied, only estimating detection function.
+\end{Soutput}
+\begin{Sinput}
 R> gof_ds(amakihi_hn)
 \end{Sinput}
 \begin{Soutput}
+
 Goodness of fit results for ddf object
 
 Distance sampling Kolmogorov-Smirnov test
@@ -435,6 +544,7 @@ Test statistic =  0.93083  P =  0.003578
 R> gof_ds(amakihi_hr_obs_mas)
 \end{Sinput}
 \begin{Soutput}
+
 Goodness of fit results for ddf object
 
 Distance sampling Kolmogorov-Smirnov test
@@ -449,26 +559,8 @@ We can conclude that the half-normal model does not pass our goodness of fit tes
 \begin{figure}
 \begin{center}
 \begin{Schunk}
-\begin{Soutput}
-Goodness of fit results for ddf object
 
-Distance sampling Kolmogorov-Smirnov test
-Test statistic =  0.059345  P =  0.00031527 
-
-Distance sampling Cramer-von Mises test (unweighted)
-Test statistic =  0.93083  P =  0.003578 
-\end{Soutput}
-\begin{Soutput}
-Goodness of fit results for ddf object
-
-Distance sampling Kolmogorov-Smirnov test
-Test statistic =  0.036251  P =  0.076237 
-
-Distance sampling Cramer-von Mises test (unweighted)
-Test statistic =  0.15016  P =  0.38908 
-\end{Soutput}
-\end{Schunk}
-\includegraphics{paper-amakihiqq}
+\includegraphics[width=\maxwidth]{figure/amakihiqq-1} \end{Schunk}
 \caption{Comparison of quantile-quantile plots for a half-normal model (no adjustments, no covariates; left) and hazard-rate model with observer and minutes after sunrise (right) for the amakihi data.}
 \label{amakihi-qq}
 \end{center}
@@ -500,6 +592,9 @@ Model & Key function & Formula & C-vM $p$-value & $\hat{P_a}$ & se($\hat{P_a}$) 
 \bottomrule
 \end{tabular}
 \end{table}
+
+
+
 \section{Estimating abundance and variance}
 
 Though fitting the detection function is the primary modelling step in distance sampling, we are really interested in estimating density or abundance. It is also important to calculate our uncertainty for these estimates. This section addresses these issues mathematically before showing how to estimate abundance and its variance in \proglang{R}.
@@ -577,6 +672,7 @@ Having already fitted a model to the minke whale data, we can see the results of
 R> summary(minke_hn)
 \end{Sinput}
 \begin{Soutput}
+
 Summary for distance analysis 
 Number of observations :  88 
 Distance range         :  0  -  1.5 
@@ -643,6 +739,9 @@ Total & 17191.90 & 5135.586 & 0.299\\
 \bottomrule
 \end{tabular}
 \end{table}
+
+
+
 \section{Extensions}
 
 Distance sampling has been applied in a wide variety of situations. Objects being detected need not be animals; plants \citep{Buckland:2007kl}, beer cans \citep{Otto:1990gs}, elephant dung \citep{NchPlu01} and bricks on a lake bottom \citep{Ber90} have been subjects of distance sampling investigations. The method of detection need not be visual sightings. Detections of objects can be through auditory as well as visual means \citep{Marques2013b}. Songs of birds \citep{Buckland2006} and whale vocalisations \citep{BorSub1} are just two examples. Blows made by whales are examples of processes that can be modelled using distance sampling. Songs and blows are indirect sampling methods producing estimates of cue density. Cue densities can be converted to animal densities with additional data needed to estimate the rate at which cues are produced and the rate at which they disappear. These are but a few examples of the applications to which distance sampling has been applied (a larger, but incomplete list of references is given at \url{http://distancesampling.org/dbib.html}).
