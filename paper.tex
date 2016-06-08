@@ -675,6 +675,53 @@ We note that there are other packages available for performing distance sampling
 The authors would like to thank the many users of \pkg{Distance}, \pkg{mrds} and Distance for Windows who have contributed bug reports and suggestions for improvements over the years. We would particularly like to thank Steve Buckland, David Borchers, Tiago Marques, Jon Bishop and Lorenzo Milazzo for their contributions. We thank Tiago Marques a second time for helpful comments on an early version of the paper and Colin Beale who suggested the ``flatfile'' data format. We also thank Ken Burnham and David Anderson for fundamental contributions to the early development of these methods.
 
 
+\appendix
+
+\section*{Appendix A: Feature comparison}
+
+There are four packages available for analysis of distance sampling data in \proglang{R} that we are aware of. All are available on CRAN. On top of \pkg{Distance} and \pkg{mrds} \citep{mrds-pkg} described above, they are \pkg{Rdistance} \citep{Rdistance-pkg} and \pkg{unmarked} \citep{Fiske:2011gv}. Table \ref{app-comp-tab} provides a feature comparison of these packages.
+
+\begin{table}
+\begin{tabular}{ccccc}
+Feature    &  \pkg{Distance} & \pkg{Rdistance} & \pkg{unmarked} & \pkg{mrds}\\
+\hline
+Line transects & x & x & x & x\\
+Point transets & x & & x & x\\
+Interval (binned) distances & x & & x & x\\
+Exact distances & x & x & & x\\
+Continuous individual level covariates & x &  & & x\\
+Factor individual level covariates & x & x & & x\\
+Transect level covariates & x &  & x & x\\
+Objects in clusters & x & x & x & x\\
+Left truncation & x  & x & & x\\
+Half-normal key & x & x & x & x\\
+Hazard-rate key & x & x &  x & x\\
+Uniform key & x & x & x & x\\
+Gamma key &  & x &  & x\\
+Negative exponential key &  &  & x  &\\
+Adjustment terms & x & x & & x\\
+AIC adjustment selection & x & x & \\
+Monotonicity constraints & x &  & & x\\
+Availability bias model & & & x &\\
+Perception bias model & & & & x\\
+Abundance estimation & x & x & x & x\\
+Density estimation & x & x & x & x\\
+User-defined likelihood functions & & x & & \\
+\end{tabular}
+\caption{Feature comparison of the available packages to perform distance sampling analyses.}
+\label{app-comp-tab}
+\end{table}
+
+
+\subsection*{Abundance estimation}
+
+\pkg{Distance} and \pkg{mrds} models can be used as part of a density surface model using \pkg{dsm}, which allows abundance to be modelled as a function of spatially varying covariates (such as location, sea depth, altitude etc). See \cite{Miller:2013fq} for more information.
+
+\pkg{unmarked} also allows abundance to vary according to covariates, via the abundance part of the likelihood. See \cite{Fiske:2011gv} for more information on the package and \cite{Royle:2004cd} for more information on methodology.
+
+Results \pkg{Rdistance} models can be use in combination with \proglang{R} modelling functions such as \code{lm}, \code{glm} etc to build abundance estimates which vary according to covariates. More information is available on the project's wiki.
+
+
 \bibliography{jstatsoft}
 
 \end{document}
