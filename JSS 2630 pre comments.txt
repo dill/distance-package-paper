@@ -16,12 +16,12 @@ o Do not put Appendix A into a separate document. Incorporate it into the main m
 
 o For the replication materials, please provide a .R (in addition to or instead of the .Rmd) file. You can easily extract this from the .Rmd, of course, but improving the comments in the .R would be appreciated.
 
-o There are various style problems, some apparently caused by relying on the “rticles" R package. JSS will eventually (upon acceptance) need a properly formatted .tex file following all style requirements (see FAQ). But already at this early stage some more efforts should be put into getting closer to the desired format. One specific style issue is that sections should start with subsections (if any) and all subsubsections should be within subsections (if any). Currently neither is the case which leads to problems with the hyper TOC for example.
+o ~~~There are various style problems, some apparently caused by relying on the “rticles" R package. JSS will eventually (upon acceptance) need a properly formatted .tex file following all style requirements (see FAQ). But already at this early stage some more efforts should be put into getting closer to the desired format. One specific style issue is that sections should start with subsections (if any) and all subsubsections should be within subsections (if any). Currently neither is the case which leads to problems with the hyper TOC for example.~~~
 
 
 Manuscript style comments:
 
-o For the code layout in R publications, we typically distinguish input/output using Sinput/Soutput (or equivalently CodeInput/CodeOutput). Unless there are special reasons to format it differently, the input should use the text width (up to 76 or 77 characters) and be indented by two spaces, e.g.,
+o ~~~For the code layout in R publications, we typically distinguish input/output using Sinput/Soutput (or equivalently CodeInput/CodeOutput). Unless there are special reasons to format it differently, the input should use the text width (up to 76 or 77 characters) and be indented by two spaces, e.g.,~~~
 
 begin{Sinput}
 R> example_model <- lm(response ~ variable1 + variable2 + variable3, 
@@ -34,9 +34,9 @@ o ~~~If using "e.g." and "i.e." add a comma after the period to keep LaTeX from 
 
 o ~~~\top should be used as the transpose symbol, e.g., X^\top.~~~
 
-o In all cases, code input/output must fit within the normal text width of the manuscript.  Thus, code input should have appropriate line breaks and code output should preferably be generated with a suitable width (or otherwise edited). E.g., see p. 21.
+o ~~~In all cases, code input/output must fit within the normal text width of the manuscript.  Thus, code input should have appropriate line breaks and code output should preferably be generated with a suitable width (or otherwise edited). E.g., see p. 21.~~~
 
-o As a reminder, please make sure that:
+o ~~~As a reminder, please make sure that~~~:
 	- \proglang, \pkg and \code have been used for highlighting throughout the paper (including titles and references), except where explicitly escaped.
 
 
