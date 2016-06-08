@@ -12,7 +12,7 @@ From the editorial team:
 
 o Unless there are important reasons against this, please also submit the current versions of "Distance" and "mrds" to CRAN. Otherwise the discrepancy will just lead to confusion in the reviewing process.
 
-o Do not put Appendix A into a separate document. Incorporate it into the main manuscript. It would also be useful to extend the discussion of other software packages and their relative strengths and integrate it into the main manuscript (rather than the appendix).
+o ~~~Do not put Appendix A into a separate document. Incorporate it into the main manuscript. It would also be useful to extend the discussion of other software packages and their relative strengths and integrate it into the main manuscript (rather than the appendix).~~~
 
 o For the replication materials, please provide a .R (in addition to or instead of the .Rmd) file. You can easily extract this from the .Rmd, of course, but improving the comments in the .R would be appreciated.
 

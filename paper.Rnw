@@ -487,7 +487,7 @@ Note that when there are no covariates in the model, \code{ds} will add adjustme
 Figure \ref{fig:minkeamakihi} (left panel) shows the result of calling \code{plot} on the resulting model object. We can also call \code{summary} on the model object to get summary information about the fitted model (we postpone this until the next section).
 
 A different form for the detection function can be specified via the \code{key=} argument to \code{ds}. For example, a hazard rate model can be fitted as:
-<<label=minke-hr-cos>>=
+<<label=minke-hr-cos, message=TRUE>>=
 minke_hrcos <- ds(minke, truncation = 1.5, key = "hr")
 @
 Here \code{ds} also fits the hazard-rate model then hazard-rate with a cosine adjustment but the AIC improvement is insufficient to select the adjustment, so the hazard-rate key-only model is returned.
