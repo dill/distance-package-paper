@@ -26,6 +26,10 @@
 %\usepackage{longtable}
 \usepackage{booktabs}
 
+% make captions be at the bottom
+\usepackage{float}
+\floatstyle{plain}
+\restylefloat{table}
 
 %% almost as usual
 \author{David L Miller\\Integrated Statistics and University of St Andrews \AND 
@@ -780,7 +784,7 @@ The authors would like to thank the many users of \pkg{Distance}, \pkg{mrds} and
 
 There are four packages available for analysis of distance sampling data in \proglang{R} that we are aware of. All are available on CRAN. On top of \pkg{Distance} and \pkg{mrds} \citep{mrds-pkg} described above, they are \pkg{Rdistance} \citep{Rdistance-pkg} and \pkg{unmarked} \citep{Fiske:2011gv}. Table \ref{app-comp-tab} provides a feature comparison of these packages.
 
-\begin{table}
+\begin{table}[h]
 \begin{tabular}{ccccc}
 Feature    &  \pkg{Distance} & \pkg{Rdistance} & \pkg{unmarked} & \pkg{mrds}\\
 \hline

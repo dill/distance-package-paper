@@ -11,6 +11,10 @@
 %\usepackage{longtable}
 \usepackage{booktabs}
 
+% make captions be at the bottom
+\usepackage{float}
+\floatstyle{plain}
+\restylefloat{table}
 
 %% almost as usual
 \author{David L Miller\\Integrated Statistics and University of St Andrews \AND 
@@ -556,7 +560,7 @@ We can conclude that the half-normal model does not pass our goodness of fit tes
 
 \begin{figure}
 \begin{center}
-<<label=amakihiqq, echo=FALSE, message=FALSE, fig.height=3, fig.width=6, results="hide">>=
+<<label=amakihiqq, echo=FALSE, message=FALSE, fig.height=4, fig.width=7, results="hide">>=
 par(mfrow=c(1,2))
 gof_ds(amakihi_hn, asp=1, cex=0.3)  # shrinking dot size to obliterate 45-deg line less
 gof_ds(amakihi_hr_obs_mas, asp=1, cex=0.3)
@@ -722,7 +726,7 @@ The authors would like to thank the many users of \pkg{Distance}, \pkg{mrds} and
 
 There are four packages available for analysis of distance sampling data in \proglang{R} that we are aware of. All are available on CRAN. On top of \pkg{Distance} and \pkg{mrds} \citep{mrds-pkg} described above, they are \pkg{Rdistance} \citep{Rdistance-pkg} and \pkg{unmarked} \citep{Fiske:2011gv}. Table \ref{app-comp-tab} provides a feature comparison of these packages.
 
-\begin{table}
+\begin{table}[h]
 \begin{tabular}{ccccc}
 Feature    &  \pkg{Distance} & \pkg{Rdistance} & \pkg{unmarked} & \pkg{mrds}\\
 \hline
