@@ -344,7 +344,7 @@ Key function plus adjustment terms (or adjustment series) models are formulated 
 $$
 g(y; \boldsymbol{\theta}) = k(y; \boldsymbol{\theta}_\text{key})\left( 1+ \alpha_O(y; \boldsymbol{\theta}_\text{adjust})\right),
 $$
-where $k$ is the key function and $\alpha_O$ is sum series of functions (given in Table \ref{tab:keyadj}), described as an \textit{adjustment of order $O$}. Subscripts on the parameter vector indicate those parameters belonging to each part of the model (i.e., $\boldsymbol{\theta} = (\boldsymbol{\theta}_\text{key}, \boldsymbol{\theta}_\text{adjust})$).
+where $k$ is the key function and $\alpha_O$ is some series of functions (given in Table \ref{tab:keyadj}), described as an \textit{adjustment of order $O$}. Subscripts on the parameter vector indicate those parameters belonging to each part of the model (i.e., $\boldsymbol{\theta} = (\boldsymbol{\theta}_\text{key}, \boldsymbol{\theta}_\text{adjust})$).
 
 Available models for the key are as follows:
 $$
