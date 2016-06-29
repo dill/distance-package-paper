@@ -318,7 +318,7 @@ The detection function models the probability $\mathbb{P}(\text{object detected 
 $$
 p = \int_0^w \pi(y) g(y; \boldsymbol{\theta}) dy
 $$
-where $\pi(y)$ describes the distribution of objects with respect to the sampler; $\pi(x)=1/w$ for line transects and $\pi(r)=\frac{2r}{w^2}$ for point transects, taking into account the geometry of the sampler \citep[usually referred to as the \textit{probability density function of distances}][Chapter 3]{Buckland:2001vm}, . When considering a particular transect type we let $x$ denote a perpendicular distance from a line and $r$ denote radial distance from a point (rather than using $y$).
+where $\pi(y)$ describes the distribution of objects with respect to the sampler; $\pi(x)=1/w$ for line transects and $\pi(r)=\frac{2r}{w^2}$ for point transects, taking into account the geometry of the sampler \citep[usually referred to as the \textit{probability density function of distances}][Chapter 3]{Buckland:2001vm}. When considering a particular transect type we let $x$ denote a perpendicular distance from a line and $r$ denote radial distance from a point (rather than using $y$).
 
 It is crucial that the detection function accurately models detectability at small distances; we are less worried by its behaviour further away from 0. To ensure that the model is not overly influenced by distances far from zero, we truncate the distances beyond a given distance $w$ (this can be done during analysis or while collecting data in the field).
 
@@ -614,7 +614,7 @@ We can use the Horvitz-Thompson-like estimator to calculate the ``average'' dete
 $$
 \hat{P_a} = n/\hat{N}_\text{C}.
 $$
-This can be a useful summary statistic, giving us an idea of how detectable our $n$ observed animals would have to be to estimate the same $\hat{N}$ if there were no observed covariates. It can also be compared to similar estimates in mark-recapture studies. $P_a$ is included in the \code{summary} output and the table produced by \code{summarize_ds_models}. 
+This can be a useful summary statistic, giving us an idea of how detectable our $n$ observed animals would have to be to estimate the same $\hat{N}$ if there were no observed covariates. It can also be compared to similar estimates in mark-recapture studies. $\hat{P_a}$ is included in the \code{summary} output and the table produced by \code{summarize_ds_models}. 
 
 \subsubsection{Stratification}
 
