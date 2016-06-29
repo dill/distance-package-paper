@@ -32,7 +32,7 @@
 
 %% an abstract and keywords
 \Abstract{
-Estimating the abundance and spatial distribution of animal and plant populations is essential for conservation and management. We introduce the \proglang{R} package \pkg{Distance} that implements distance sampling methods to estimate abundance. We describe how users can obtain estimates of abundance (and density) using the package as well documenting the links it provides with other more specialized \proglang{R} packages. We also demonstrate how \pkg{Distance} provides a migration pathway from previous software, thereby allowing us to deliver cutting-edge methods to the users more quickly.
+Estimating the abundance and spatial distribution of animal and plant populations is essential for conservation and management. We introduce the \proglang{R} package \pkg{Distance} that implements distance sampling methods to estimate abundance. We describe how users can obtain estimates of abundance (and density) using the package as well as documenting the links it provides with other more specialized \proglang{R} packages. We also demonstrate how \pkg{Distance} provides a migration pathway from previous software, thereby allowing us to deliver cutting-edge methods to the users more quickly.
 }
 \Keywords{distance sampling, abundance estimation, line transect, point transect, detection function, Horvitz-Thompson, \proglang{R}, Distance}
 \Plainkeywords{distance sampling, abundance estimation, line transect, point transecs, detection function, Horvitz-Thompson, R, Distance} %% without formatting
