@@ -17,13 +17,13 @@
 \restylefloat{table}
 
 %% almost as usual
-\author{David L Miller\\Integrated Statistics and University of St Andrews \AND 
+\author{David L Miller\\University of St Andrews \AND 
         Eric Rexstad\\University of St Andrews \And 
         Len Thomas\\University of St Andrews \AND 
         Laura Marshall\\University of St Andrews \And 
         Jeffrey L Laake\\Marine Mammal Laboratory}
 
-        
+
 \title{Distance Sampling in \proglang{R}}
 
 %% for pretty printing and a nice hypersummary also set:
@@ -51,8 +51,7 @@ Estimating the abundance and spatial distribution of animal and plant population
 %% in the following format:
 \Address{
   David L Miller\\
-  Integrated Statistics and University of St Andrews\\
-  16 Sumner Street, Woods Hole, MA 02543, USA and\\
+  University of St Andrews\\
   Centre for Research into Ecological and Environmental Modelling,\\
   The Observatory,\\
   St Andrews, Fife KY16 9LZ, Scotland\\
@@ -120,8 +119,7 @@ For line transect studies we assume that objects are uniformly distributed with 
 
 \begin{figure}
 \begin{center}
-<<label=detectdists, echo=FALSE, message=FALSE, fig.height=5.5, fig.width=9>>=
-
+<<label=detectdists, echo=FALSE, message=FALSE, fig.height=5.5, fig.width=8>>=
 par(mfrow=c(2,3))
 #line and point transect examples
 
@@ -254,7 +252,7 @@ hist(detected_distances, main="", xlab="Observed radial distances")
 
 par(opar)
 @
-\caption{Left side plots show an example of a survey of a (1x1) area containing a population of 500 objects; blue dashed lines (top plot) and triangles (bottom plot) indicate sampler placement, red dots indicate detected individuals and grey dots give the locations of unobserved individuals. The right side of the figure shows histograms of observed distances (again, lines top and points bottom).}
+\caption{Examples of line (top row) and point (bottom row) transect sampling. Left side plots show an example of a survey of the unit square containing a population of 500 objects; blue dashed lines (top plot) and triangles (bottom plot) indicate sampler placement, red dots indicate detected individuals and grey dots give the locations of unobserved individuals. The right side of the figure shows histograms of observed distances.}
 \label{fig:pointslines}
 \end{center}
 \end{figure}
@@ -264,7 +262,7 @@ Good survey design is essential to produce reliable density and abundance estima
 
 \pkg{Distance} provides a selection of candidate functions to describe the probability of detection and estimates the associated parameters using maximum likelihood estimation. The probability of detecting an object may not only depend on how far it is from the observer but also on other factors such as weather conditions, ground cover, cluster size etc. The \pkg{Distance} package also allows the incorporation of such covariates into the detection function allowing the detection function scale parameter to vary based on these covariates.
 
-Having estimated the detection function's parameters, one can then integrate out distance from the function (as the detection function describes the probability of detection \textit{given} distance) to get an ``average'' probability of detection, which can be used to correct the observed counts. Summing the corrected counts gives an estimate of abundance in the area covered by surveys, which can be multiplied up to the total study area.
+Having estimated the detection function's parameters, one can then integrate out distance from the function (as the detection function describes the probability of detection \textit{given} distance) to get an ``average'' probability of detection (in the sense of averaging over distances), which can be used to correct the observed counts. Summing the corrected counts gives an estimate of abundance in the area covered by surveys, which can be multiplied up to the total study area.
 
 In addition to randomly placed samplers distance sampling relies on three other main assumptions. Firstly, all objects directly on the transect line or point (i.e., those at zero distance) are detected (see ``Extensions'' for methods to deal with the situation when this is not possible). Secondly, objects are stationary or detected prior to any movement. Thirdly, distance to the object must be measured accurately, or the observation allocated to the correct distance bin for grouped data. Depending on the survey species some of these assumptions may be more difficult to meet than others. Further information on field methods to help meet these assumptions can be found in \cite{Buckland:2001vm} and \cite{buckland2015distance}.
 
@@ -314,11 +312,15 @@ We will explore the consequences of including effort and stratum data in the ana
 
 \section{Detection functions}
 
-The detection function models the probability $\mathbb{P}(\text{object detected } \vert \text{ object at distance } y)$ and is usually denoted $g(y; \boldsymbol{\theta})$ where $y$ is distance (from a line or point) and $\boldsymbol{\theta}$ is a vector of parameters to be estimated. Our goal is to estimate an \textit{average probability of detection} ($p$, average in the sense of an average over distance from $0$ to truncation distance $w$), so we must integrate out distance ($y$) from the detection function:
+The detection function models the probability $\Prob(\text{object detected } \vert \text{ object at distance } y)$ and is usually denoted $g(y; \boldsymbol{\theta})$ where $y$ is distance (from a line or point) and $\boldsymbol{\theta}$ is a vector of parameters to be estimated. The parameter(s) $\boldsymbol{\theta}$ are used in a detection function (see Section 3.1), serving as the basis to produce an estimate of the probability that an object within the truncation distance of the point or line transect is detected during the survey. Our goal is to estimate an \textit{average probability of detection} ($p$, average in the sense of an average over distance from $0$ to truncation distance $w$), so we must integrate out distance from the detection function. Letting $x$ denote a perpendicular distance from a line and $r$ denote radial distance from a point:
 $$
-p = \int_0^w \pi(y) g(y; \boldsymbol{\theta}) dy
+p = \left\{
+\begin{array}{l l}
+\int_0^w \frac{1}{w}    g(x; \boldsymbol{\theta}) dx & \quad \text{for lines,} \\
+\int_0^w \frac{2r}{w^2} g(r; \boldsymbol{\theta}) dr & \quad \text{for points,}
+\end{array} \right.
 $$
-where $\pi(y)$ describes the distribution of objects with respect to the sampler; $\pi(x)=1/w$ for line transects and $\pi(r)=\frac{2r}{w^2}$ for point transects, taking into account the geometry of the sampler \citep[usually referred to as the \textit{probability density function of distances}][Chapter 3]{Buckland:2001vm}, . When considering a particular transect type we let $x$ denote a perpendicular distance from a line and $r$ denote radial distance from a point (rather than using $y$).
+where the fractions pre-multiplying the detection function describes the distribution of objects with respect to the sampler, taking into account the geometry of the sampler \citep[usually referred to as the \textit{probability density function of (object) distances} and denoted $\pi(y)$;][Chapter 3]{Buckland:2001vm}. Figure \ref{fig:detectdists} shows the relationship between the detection function, the probability density function of object distances and the probability density function of observed distances.
 
 It is crucial that the detection function accurately models detectability at small distances; we are less worried by its behaviour further away from 0. To ensure that the model is not overly influenced by distances far from zero, we truncate the distances beyond a given distance $w$ (this can be done during analysis or while collecting data in the field).
 
@@ -415,7 +417,7 @@ $$
 
 A disadvantage of K+A models is that we must resort to constrained optimisation \citep[via the \pkg{Rsolnp} package;][]{rsolnp-pkg} to ensure that the resulting detection function is monotonic non-increasing over its range.
 
-It is not always necessary to include adjustments (except in the case of the uniform key) and in such cases we refer to these as ``key only'' models (see the next section and ``Model checking and model selection'').
+It is not always necessary to include adjustments (except in the case of the uniform key) and in such cases we refer to these as ``key only'' models (see the next section and ``Model checking and model selection''). Adjustment terms increase the flexibility of the detection functioni but this added flexibility comes at the expense of additional parameters to be estimated. The analyst must consider whether the process giving rise to the distribution of detection distances should be modelled with shapes depicted in Figure \ref{fig:keyadj}.
 
 \begin{figure}
 \begin{center}
@@ -445,7 +447,7 @@ title(ylab="Detection probability", line=2)
 g <- function(x) (1 - exp(-(x/0.0199)^-1.4))*
                  (1-0.08*cos((2*pi*x)/0.025)+0.08*cos((3*pi*x)/0.025))
 f <- function(x) g(x)/g(0)
-curve(f, from=0, to=0.025, xlab="", ylab="", main="Hazard-rate with \n2 cosine adjustment", xlim=c(0,0.025), ylim=c(0,1))
+curve(f, from=0, to=0.025, xlab="", ylab="", main="Hazard-rate with \n2 cosine adjustments", xlim=c(0,0.025), ylim=c(0,1))
 title(xlab="Distance", line=2)
 title(ylab="Detection probability", line=2)
 @
@@ -458,7 +460,7 @@ title(ylab="Detection probability", line=2)
 
 \subsubsection{Covariates}
 
-There are many factors that can affect the probability of detecting an object: observer skill, cluster size (if objects occur in clusters), the vessel or platform used, sea state, other weather conditions, time of day and more. In \pkg{Distance} we assume that these variables affect detection only via the scale of the detection function (and do not affect the shape).
+There are many factors that can affect the probability of detecting an object: observer skill, cluster size (if objects occur in clusters), the vessel or platform used, sea state, other weather conditions, time of day and more. In \pkg{Distance} we assume that these covariates affect detection only via the scale of the detection function (and do not affect the shape).
 
 Covariates can be included in this formulation by considering the scale parameter from the half-normal or hazard-rate detection functions as a(n exponentiated) linear model of the ($J$) covariates ($\mathbf{z}$; a vector of length $J$ for each observation):
 $$
@@ -467,9 +469,13 @@ $$
 
 Including covariates has an important implication for our calculation of detectability. We do not know the true distribution of the covariates, we therefore must either: $(i)$ model the distribution of the covariates and integrate the covariates out of the joint density (thus making strong assumptions about their distribution), or $(ii)$ calculate the probability of detection conditional on the observed values of the covariates \citep{Marques:2003vb}. We opt for the latter:
 $$
-p(\mathbf{z_i}) = \int_0^w \pi(y) g(y, \mathbf{z_i}; \boldsymbol{\theta}) dy,
+p(\mathbf{z}_i) = \left\{
+\begin{array}{l l}
+\int_0^w \frac{1}{w} g(x, \mathbf{z}_i; \boldsymbol{\theta}) dx & \quad \text{for lines,} \\
+\int_0^w \frac{2r}{w^2} g(r, \mathbf{z}_i; \boldsymbol{\theta}) dr & \quad \text{for points,}
+\end{array} \right.
 $$
-where $\mathbf{z_i}$ is the vector of $J$ covariates associated with observation $i$. For covariate models, we calculate a value of ``average'' probability of detection (average in the sense of distance being integrated out) per observation. There are as many unique values of $p(\mathbf{z_i})$ as there are unique covariate combinations in our data.
+where $\mathbf{z}_i$ is the vector of $J$ covariates associated with observation $i$. For covariate models, we calculate a value of ``average'' probability of detection (average in the sense of distance being integrated out) per observation. There are as many unique values of $p(\mathbf{z}_i)$ as there are unique covariate combinations in our data.
 
 K+A models that include covariates and one or more adjustments cannot be guaranteed to be monotonic non-increasing for all covariate combinations. Without a model for the distribution of the covariates, it is not possible to know what the behaviour of the detection function will be across the ranges of the covariates. As such we cannot set meaningful constraints on monotonicity. For this reason, we advise caution when using both adjustments and covariates in a detection function \citep[see][for an example of when this can be problematic]{Miller:2015hw}.
 
@@ -522,14 +528,14 @@ As with the minke whale model, we can plot the resulting models (Figure \ref{fig
 \begin{center}
 <<label=minke-amakihi-hn-plot, echo=FALSE, warning=FALSE, fig.height=4, fig.width=9>>=
 par(mfrow=c(1, 3))
-plot(minke_hn, showpoints=FALSE)
+plot(minke_hn, showpoints=FALSE, xlab="Distance (km)")
 title("Minke whales", cex.main=1.5)
-plot(amakihi_hr_obs, pdf=TRUE, cex=0.7)
+plot(amakihi_hr_obs, pdf=TRUE, cex=0.7, xlab="Distance (m)")
 title("Amakihi\n(observer)", cex.main=1.5)
-plot(amakihi_hr_obs_mas, pdf=TRUE, cex=0.7)
+plot(amakihi_hr_obs_mas, pdf=TRUE, cex=0.7, xlab="Distance (m)")
 title("Amakihi\n(observer+minutes)", cex.main=1.5)
 @
-\caption{Left: fitted detection function overlayed on the histogram of observed distances for the minke whale data using half-normal model. Centre and right: plots of the probability density function for the amakihi models. Centre, hazard-rate with observer as a covariate; right, hazard-rate model with observer and minutes after sunrise as covariates. Points indicate probability of detection for a given observation (given that observation's covariate values) and lines indicate the average detection function.}
+\caption{Left: fitted detection function overlayed on the histogram of observed distances for the minke whale data using half-normal model. Centre and right: plots of the probability density function for the amakihi models. Centre, hazard-rate with observer as a covariate; right, hazard-rate model with observer and minutes after sunrise as covariates. Points indicate probability of detection for a given observation (given that observation's covariate values) and lines indicate the average detection function (averaged over covariates, observer or observer+minutes after sunrise).}
 \label{fig:minkeamakihi}
 \end{center}
 \end{figure}
@@ -614,11 +620,11 @@ We can use the Horvitz-Thompson-like estimator to calculate the ``average'' dete
 $$
 \hat{P_a} = n/\hat{N}_\text{C}.
 $$
-This can be a useful summary statistic, giving us an idea of how detectable our $n$ observed animals would have to be to estimate the same $\hat{N}$ if there were no observed covariates. It can also be compared to similar estimates in mark-recapture studies. $P_a$ is included in the \code{summary} output and the table produced by \code{summarize_ds_models}. 
+This can be a useful summary statistic, giving us an idea of how detectable our $n$ observed animals would have to be to estimate the same $\hat{N}$ if there were no observed covariates. It can also be compared to similar estimates in mark-recapture studies. $P_a$ is included in the \code{summary} output and the table produced by \code{summarize_ds_models}.
 
 \subsubsection{Stratification}
 
-We may wish to calculate abundance estimates for some sub-regions of the study region, we call these areas \textit{strata}. Stratification can be used to increase the precision of estimates if we know \textit{a priori} that density varies between different parts of the study area. For example, strata may be defined by habitat types or animal sex (or some combination) which may be of interest for biological or management reasons. To calculate estimates for a given stratification each observation must occur in a stratum which must be labelled with a \code{Region.Label} and have a corresponding \code{Area} (if we are using an animal characteristic like sex, we would have the areas be the same but if we were using say forested vs. wetland habitat the areas of those strata would be different). Finally, we must also know the stratum in which each observation occurs.
+We may wish to calculate abundance estimates for some sub-regions of the study region, we call these areas \textit{strata}. Stratification can be used to increase the precision of estimates if we know \textit{a priori} that density varies between different parts of the study area. For example, strata may be defined by habitat types which may be of interest for biological or management reasons. To calculate estimates for a given stratification each observation must occur in a stratum which must be labelled with a \code{Region.Label} and have a corresponding \code{Area}. Finally, we must also know the stratum in which each observation occurs.
 
 As an example, the minke whale data contain two strata: \code{North} and \code{South} relating to strata further away from and nearer to the Antarctic ice edge, respectively.
 
@@ -635,9 +641,9 @@ We can see this by looking at the Horvitz-Thompson-like estimation in (\ref{ht})
 
 Model parameter uncertainty can be addressed using standard maximum likelihood theory. We can invert the Hessian matrix of the likelihood to obtain a variance-covariance matrix. We can then pre- and post-multiply this by the derivatives of $\hat{N}_\text{C}$ with respect to the parameters of the detection function
 $$
-\widehat{\text{Var}}_\text{model}\left( \hat{N}_\text{C}\right) = \left(\frac{\partial \hat{N}_\text{C}}{\partial\hat{\boldsymbol{\theta}}}\right)^\top \left(\hat{\mathbf{H}}(\hat{\boldsymbol{\theta}})^{-1} \right)\frac{\partial \hat{N}_\text{C}}{\partial\hat{\boldsymbol{\theta}}}
+\widehat{\text{Var}}_\text{model}\left( \hat{N}_\text{C}\right) = \left(\frac{\partial \hat{N}_\text{C}}{\partial\hat{\boldsymbol{\theta}}}\right)^\top \left(\hat{\mathbf{H}}(\hat{\boldsymbol{\theta}})^{-1} \right)\frac{\partial \hat{N}_\text{C}}{\partial\hat{\boldsymbol{\theta}}},
 $$
-where the partial derivatives of $\hat{N}_\text{C}$ are evaluated at the MLE ($\hat{\theta}$) and $\mathbf{H}$ is the first partial Hessian (outer product of first derivatives of the log likelihood) for numerical stability \citep[][p 62]{Buckland:2001vm}. Note that although we calculate uncertainty in $\hat{N}_\text{C}$, we can trivially scale-up to variance of $\hat{N}$ (by noting that $\hat{N} = \frac{A}{a} \hat{N}_\text{C}$ and therefore $\widehat{\text{Var}}_\text{model}\left(\hat{N}\right) = \left( \frac{A}{a} \right)^2 \widehat{\text{Var}}_\text{model} \left(\hat{N}_\text{C} \right)$).
+where the partial derivatives of $\hat{N}_\text{C}$ are evaluated at the MLE ($\hat{\theta}$) and $\mathbf{H}$ is the first partial Hessian (outer product of first derivatives of the log likelihood) for numerical stability \citep[][p 62]{Buckland:2001vm}. Note that although we calculate uncertainty in $\hat{N}_\text{C}$, we can scale-up to variance of $\hat{N}$ (by noting that $\hat{N} = \frac{A}{a} \hat{N}_\text{C}$ and therefore $\widehat{\text{Var}}_\text{model}\left(\hat{N}\right) = \left( \frac{A}{a} \right)^2 \widehat{\text{Var}}_\text{model} \left(\hat{N}_\text{C} \right)$).
 
 \textit{Encounter rate} is the number of objects per unit transect (rather than just $n$). When covariates are not included in the detection function we can define the encounter rate as $n/L$ for line transects (where $L$ is the total line length) or $n/T$ for point transects (where $T$ is the total number of visits summed over all points). When covariates are included in the detection function, it is recommended that we substitute the $n$ in the encounter rate with the estimated abundance $\hat{N}_\text{C}$ as this will take into account the effects of the covariates \citep{Innes:2002ka}.
 
@@ -764,7 +770,7 @@ User-defined likelihood functions & & x & & \\
 
 \pkg{unmarked} also allows abundance to vary according to covariates, via the abundance part of the likelihood. See \cite{Fiske:2011gv} for more information on the package and \cite{Royle:2004cd} for more information on methodology.
 
-Results \pkg{Rdistance} models can be use in combination with \proglang{R} modelling functions such as \code{lm}, \code{glm} etc to build abundance estimates which vary according to covariates. More information is available on the project's wiki.
+Resulting \pkg{Rdistance} models can be use in combination with \proglang{R} modelling functions such as \code{lm}, \code{glm} etc to build abundance estimates which vary according to covariates. More information is available on the project's wiki.
 
 
 \bibliography{jstatsoft}

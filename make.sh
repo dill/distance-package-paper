@@ -1,4 +1,6 @@
 #!/bin/sh
 
-R -e 'rmarkdown::render("paper.Rmd")'
+Rscript -e "library(knitr);knit('paper.Rnw')"
+pdflatex paper.tex
+pdflatex paper.tex
 open paper.pdf
