@@ -32,7 +32,7 @@
 
 %% an abstract and keywords
 \Abstract{
-Estimating the abundance and spatial distribution of animal and plant populations is essential for conservation and management. We introduce the \proglang{R} package \pkg{Distance} that implements distance sampling methods to estimate abundance. We describe how users can obtain estimates of abundance (and density) using the package as well documenting the links it provides with other more specialized \proglang{R} packages. We also demonstrate how \pkg{Distance} provides a migration pathway from previous software, thereby allowing us to deliver cutting-edge methods to the users more quickly.
+Estimating the abundance and spatial distribution of animal and plant populations is essential for conservation and management. We introduce the \proglang{R} package \pkg{Distance} that implements distance sampling methods to estimate abundance. We describe how users can obtain estimates of abundance (and density) using the package as well as documenting the links it provides with other more specialized \proglang{R} packages. We also demonstrate how \pkg{Distance} provides a migration pathway from previous software, thereby allowing us to deliver cutting-edge methods to the users more quickly.
 }
 \Keywords{distance sampling, abundance estimation, line transect, point transect, detection function, Horvitz-Thompson, \proglang{R}, Distance}
 \Plainkeywords{distance sampling, abundance estimation, line transect, point transecs, detection function, Horvitz-Thompson, R, Distance} %% without formatting
@@ -346,7 +346,7 @@ Key function plus adjustment terms (or adjustment series) models are formulated 
 $$
 g(y; \boldsymbol{\theta}) = k(y; \boldsymbol{\theta}_\text{key})\left( 1+ \alpha_O(y; \boldsymbol{\theta}_\text{adjust})\right),
 $$
-where $k$ is the key function and $\alpha_O$ is sum series of functions (given in Table \ref{tab:keyadj}), described as an \textit{adjustment of order $O$}. Subscripts on the parameter vector indicate those parameters belonging to each part of the model (i.e., $\boldsymbol{\theta} = (\boldsymbol{\theta}_\text{key}, \boldsymbol{\theta}_\text{adjust})$).
+where $k$ is the key function and $\alpha_O$ is some series of functions (given in Table \ref{tab:keyadj}), described as an \textit{adjustment of order $O$}. Subscripts on the parameter vector indicate those parameters belonging to each part of the model (i.e., $\boldsymbol{\theta} = (\boldsymbol{\theta}_\text{key}, \boldsymbol{\theta}_\text{adjust})$).
 
 Available models for the key are as follows:
 $$
