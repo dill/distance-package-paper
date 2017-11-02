@@ -47,7 +47,7 @@
 
 %% an abstract and keywords
 \Abstract{
-Estimating the abundance and spatial distribution of animal and plant populations is essential for conservation and management. We introduce the \proglang{R} package \pkg{Distance} that implements distance sampling methods to estimate abundance. We describe how users can obtain estimates of abundance (and density) using the package as well documenting the links it provides with other more specialized \proglang{R} packages. We also demonstrate how \pkg{Distance} provides a migration pathway from previous software, thereby allowing us to deliver cutting-edge methods to the users more quickly.
+Estimating the abundance and spatial distribution of animal and plant populations is essential for conservation and management. We introduce the \proglang{R} package \pkg{Distance} that implements distance sampling methods to estimate abundance. We describe how users can obtain estimates of abundance (and density) using the package as well as documenting the links it provides with other more specialized \proglang{R} packages. We also demonstrate how \pkg{Distance} provides a migration pathway from previous software, thereby allowing us to deliver cutting-edge methods to the users more quickly.
 }
 \Keywords{distance sampling, abundance estimation, line transect, point transect, detection function, Horvitz-Thompson, \proglang{R}, Distance}
 \Plainkeywords{distance sampling, abundance estimation, line transect, point transecs, detection function, Horvitz-Thompson, R, Distance} %% without formatting
@@ -258,7 +258,7 @@ Key function plus adjustment terms (or adjustment series) models are formulated 
 $$
 g(y; \boldsymbol{\theta}) = k(y; \boldsymbol{\theta}_\text{key})\left( 1+ \alpha_O(y; \boldsymbol{\theta}_\text{adjust})\right),
 $$
-where $k$ is the key function and $\alpha_O$ is sum series of functions (given in Table \ref{tab:keyadj}), described as an \textit{adjustment of order $O$}. Subscripts on the parameter vector indicate those parameters belonging to each part of the model (i.e., $\boldsymbol{\theta} = (\boldsymbol{\theta}_\text{key}, \boldsymbol{\theta}_\text{adjust})$).
+where $k$ is the key function and $\alpha_O$ is some series of functions (given in Table \ref{tab:keyadj}), described as an \textit{adjustment of order $O$}. Subscripts on the parameter vector indicate those parameters belonging to each part of the model (i.e., $\boldsymbol{\theta} = (\boldsymbol{\theta}_\text{key}, \boldsymbol{\theta}_\text{adjust})$).
 
 Available models for the key are as follows:
 $$
@@ -546,23 +546,23 @@ R> gof_ds(amakihi_hn)
 Goodness of fit results for ddf object
 
 Distance sampling Kolmogorov-Smirnov test
-Test statistic =  0.059345  P =  0.00031527 
+Test statistic = 0.0593449 p-value = 0
 
 Distance sampling Cramer-von Mises test (unweighted)
-Test statistic =  0.93083  P =  0.003578 
+Test statistic = 0.930827 p-value = 0.00357797
 \end{Soutput}
 \begin{Sinput}
-R> gof_ds(amakihi_hr_obs_mas)
+R> gof_ds(amakihi_hr_obs)
 \end{Sinput}
 \begin{Soutput}
 
 Goodness of fit results for ddf object
 
 Distance sampling Kolmogorov-Smirnov test
-Test statistic =  0.036251  P =  0.076237 
+Test statistic = 0.0420268 p-value = 0.48
 
 Distance sampling Cramer-von Mises test (unweighted)
-Test statistic =  0.15016  P =  0.38908 
+Test statistic = 0.198335 p-value = 0.270719
 \end{Soutput}
 \end{Schunk}
 We can conclude that the half-normal model does not pass our goodness of fit tests and should be discarded. Both hazard-rate models (output only shown for hazard-rate model with observer and minutes after sunrise) had non-significant goodness of fit test statistics and are both therefore deemed plausible models. The corresponding Q-Q plots are shown in Figure \ref{amakihi-qq}, comparing the half-normal model with the hazard-rate model with observer and minutes after sunrise included.
@@ -572,7 +572,7 @@ We can conclude that the half-normal model does not pass our goodness of fit tes
 \begin{Schunk}
 
 \includegraphics[width=\maxwidth]{figure/amakihiqq-1} \end{Schunk}
-\caption{Comparison of quantile-quantile plots for a half-normal model (no adjustments, no covariates; left) and hazard-rate model with observer and minutes after sunrise (right) for the amakihi data.}
+\caption{Comparison of quantile-quantile plots for a half-normal model (no adjustments, no covariates; left) and hazard-rate model with observer as a covariate (right) for the amakihi data.}
 \label{amakihi-qq}
 \end{center}
 \end{figure}
@@ -591,11 +591,11 @@ In this case we may be skeptical about the top model as selected by AIC being tr
 
 \begin{table}
 
-\caption{Summary for the detection function models fitted to the amakihi data. ``C-vM'' stands for Cram\'{e}r-von Mises, $P_a$ is average detectability (see ``Estimating abundance and variance''), se is standard error. Models are sorted according to AIC.\label{tab:amakihi}}
+\caption{\label{tab:summary-table}Summary for the detection function models fitted to the amakihi data. ``C-vM'' stands for Cram\'{e}r-von Mises, $P_a$ is average detectability (see ``Estimating abundance and variance''), se is standard error. Models are sorted according to AIC.\label{tab:amakihi}}
 \centering
 \begin{tabular}[t]{lllrrrr}
 \toprule
-Model & Key function & Formula & C-vM $p$-value & $\hat{P_a}$ & se($\hat{P_a}$) & $\Delta$AIC\\
+Model & Key function & Formula & C-vM p-value & $\hat{P_a}$ & se($\hat{P_a}$) & $\Delta$AIC\\
 \midrule
 \texttt{amakihi\char`_hr\char`_obs\char`_mas} & Hazard-rate & ~obs + mas & 0.389 & 0.319 & 0.020 & 0.000\\
 \texttt{amakihi\char`_hr\char`_obs} & Hazard-rate & ~obs & 0.271 & 0.314 & 0.020 & 1.073\\
@@ -738,7 +738,7 @@ colnames(minke_table) <- c("Stratum", "$\\hat{N}$", "$\\text{se}(\\hat{N}$)",
 
 \begin{table}
 
-\caption{Summary of abundance estimation for the half-normal model for the minke whale data.\label{minke-abund}}
+\caption{\label{tab:minke-abundance-table}Summary of abundance estimation for the half-normal model for the minke whale data.\label{minke-abund}}
 \centering
 \begin{tabular}[t]{lrrr}
 \toprule

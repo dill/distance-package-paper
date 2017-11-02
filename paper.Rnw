@@ -560,7 +560,7 @@ We can generate a Q-Q plot and test results using the \code{gof_ds} function. Fi
 amakihi_hn <- ds(amakihi, truncation = 82.5, transect = "point",
                  key = "hn", adjustment = NULL)
 gof_ds(amakihi_hn)
-gof_ds(amakihi_hr_obs_mas)
+gof_ds(amakihi_hr_obs)
 @
 We can conclude that the half-normal model does not pass our goodness of fit tests and should be discarded. Both hazard-rate models (output only shown for hazard-rate model with observer and minutes after sunrise) had non-significant goodness of fit test statistics and are both therefore deemed plausible models. The corresponding Q-Q plots are shown in Figure \ref{amakihi-qq}, comparing the half-normal model with the hazard-rate model with observer and minutes after sunrise included.
 
@@ -568,10 +568,10 @@ We can conclude that the half-normal model does not pass our goodness of fit tes
 \begin{center}
 <<label=amakihiqq, echo=FALSE, message=FALSE, fig.height=4, fig.width=7, results="hide">>=
 par(mfrow=c(1,2))
-gof_ds(amakihi_hn, asp=1, cex=0.3)  # shrinking dot size to obliterate 45-deg line less
-gof_ds(amakihi_hr_obs_mas, asp=1, cex=0.3)
+gof_ds(amakihi_hn, cex=0.3)  # shrinking dot size to obliterate 45-deg line less
+gof_ds(amakihi_hr_obs, cex=0.3)
 @
-\caption{Comparison of quantile-quantile plots for a half-normal model (no adjustments, no covariates; left) and hazard-rate model with observer and minutes after sunrise (right) for the amakihi data.}
+\caption{Comparison of quantile-quantile plots for a half-normal model (no adjustments, no covariates; left) and hazard-rate model with observer as a covariate (right) for the amakihi data.}
 \label{amakihi-qq}
 \end{center}
 \end{figure}
