@@ -320,7 +320,7 @@ p = \left\{
 \int_0^w \frac{2r}{w^2} g(r; \boldsymbol{\theta}) dr & \quad \text{for points,}
 \end{array} \right.
 $$
-where the fractions pre-multiplying the detection function describes the distribution of objects with respect to the sampler, taking into account the geometry of the sampler \citep[usually referred to as the \textit{probability density function of (object) distances} and denoted $\pi(y)$;][Chapter 3]{Buckland:2001vm}. Figure \ref{fig:detectdists} shows the relationship between the detection function, the probability density function of object distances and the probability density function of observed distances.
+where the fractions pre-multiplying the detection function describes the distribution of objects with respect to the sampler, taking into account the geometry of the sampler \citep[usually referred to as the \textit{probability density function of (object) distances} and denoted $\pi(y)$;][Chapter 3]{Buckland:2001vm}. Figure \ref{fig:detectiondist} shows the relationship between the detection function, the probability density function of object distances and the probability density function of observed distances.
 
 It is crucial that the detection function accurately models detectability at small distances; we are less worried by its behaviour further away from 0. To ensure that the model is not overly influenced by distances far from zero, we truncate the distances beyond a given distance $w$ (this can be done during analysis or while collecting data in the field).
 
@@ -417,7 +417,7 @@ $$
 
 A disadvantage of K+A models is that we must resort to constrained optimisation \citep[via the \pkg{Rsolnp} package;][]{rsolnp-pkg} to ensure that the resulting detection function is monotonic non-increasing over its range.
 
-It is not always necessary to include adjustments (except in the case of the uniform key) and in such cases we refer to these as ``key only'' models (see the next section and ``Model checking and model selection''). Adjustment terms increase the flexibility of the detection functioni but this added flexibility comes at the expense of additional parameters to be estimated. The analyst must consider whether the process giving rise to the distribution of detection distances should be modelled with shapes depicted in Figure \ref{fig:keyadj}.
+It is not always necessary to include adjustments (except in the case of the uniform key) and in such cases we refer to these as ``key only'' models (see the next section and ``Model checking and model selection''). Adjustment terms increase the flexibility of the detection function but this added flexibility comes at the expense of additional parameters to be estimated. The analyst must consider whether the process giving rise to the distribution of detection distances should be modelled with shapes depicted in Figure \ref{fig:keyadj}.
 
 \begin{figure}
 \begin{center}
@@ -672,9 +672,11 @@ summary(minke_hn)
 @
 This prints a rather large amount of information: first the detection function summary, then three tables:
 
-1. \code{Summary statistics}: giving the areas, covered areas, effort, number of observations, number of transects, encounter rate, its standard error and coefficient of variation for each stratum. 
-2. \code{Abundance}: giving estimates, standard errors, coefficients of variation, lower and upper confidence intervals and finally the degrees of freedom for each stratum's abundance estimate.
-3. \code{Density}: lists the same statistics as \code{Abundance} but for a density estimate.
+\begin{enumerate}
+\item \code{Summary statistics}: giving the areas, covered areas, effort, number of observations, number of transects, encounter rate, its standard error and coefficient of variation for each stratum. 
+\item \code{Abundance}: giving estimates, standard errors, coefficients of variation, lower and upper confidence intervals and finally the degrees of freedom for each stratum's abundance estimate.
+\item \code{Density}: lists the same statistics as \code{Abundance} but for a density estimate.
+\end{enumerate}
 
 In each table the bottom row gives a total for the whole study area.
 
