@@ -17,10 +17,10 @@
 \restylefloat{table}
 
 %% almost as usual
-\author{David L Miller\\University of St Andrews \AND 
-        Eric Rexstad\\University of St Andrews \And 
-        Len Thomas\\University of St Andrews \AND 
-        Laura Marshall\\University of St Andrews \And 
+\author{David L Miller\\University of St Andrews \AND
+        Eric Rexstad\\University of St Andrews \And
+        Len Thomas\\University of St Andrews \AND
+        Laura Marshall\\University of St Andrews \And
         Jeffrey L Laake\\Marine Mammal Laboratory}
 
 
@@ -100,15 +100,16 @@ knitr::opts_chunk$set(cache=TRUE)
 render_sweave()
 @
 
-Distance sampling \citep{Buckland:2001vm, Buckland:2004ts, buckland2015distance} encompasses a suite of methods used to estimate the density and/or abundance of biological populations. Distance sampling can be thought of as an extension of plot sampling. Plot sampling involves selecting a number of plots (small areas) at random within the study area and counting the objects of interest that are contained within each plot. By selecting the plots at random we can assume that the density of objects in the plots is representative of the study area as a whole. One of the key assumptions of plot sampling is that all objects within each of the plots are counted. Distance sampling relaxes this assumption in that observers are no longer required to detect (either by eye, video/audio recording etc) and count everything within selected plots. While plot sampling techniques are adequate for static populations occurring at high density they are inefficient for more sparsely distributed populations. Distance sampling provides a more efficient solution in such circumstances.
+Distance sampling \citep{Buckland:2001vm, Buckland:2004ts, buckland2015distance} encompasses a suite of methods used to estimate the density and/or abundance of biological populations. Distance sampling can be thought of as an extension of plot sampling. Plot sampling involves selecting a number of plots (small areas) at random within the study area and counting the objects of interest that are contained within each plot. By selecting the plots at random we can assume that the density of objects in the plots is representative of the study area as a whole. One of the key assumptions of plot sampling is that all objects within each of the plots are counted. Distance sampling relaxes this assumption in that observers are no longer required to detect (i.e., either by eye, video/audio recording, etc.) and count everything within selected plots. While plot sampling techniques are adequate for static populations occurring at high density they are inefficient for more sparsely distributed populations. Distance sampling provides a more efficient solution in such circumstances.
 
-Conventional distance sampling assumes the observer is located either at a point or moving along a line and will observe all objects that occur at the point or on the line. The further away an object is from the point or line (also known as the sampler or transect) the less likely it is that the observer will see it. We can use the distances to each of the detected objects from the line or point to build a model of the probability of detection given distance from the sampler --- the \textit{detection function}. The detection function can be used to infer how many objects were missed and thereby produce estimates of density and/or abundance. 
+Conventional distance sampling assumes the observer is located either at a point or moving along a line and will observe all objects that occur at the point or on the line. The further away an object is from the point or line (also known as the sampler or transect) the less likely it is that the observer will see it. We can use the distances to each of the detected objects from the line or point to build a model of the probability of detection given distance from the sampler --- the \textit{detection function}. The detection function can be used to infer how many objects were missed and thereby produce estimates of density and/or abundance. Exact distances can be recorded or distances can be collected in bins if exact distances are hard to estimate (sometimes referred to as ``grouped'' or ``interval'' data). To ensure that the model is not overly influenced by distances far from zero and that observer time is not spent looking for far away objects, we discard or do not record observations beyond a given \textit{truncation distance} (during analysis or while collecting data in the field).
+
 
 The Windows program Distance (or ``DISTANCE''; for clarity henceforth ``Distance for Windows'') can be used to fit detection functions to distance sampling data. It was first released (versions 1.0 - 3.0; principally programmed by Jeff Laake while working at the National Marine Mammal Laboratory) as a console-based application (this in turn was based on earlier software TRANSECT, \citealp{Burnham:1980wz} and algorithms developed in \citealp{Buckland:1992fa}), before the first graphical interface (Distance for Windows 3.5) was released in November 1998. Since this time it has evolved to include various design and analysis features \citep{Thomas:2010cf}. Distance for Windows versions 5 onwards have included \proglang{R} \citep{rcore} packages as the analysis engines providing additional, more complex analysis options than those offered by the original (\proglang{Fortran}) code.
 
 As Distance for Windows becomes increasingly reliant on analyses performed in \proglang{R} and many new methods are being developed, we are encouraging the use of our \proglang{R} packages directly. \proglang{R} provides a huge variety of functionality for data exploration and reproducible research, much more than is possible in Distance for Windows.
 
-Until now those wishing to use our \proglang{R} packages for straight forward distance sampling analyses would have had to negotiate the package \pkg{mrds} \citep{mrds-pkg} designed for mark-recapture distance sampling \citep{Burt:2014gu}, requiring a complex data structure to perform analyses. \pkg{Distance} is a wrapper package around \pkg{mrds} making it easier to get started with basic distance sampling analyses in \proglang{R}. The most basic detection function estimation only requires a numeric vector of distances. Here we demonstrate how to use \pkg{Distance} to fit detection functions, perform model checking and selection, and estimate abundance.
+Until now those wishing to use our \proglang{R} packages for straightforward distance sampling analyses would have had to negotiate the package \pkg{mrds} \citep{mrds-pkg} designed for mark-recapture distance sampling \citep{Burt:2014gu}, requiring a complex data structure to perform analyses. \pkg{Distance} is a wrapper package around \pkg{mrds} making it easier to get started with basic distance sampling analyses in \proglang{R}. The most basic detection function estimation only requires a numeric vector of distances. Here we demonstrate how to use \pkg{Distance} to fit detection functions, perform model checking and selection, and estimate abundance.
 
 
 \subsection{Distance sampling}
@@ -165,12 +166,12 @@ pdf.observed <- pdf.point.observed(x, sigma = 200)
 plot(x, pdf.observed, xlab = "Radial distance", ylab= "pdf of observed distances", type = "l", ylim = c(0,0.00345), cex = set.cex, cex.lab = set.cex.lab, axes=FALSE)
 axis(2, at=round(c(0,max(pdf.observed)/2,max(pdf.observed)),4)); axis(1); box()
 @
-\caption{Panels show an example detection function (left), the pdf of object distances (middle) and the resulting pdf of detection distances (right) for line transects (top row) and point transects (bottom row). The pdf of observed detection distances in the right hand plots are obtained by multiplying the detection function by the pdf of object distances and rescaling. In this example, detection probability becomes effectively zero at 500 (distances shown on $x$-axis are arbitrary).}
+\caption{Panels show an example detection function (left), the probability density function of object distances (middle) and the resulting pdf of detection distances (right) for line transects (top row) and point transects (bottom row). The pdf of observed detection distances in the right hand plots are obtained by multiplying the detection function by the pdf of object distances and rescaling. In this example, detection probability becomes effectively zero at 500 (distances shown on $x$-axis are arbitrary).}
 \label{fig:detectiondist}
 \end{center}
 \end{figure}
 
-Figure \ref{fig:pointslines} shows simulated sampling of a population of 500 objects using line and point transects and their corresponding histograms of observed detection distances. Note that for the purposes of distance sampling an ``object'' may either refer to an individual in a population or a cluster of individuals.  
+Figure \ref{fig:pointslines} shows simulated sampling of a population of 500 objects using line and point transects and their corresponding histograms of observed detection distances. Note that for the purposes of distance sampling an ``object'' may either refer to an individual in a population or a cluster (or group) of individuals.
 
 \begin{figure}
 \begin{center}
@@ -260,9 +261,9 @@ par(opar)
 
 Good survey design is essential to produce reliable density and abundance estimates from distance sampling data. Survey design is beyond the scope of this article but we refer readers to \cite[][Chapter 7]{Buckland:2001vm} and \cite[][Chapter 2]{buckland2015distance} for introductory information; \cite{Strindberg:2004vr} contains information on automated survey design using geographical information systems (GIS); \cite{Thomas:2007wz} gives an example of designing a distance sampling survey in a complex region. We also note that Distance for Windows includes a GIS survey design tool \citep{Thomas:2010cf}.
 
-\pkg{Distance} provides a selection of candidate functions to describe the probability of detection and estimates the associated parameters using maximum likelihood estimation. The probability of detecting an object may not only depend on how far it is from the observer but also on other factors such as weather conditions, ground cover, cluster size etc. The \pkg{Distance} package also allows the incorporation of such covariates into the detection function allowing the detection function scale parameter to vary based on these covariates.
+\pkg{Distance} provides a selection of candidate functions to describe the probability of detection and estimates the associated parameters using maximum likelihood estimation. The probability of detecting an object may not only depend on how far it is from the sampler but also on other factors such as weather conditions, ground cover, cluster size etc \citep{Marques:2007ey}. The \pkg{Distance} package also allows the incorporation of such covariates into the detection function allowing the detection function scale parameter to vary based on these covariates.
 
-Having estimated the detection function's parameters, one can then integrate out distance from the function (as the detection function describes the probability of detection \textit{given} distance) to get an ``average'' probability of detection (in the sense of averaging over distances), which can be used to correct the observed counts. Summing the corrected counts gives an estimate of abundance in the area covered by surveys, which can be multiplied up to the total study area.
+Having estimated the detection function's parameters, one can then integrate out distance from the function (as the detection function describes the probability of detection \textit{given} distance) to get an ``average'' probability of detection (in the sense of averaging over distances, conditional on any observed covariates), which can be used to correct the observed counts. Summing the corrected counts gives an estimate of abundance in the area covered by surveys, which can be multiplied up to the total study area.
 
 In addition to randomly placed samplers distance sampling relies on three other main assumptions. Firstly, all objects directly on the transect line or point (i.e., those at zero distance) are detected (see ``Extensions'' for methods to deal with the situation when this is not possible). Secondly, objects are stationary or detected prior to any movement. Thirdly, distance to the object must be measured accurately, or the observation allocated to the correct distance bin for grouped data. Depending on the survey species some of these assumptions may be more difficult to meet than others. Further information on field methods to help meet these assumptions can be found in \cite{Buckland:2001vm} and \cite{buckland2015distance}.
 
@@ -274,7 +275,7 @@ We introduce two example analyses performed in \pkg{Distance}: one line transect
 
 \subsection{Minke whales}
 
-The line transect data have been simulated from models fitted to Antarctic minke whale (\textit{Balaenoptera bonaerensis}) data. These data were collected as part of the International Whaling Commission's International Decade of Cetacean Research Southern Ocean Whale and Ecosystem Research (IWC IDCR-SOWER) programme 1992-1993 austral summer surveys. These data consist of 99 observations that are stratified based on location (near or distant from ice edge) and effort data (transect lengths). Further details on the survey are available in \cite{Branch:2001ua} (data is simulated based on the design used for ``1992/93 Area III'' therein).
+The line transect data have been simulated from models fitted to Antarctic minke whale (\textit{Balaenoptera bonaerensis}) data. These data were collected as part of the International Whaling Commission's International Decade of Cetacean Research Southern Ocean Whale and Ecosystem Research (IWC IDCR-SOWER) programme 1992-1993 austral summer surveys. Data consist of 99 observations on 25 transects, which were stratified based on location (near or distant from ice edge) and effort data (transect lengths). Further details on the survey are available in \cite{Branch:2001ua} (data are simulated based on the design used for ``1992/93 Area III'' therein).
 
 \subsection{Amakihi}
 
@@ -292,7 +293,7 @@ Generally, data collected in the field will require some formatting before use w
 
 As we will see in ``Extensions'', further information is also required for fitting more complex models.
 
-It is also possible to use distances collected in intervals (``binned'' or ``grouped'' data, as opposed to ``exact'' distances) to model the detection function. In this case the column \code{distance} is replaced by two columns \code{distbegin} and \code{distend} referring to the distance interval start and end cutpoints. More information on binned data is included in \cite{Buckland:2001vm} sections 4.5 and 7.4.1.2.
+If distances were collected in bins the column \code{distance} is replaced by two columns \code{distbegin} and \code{distend} referring to the distance interval start and end cutpoints. More information on binned data is included in \cite{Buckland:2001vm} sections 4.5 and 7.4.1.2.
 
 The columns \code{distance}, \code{Area} and (in the case of line transects) \code{Effort} have associated units (though these are not explicitly included in a \pkg{Distance} analysis). We recommend that data in these columns are converted to SI units before starting any analysis to ensure that resulting abundance and density estimates have sensible units. For example, if distances from a line transect survey are recorded in metres, the \code{Effort} columns should contain line lengths also in metres and the \code{Area} column gives the stratum areas in square metres. This would lead to density estimates of animals per square metre.
 
@@ -312,7 +313,7 @@ We will explore the consequences of including effort and stratum data in the ana
 
 \section{Detection functions}
 
-The detection function models the probability $\Prob(\text{object detected } \vert \text{ object at distance } y)$ and is usually denoted $g(y; \boldsymbol{\theta})$ where $y$ is distance (from a line or point) and $\boldsymbol{\theta}$ is a vector of parameters to be estimated. The parameter(s) $\boldsymbol{\theta}$ are used in a detection function (see Section 3.1), serving as the basis to produce an estimate of the probability that an object within the truncation distance of the point or line transect is detected during the survey. Our goal is to estimate an \textit{average probability of detection} ($p$, average in the sense of an average over distance from $0$ to truncation distance $w$), so we must integrate out distance from the detection function. Letting $x$ denote a perpendicular distance from a line and $r$ denote radial distance from a point:
+The detection function models the probability $\Prob(\text{object detected } \vert \text{ object at distance } y)$ and is usually denoted $g(y; \boldsymbol{\theta})$ where $y$ is distance (from a line or point) and $\boldsymbol{\theta}$ is a vector of parameters to be estimated. Our goal is to estimate an \textit{average probability of detection} ($p$, average in the sense of an average over distance from $0$ to truncation distance $w$), so we must integrate out distance from the detection function. Letting $x$ denote a perpendicular distance from a line and $r$ denote radial distance from a point:
 $$
 p = \left\{
 \begin{array}{l l}
@@ -320,21 +321,20 @@ p = \left\{
 \int_0^w \frac{2r}{w^2} g(r; \boldsymbol{\theta}) dr & \quad \text{for points,}
 \end{array} \right.
 $$
-where the fractions pre-multiplying the detection function describes the distribution of objects with respect to the sampler, taking into account the geometry of the sampler \citep[usually referred to as the \textit{probability density function of (object) distances} and denoted $\pi(y)$;][Chapter 3]{Buckland:2001vm}. Figure \ref{fig:detectiondist} shows the relationship between the detection function, the probability density function of object distances and the probability density function of observed distances.
+where the fractions pre-multiplying the detection function describe the distribution of objects with respect to the sampler, taking into account the geometry of the sampler \citep[usually referred to as the \textit{probability density function of (object) distances} and denoted $\pi(y)$;][Chapter 3]{Buckland:2001vm}. Figure \ref{fig:detectiondist} shows the relationship between the detection function, the probability density function of object distances and the probability density function of observed distances.
 
-It is crucial that the detection function accurately models detectability at small distances; we are less worried by its behaviour further away from 0. To ensure that the model is not overly influenced by distances far from zero, we truncate the distances beyond a given distance $w$ (this can be done during analysis or while collecting data in the field).
 
 Models for the detection function are expected to have the following properties \citep[][Chapter 5]{buckland2015distance}:
 
 \begin{itemize}
-\item \textit{Shoulder}: we expect observers to be able to see objects near them, not just those directly in front of them. For this reason, we expect the detection function to be flat near the line or point.
+\item \textit{Shoulder}: we expect observers to be able to see objects near them, not just those directly in front of them. We therefore expect the detection function to be flat near the line or point.
 \item \textit{Non-increasing}: we do not think that observers should be more likely to see distant objects than those nearer the transect. If this occurs, it usually indicates an issue with survey design or field procedures (for example that the distribution of objects with respect to the line, $\pi(y)$ is not what we expect), so we do not want the detection function to model this \citep{Marques:2010he, Marques:2012fy, Miller:2015hw}.
 \item \textit{Model robust}: models should be flexible enough to fit many different shapes.
 \item \textit{Pooling robust}: many factors can affect the probability of detection and it is not possible to measure all of these. We would like models to produce unbiased results without inclusion of these factors.
 \item \textit{Estimator efficiency}: we would like models to have low variances, given they satisfy the other properties above (which, if satisfied, would give low bias).
 \end{itemize}
 
-Given these criteria, we can formulate models for $g$.
+The shoulder condition also implies that it is crucial that the detection function accurately models detectability at small distances and that we are less worried by its behaviour further away from 0. Given these criteria, we can formulate models for $g$.
 
 \subsection{Formulations}
 
@@ -342,9 +342,9 @@ There is a wide literature on possible formulations for the detection function \
 
 \subsubsection{Key function plus adjustments (K+A)}
 
-Key function plus adjustment terms (or adjustment series) models are formulated by taking a ``key'' function and optionally adding ``adjustments'' to it to improve the fit \citep{Buckland:1992fa}. Mathematically we formulate this as:
+Key function plus adjustment terms (or adjustment series) models are formulated by taking a ``key'' function and optionally including ``adjustments'' to it to improve the fit \citep{Buckland:1992fa}. Mathematically we formulate this as:
 $$
-g(y; \boldsymbol{\theta}) = k(y; \boldsymbol{\theta}_\text{key})\left( 1+ \alpha_O(y; \boldsymbol{\theta}_\text{adjust})\right),
+g(y; \boldsymbol{\theta}) \propto k(y; \boldsymbol{\theta}_\text{key})\left( 1+ \alpha_O(y; \boldsymbol{\theta}_\text{adjust})\right),
 $$
 where $k$ is the key function and $\alpha_O$ is some series of functions (given in Table \ref{tab:keyadj}), described as an \textit{adjustment of order $O$}. Subscripts on the parameter vector indicate those parameters belonging to each part of the model (i.e., $\boldsymbol{\theta} = (\boldsymbol{\theta}_\text{key}, \boldsymbol{\theta}_\text{adjust})$).
 
@@ -410,7 +410,7 @@ Key function   & Form   & Adjustment series & Form\\
 \label{tab:keyadj}
 \end{table}
 
-When adjustment terms are used it is necessary to standardise the results to ensure that $g(0)=1$, so we can redefine the detection function as:
+When adjustment terms are used it is necessary to standardise the results to ensure that $g(0)=1$:
 $$
 g(y; \boldsymbol{\theta}) = \frac{k(y; \boldsymbol{\theta}_\text{key})\left( 1+ \alpha_O(y; \boldsymbol{\theta}_\text{adjust})\right)}{k(0; \boldsymbol{\theta}_\text{key})\left( 1+ \alpha_O(0; \boldsymbol{\theta}_\text{adjust})\right)}.
 $$
@@ -477,7 +477,7 @@ p(\mathbf{z}_i) = \left\{
 $$
 where $\mathbf{z}_i$ is the vector of $J$ covariates associated with observation $i$. For covariate models, we calculate a value of ``average'' probability of detection (average in the sense of distance being integrated out) per observation. There are as many unique values of $p(\mathbf{z}_i)$ as there are unique covariate combinations in our data.
 
-K+A models that include covariates and one or more adjustments cannot be guaranteed to be monotonic non-increasing for all covariate combinations. Without a model for the distribution of the covariates, it is not possible to know what the behaviour of the detection function will be across the ranges of the covariates. As such we cannot set meaningful constraints on monotonicity. For this reason, we advise caution when using both adjustments and covariates in a detection function \citep[see][for an example of when this can be problematic]{Miller:2015hw}.
+K+A models that include covariates and one or more adjustments cannot be guaranteed to be monotonic non-increasing for all covariate combinations. Without a model for the distribution of the covariates, it is not possible to know what the behaviour of the detection function will be across the ranges of the covariates. As such we cannot set meaningful constraints on monotonicity. For this reason, we advise caution when using both adjustments and covariates in a detection function \citep[see][for an example of when this can be problematic and an alternative detection function formulation to solve this issue]{Miller:2015hw}.
 
 
 \subsection{Fitting detection functions in R}
@@ -551,7 +551,7 @@ This summary information includes details of the data and model specification, a
 
 \subsection{Goodness of fit}
 
-We use a quantile-quantile plot (Q-Q plot) to visually assess how well a detection functions fits the data when we have exact distances. Here the Q-Q plot compares the cumulative distribution function (CDF) of the fitted detection function to the distribution of the data (empirical distribution function or EDF). The Q-Q plots in \pkg{Distance} plot a point for every observation. The EDF is the proportion of points that have been observed at a distance equal to or less than the distance of that observation. The CDF is calculated from the fitted detection function as the probability of observing an object at a distance less than or equal to that of the given observation. This can be interpreted as assessing whether the number of observations up to a given distance is in line with what the model says they should be. As usual for Q-Q plots, ``good'' models will have values close to the line $y=x$, poor models will show greater deviations from that line.
+We use a quantile-quantile plot (Q-Q plot) to visually assess how well a detection functions fits the data when we have exact distances. The Q-Q plot compares the cumulative distribution function (CDF) of the fitted detection function to the distribution of the data (empirical distribution function or EDF). The Q-Q plots in \pkg{Distance} plot a point for every observation. The EDF is the proportion of points that have been observed at a distance equal to or less than the distance of that observation. The CDF is calculated from the fitted detection function as the probability of observing an object at a distance less than or equal to that of the given observation. This can be interpreted as assessing whether the number of observations up to a given distance is in line with what the model says they should be. As usual for Q-Q plots, ``good'' models will have values close to the line $y=x$, poor models will show greater deviations from that line.
 
 Q-Q plots can be inspected visually, though this is prone to subjective judgments. Therefore, we also quantify the Q-Q plot's information using a Cram\'{e}r-von Mises test \citep{Burnham:2004vd} to test whether points from the EDF and CDF are from the same distribution. The Cram\'{e}r-von Mises test uses the sum of all the distances between a point on the Q-Q plot and the line $y=x$ to form a test statistic. As it takes into account more information and is therefore more powerful, the Cram\'{e}r-von Mises is generally more powerful than the Kolmogorov-Smirnov test, which uses the largest difference between a point on the Q-Q plot and the line $y=x$ (which is also available in \pkg{Distance}, though is not produced by default as it requires computationally demanding bootstraps). A significant result from either test gives evidence against the null hypothesis (that the data arose from the fitted model), suggesting that the model does not fit the data well.
 
@@ -624,7 +624,7 @@ This can be a useful summary statistic, giving us an idea of how detectable our 
 
 \subsubsection{Stratification}
 
-We may wish to calculate abundance estimates for some sub-regions of the study region, we call these areas \textit{strata}. Stratification can be used to increase the precision of estimates if we know \textit{a priori} that density varies between different parts of the study area. For example, strata may be defined by habitat types which may be of interest for biological or management reasons. To calculate estimates for a given stratification each observation must occur in a stratum which must be labelled with a \code{Region.Label} and have a corresponding \code{Area}. Finally, we must also know the stratum in which each observation occurs.
+We may wish to calculate abundance estimates for some sub-regions of the study region, we call these areas \textit{strata} and can be defined at the design stage or post hoc. Stratification can be used to increase the precision of estimates if we know \textit{a priori} that density varies between different parts of the study area. For example, strata may be defined by habitat types which may be of interest for biological or management reasons. To calculate estimates for a given stratification each observation must occur in a stratum which must be labelled with a \code{Region.Label} and have a corresponding \code{Area}. Finally, we must also know the stratum in which each observation occurs.
 
 As an example, the minke whale data contain two strata: \code{North} and \code{South} relating to strata further away from and nearer to the Antarctic ice edge, respectively.
 
@@ -698,19 +698,19 @@ kable(minke_table, digits=3, format="latex", booktabs=TRUE, row.names=FALSE, esc
 
 \section{Extensions}
 
-Distance sampling has been applied in a wide variety of situations. Objects being detected need not be animals; plants \citep{Buckland:2007kl}, beer cans \citep{Otto:1990gs}, elephant dung \citep{NchPlu01} and bricks on a lake bottom \citep{Ber90} have been subjects of distance sampling investigations. The method of detection need not be visual sightings. Detections of objects can be through auditory as well as visual means \citep{Marques2013b}. Songs of birds \citep{Buckland2006} and whale vocalisations \citep{BorSub1} are just two examples. Blows made by whales are examples of processes that can be modelled using distance sampling. Songs and blows are indirect sampling methods producing estimates of cue density. Cue densities can be converted to animal densities with additional data needed to estimate the rate at which cues are produced and the rate at which they disappear. These are but a few examples of the applications to which distance sampling has been applied (a larger, but incomplete list of references is given at \url{http://distancesampling.org/dbib.html}).
+Distance sampling has been applied in a wide variety of situations. Objects being detected need not be animals; plants \citep{Buckland:2007kl}, beer cans \citep{Otto:1990gs}, elephant dung \citep{NchPlu01} and bricks on a lake bottom \citep{Ber90} have been subjects of distance sampling investigations. The method of detection need not be visual sightings. Detections of objects can be through auditory as well as visual means \citep{Marques2013b}. Songs of birds \citep{Buckland2006} and whale vocalisations \citep{BorSub1} are just two examples. Blows made by whales are examples of processes that can be modelled using distance sampling. Songs and blows are indirect sampling methods producing estimates of cue density. Cue densities can be converted to animal densities with additional data needed to estimate the rate at which cues are produced and the rate at which they disappear. These are but a few examples of the applications to which distance sampling has been applied (an incomplete list of references is given at \url{http://distancesampling.org/dbib.html}).
 
 The features of \pkg{Distance} are deliberately limited to provide a simplified interface for users. For more complex analyses of distance sampling data, we provide additional packages for modelling in \proglang{R}.
 
-We noted at the start of the article that \pkg{Distance} is a simple-to-use wrapper around the package \pkg{mrds}. Additional features available in \pkg{mrds} include  models that relax the assumption that detection is certain at zero distance from the transect (by including data from additional observers). This is done using mark-recapture type methods which require additional survey methodology, known as double observer surveys \citep[see][for an introduction]{Burt:2014gu}.
+We noted at the start of the article that \pkg{Distance} is a simple-to-use wrapper around the package \pkg{mrds}. Additional features available in \pkg{mrds} include  models that relax the assumption that detection is certain at zero distance from the transect (by including data from additional observers). This is done using mark-recapture type methods which require additional survey methodology, known as double observer surveys or mark-recapture distance sampling \citep[see][for an introduction]{Burt:2014gu}.
 
 \pkg{Distance} can provide us with estimates of abundance or density for each strata as a whole but tells us nothing about the distribution of animals within strata. One option is to divide the study area into smaller and smaller strata to try to detect patterns in spatial distribution, however, a more rigorous approach is to build a spatial model. Such models incorporate spatially-referenced environmental data (for example derived from GIS products). \pkg{Distance} interfaces with one such package used to perform this type of analysis: \pkg{dsm} \citep{dsm-pkg}. So-called ``density surface modelling'' uses the generalized additive model framework \citep[e.g.][]{Wood:2006vg} to build models of abundance (adjusting counts for imperfect detectability) as a function of environmental covariates, as part of a two stage model \citep{Hedley:2004et, Miller:2013fq}.
 
-Uncertainty in measured covariates (e.g. cluster size) and model uncertainty (when two models have similar fit but substantially different estimates) can be incorporated using the multi-analysis distance sampling package \pkg{mads} \citep{mads-pkg}. In addition, \pkg{mads} can also incorporate sightings with unknown species identification. This is done by estimating the abundance of these 'unidentified' sightings and pro-rating them to the known species \citep{Gerrodette:2005}.
+Uncertainty in measured covariates (e.g. cluster size) and model uncertainty (when two models have similar fit but substantially different estimates) can be incorporated using the multi-analysis distance sampling package \pkg{mads} \citep{mads-pkg}. In addition, \pkg{mads} can also incorporate sightings with unknown species identification. This is done by estimating the abundance of these unidentified sightings and pro-rating them to the known species \citep{Gerrodette:2005}.
 
-As mentioned above, survey design is critical to ensuring that resulting distance sampling data can be reliably analysed. \pkg{DSsim} allows users to test out different designs in their study region and tailor population attributes to reflect the species they are working with. \pkg{DSsim} \citep{DSsim-pkg} allows users to more easily identify challenges unique to their study and select a survey design which is more likely to yield accurate and precise estimates. 
+As mentioned above, survey design is critical to ensuring that resulting distance sampling data can be reliably analysed. \pkg{DSsim} allows users to test out different designs in their study region and tailor population attributes to reflect the species they are working with. \pkg{DSsim} \citep{DSsim-pkg} allows users to more easily identify challenges unique to their study and select a survey design which is more likely to yield accurate and precise estimates.
 
-Distance for Windows has many users (over 45,000 downloads since 2002) and they may be overwhelmed by the prospect of switching existing analyses to \proglang{R}. For that reason we have created the \pkg{readdst} \citep{readdst-pkg} package to interface with projects created by Distance for Windows. The package can take analyses created using the CDS, MCDS and MRDS engines in Distance for Windows, extract the data and create equivalent models in \proglang{R}. \pkg{readdst} can also run these analyses and test the resulting statistics (for example, $\hat{N}$ or $\hat{P_a}$) calculated in \proglang{R} against those calculated by Distance for Windows. We hope that \pkg{readdst} will provide a useful transition to \proglang{R} for interested users. \pkg{readdst} is currently available on GitHub at \url{https://github.com/distancedevelopment/readdst}.
+Distance for Windows has many users (over 50,000 downloads since 2002) and they may be overwhelmed by the prospect of switching existing analyses to \proglang{R}. For that reason we have created the \pkg{readdst} \citep{readdst-pkg} package to interface with projects created by Distance for Windows. The package can take analyses created using the CDS, MCDS and MRDS engines in Distance for Windows, extract the data and create equivalent models in \proglang{R}. \pkg{readdst} can also run these analyses and test the resulting statistics (for example, $\hat{N}$ or $\hat{P_a}$) calculated in \proglang{R} against those calculated by Distance for Windows. We hope that \pkg{readdst} will provide a useful transition to \proglang{R} for interested users. \pkg{readdst} is currently available on GitHub at \url{https://github.com/distancedevelopment/readdst}.
 
 \section{Conclusion}
 
