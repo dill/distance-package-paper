@@ -1,5 +1,9 @@
 .Rproj.user
 .Rhistory
 .RData
-paper_cache
-paper_files
+cache/
+jss2630.aux
+jss2630.bbl
+jss2630.blg
+jss2630.log
+jss2630.out

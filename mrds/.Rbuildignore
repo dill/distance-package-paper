@@ -1,0 +1,6 @@
+.travis.yml
+^appveyor\.yml$
+tests
+inst/testData
+inst/docs
+LICENSE
